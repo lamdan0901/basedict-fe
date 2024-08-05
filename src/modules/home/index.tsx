@@ -112,6 +112,7 @@ export function Home() {
                 type="search"
                 onChange={(e) => {
                   setText(e.target.value);
+                  setSearchParam({ search: e.target.value });
                   if (selectedLexeme) setSelectedLexeme(null);
                   if (e.target.value.trim().length === 0) {
                     setSearchParam({ search: "" });
@@ -127,9 +128,6 @@ export function Home() {
                     setMeaningNotExisted(false);
                     setWord(text);
                   }
-                }}
-                onCompositionEnd={(e) => {
-                  setSearchParam({ search: text });
                 }}
                 placeholder="Enter text here..."
                 className="border-none px-1 text-3xl focus-visible:ring-transparent"
