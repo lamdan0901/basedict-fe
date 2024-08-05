@@ -12,3 +12,7 @@ export function stringifyParams(params: Record<string, any>) {
     allowDots: true,
   });
 }
+
+export const trimAllSpaces = (str: string): string => {
+  return str.replace(/[\s\u3000]/g, "");
+};

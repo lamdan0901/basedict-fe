@@ -1,5 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import QueryString from "qs";
+import axios, { AxiosError } from "axios";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants";
 import { getCookie } from "@/lib/cookies";
 import { useAppStore } from "@/store/useAppStore";
@@ -25,14 +24,6 @@ const axiosAuth = axios.create({
 
 const axiosData = axios.create({
   baseURL: process.env.NEXT_PUBLIC_DATA_BASE_URL,
-  // paramsSerializer: {
-  //   serialize: (params) => {
-  //     return QueryString.stringify(params, {
-  //       arrayFormat: "indices",
-  //       allowDots: true,
-  //     });
-  //   },
-  // },
 });
 
 // Shared interceptor for both instances

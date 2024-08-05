@@ -12,14 +12,21 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { cn, stringifyParams } from "@/lib/utils";
+import { cn, stringifyParams, trimAllSpaces } from "@/lib/utils";
 import { getRequest } from "@/service/data";
-import { CircleCheckBig, Flag } from "lucide-react";
+import { CircleCheckBig, Flag, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import useSWR from "swr";
 
 const MAX_LINES = 3;
+
+const MEANING_ERR_MSG = {
+  NOT_FOUND: "Không tìm thấy từ",
+  VALIDATION_FAILED:
+    "Từ vựng chỉ được bao gồm hán tự, hiragana hoặc toàn bộ là katakana và tối đa là 7 kí tự",
+  UNKNOWN: "Đã xảy ra lỗi không xác định",
+};
 
 export function Home() {
   const searchParams = useSearchParams();
@@ -34,7 +41,7 @@ export function Home() {
 
   const [meaningIndex, setMeaningIndex] = useState(0);
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
-  const [meaningNotExisted, setMeaningNotExisted] = useState(false);
+  const [meaningErrMsg, setMeaningErrMsg] = useState("");
 
   const {
     data: lexemeListRes,
@@ -45,7 +52,7 @@ export function Home() {
   }>(
     search
       ? `/v1/lexemes?${stringifyParams({
-          search,
+          search: trimAllSpaces(search),
           sort: "frequency_ranking",
           orderDirection: "asc",
         })}`
@@ -55,29 +62,36 @@ export function Home() {
   const {
     data: lexemeSearch,
     isLoading: loadingLexemeSearch,
-    error: lexemeSearchError,
-  } = useSWR<TLexeme>(word ? `/v1/lexemes/search/${word}` : null, getRequest);
-  const { data: lexemeSearchGPT, isLoading: loadingLexemeSearchGPT } =
-    useSWR<TLexeme>(
-      meaningNotExisted && word ? `/lexemes/v1/${word}` : null,
-      getRequest
-    );
+    mutate: retryLexemeSearch,
+  } = useSWR<TLexeme>(
+    word ? `/v1/lexemes/search/${trimAllSpaces(word)}` : null,
+    getRequest,
+    {
+      onError(errMsg) {
+        setMeaningErrMsg(
+          MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
+            MEANING_ERR_MSG.UNKNOWN
+        );
+        console.error("err searching lexeme: ", errMsg);
+      },
+      shouldRetryOnError: false,
+    }
+  );
 
   const lexemeList = lexemeListRes?.data ?? [];
-  const lexemeSearchToDisplay = lexemeSearch?.meaning?.[0]
-    ? lexemeSearch
-    : lexemeSearchGPT;
+  const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
   const hanviet = selectedLexeme?.hanviet
     ? "(" + selectedLexeme.hanviet + ")"
     : "";
-  const lexemeToShowHanviet = selectedLexeme || lexemeSearchToDisplay;
+  const lexemeToShowHanviet = selectedLexeme || lexemeSearch;
   const lexemeHanViet = lexemeToShowHanviet
     ? lexemeToShowHanviet.standard === lexemeToShowHanviet.lexeme
       ? `${lexemeToShowHanviet.hiragana} ${hanviet}`
       : `${lexemeToShowHanviet.hiragana} ${lexemeToShowHanviet.lexeme} ${hanviet}`
     : "";
 
+  // After user select a lexeme from the list, user can click on that word again to search for similar ones
   useEffect(() => {
     if (readyToSearch) {
       setSearchParam({ search: text });
@@ -87,8 +101,8 @@ export function Home() {
 
   // useEffect(() => {
   //   console.log("lexemeSearchError", lexemeSearchError);
-  //   // if (!lexemeSearch?.meaning?.[0] && meaningNotExisted)
-  //   //   setMeaningNotExisted(true);
+  //   // if (!lexemeSearch?.meaning?.[0] && meaningErrMsg)
+  //   //   setMeaningErrMsg(true);
   // }, [lexemeSearchError]);
 
   console.log("render...");
@@ -126,8 +140,12 @@ export function Home() {
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && text) {
-                    setMeaningNotExisted(false);
+                    setMeaningErrMsg("");
                     setWord(text);
+
+                    // when user press Enter, we need to cancel the request to get lexeme list
+                    setSearchParam({ search: "" });
+                    mutate({ data: [] });
                   }
                 }}
                 placeholder="Enter text here..."
@@ -151,9 +169,8 @@ export function Home() {
                           onClick={() => {
                             setSelectedLexeme(lexeme);
                             setSearchParam({ search: "" });
-                            setText(lexemeStandard);
+                            setText(lexeme.standard);
                             setWord(lexeme.lexeme);
-                            mutate({ data: [] });
                           }}
                           className="items-start text-xl py-7 font-normal relative px-1 w-full flex-col"
                           variant="ghost"
@@ -172,10 +189,10 @@ export function Home() {
           </Card>
 
           <div className="flex mx-4 gap-2 mt-4 absolute top-[100%] left-0 flex-wrap">
-            <p>Từ tương tự:</p>
+            <p className="text-lg">Từ tương tự:</p>
             {lexemeToShowHanviet?.similars?.map((word, i) => (
               <Badge
-                className="cursor-pointer"
+                className="cursor-pointer text-base"
                 onClick={() => {
                   setSearchParam({ search: word });
                   setSelectedLexeme(null);
@@ -200,8 +217,8 @@ export function Home() {
 
       <Card className="w-full rounded-2xl min-h-[325px] mt-2">
         <CardContent className="!p-4 space-y-2">
-          {(loadingLexemeSearch || loadingLexemeSearchGPT) && "Loading..."}
-          {lexemeSearchToDisplay && (
+          {loadingLexemeSearch && "Loading..."}
+          {lexemeSearch ? (
             <Fragment>
               <div className="flex justify-between items-center">
                 <div className="flex gap-1 items-center">
@@ -211,13 +228,13 @@ export function Home() {
                   >
                     <PopoverTrigger asChild>
                       <Button className="text-2xl px-1" variant={"ghost"}>
-                        {lexemeSearchToDisplay.meaning[meaningIndex].meaning}
+                        {currentMeaning?.meaning}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-fit min-w-40 px-0">
                       <Command className="p-0">
                         <CommandList>
-                          {lexemeSearchToDisplay.meaning.map((m, i) => (
+                          {lexemeSearch.meaning.map((m, i) => (
                             <CommandItem
                               key={i}
                               className="text-xl"
@@ -233,15 +250,17 @@ export function Home() {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  {lexemeSearchToDisplay.approved && (
+                  {lexemeSearch.approved && (
                     <CircleCheckBig className="text-green-500 w-4 h-4 mb-1" />
                   )}
                 </div>
 
                 <div className="flex gap-2 items-center">
-                  <div className="bg-slate-50 text-black rounded-full px-6 text-sm border">
-                    {lexemeSearchToDisplay.meaning[meaningIndex].context}
-                  </div>
+                  {currentMeaning?.context && (
+                    <div className="bg-slate-50 text-black rounded-full px-6 text-sm border">
+                      {currentMeaning?.context}
+                    </div>
+                  )}
                   <Button
                     className="rounded-full p-2"
                     size="sm"
@@ -252,11 +271,9 @@ export function Home() {
                 </div>
               </div>
 
-              <p className="pl-1">
-                {lexemeSearchToDisplay.meaning[meaningIndex].explaination}
-              </p>
+              <p className="pl-1">{currentMeaning?.explaination}</p>
 
-              {lexemeSearchToDisplay.meaning[meaningIndex].example && (
+              {currentMeaning?.example && (
                 <div>
                   <Button
                     onClick={() => setShowExamples((prev) => !prev)}
@@ -271,12 +288,23 @@ export function Home() {
                       showExamples ? "block" : "hidden"
                     )}
                   >
-                    {lexemeSearchToDisplay.meaning[meaningIndex].example}
+                    {currentMeaning?.example}
                   </p>
                 </div>
               )}
             </Fragment>
-          )}
+          ) : meaningErrMsg ? (
+            <div>
+              <Button
+                onClick={() => retryLexemeSearch()}
+                variant={"link"}
+                className="text-xl px-1"
+              >
+                <RotateCcw className="w-5 h-5 mr-2" /> Thử lại
+              </Button>
+              <p className="text-destructive">{meaningErrMsg}</p>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
     </div>
