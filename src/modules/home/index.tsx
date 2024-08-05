@@ -85,17 +85,17 @@ export function Home() {
     }
   }, [setSearchParam, text, readyToSearch]);
 
-  useEffect(() => {
-    console.log("lexemeSearchError", lexemeSearchError);
-    // if (!lexemeSearch?.meaning?.[0] && meaningNotExisted)
-    //   setMeaningNotExisted(true);
-  }, [lexemeSearchError]);
+  // useEffect(() => {
+  //   console.log("lexemeSearchError", lexemeSearchError);
+  //   // if (!lexemeSearch?.meaning?.[0] && meaningNotExisted)
+  //   //   setMeaningNotExisted(true);
+  // }, [lexemeSearchError]);
 
   console.log("render...");
 
   return (
     <div className="flex h-full py-4 sm:flex-row flex-col gap-8 items-center">
-      <Tabs defaultValue="vocab" className="w-full h-fit">
+      <Tabs defaultValue="vocab" className="w-full h-fit  relative -top-5">
         <TabsList className="grid rounded-xl w-[200px] grid-cols-2">
           <TabsTrigger className="rounded-xl" value="vocab">
             Từ vựng
@@ -104,11 +104,12 @@ export function Home() {
             Ngữ pháp
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="vocab">
+        <TabsContent className="relative" value="vocab">
           <Card className="rounded-2xl h-fit">
-            <CardContent className="!p-4">
+            <CardContent className="!p-4  h-[325px]">
               <Input
                 value={text}
+                autoFocus
                 type="search"
                 onChange={(e) => {
                   setText(e.target.value);
@@ -136,7 +137,7 @@ export function Home() {
               {lexemeList.length > 0 && (
                 <div className="w-full h-px bg-muted-foreground "></div>
               )}
-              <div className="flex flex-col gap-6  h-[240px] overflow-auto items-start mt-3">
+              <div className="flex flex-col gap-6 overflow-auto h-[220px] items-start mt-3">
                 {loadingLexemeList
                   ? "Searching..."
                   : lexemeList.map((lexeme) => {
@@ -170,7 +171,7 @@ export function Home() {
             </CardContent>
           </Card>
 
-          <div className="flex mx-4 gap-2 mt-4 flex-wrap">
+          <div className="flex mx-4 gap-2 mt-4 absolute top-[100%] left-0 flex-wrap">
             <p>Từ tương tự:</p>
             {lexemeToShowHanviet?.similars?.map((word, i) => (
               <Badge
