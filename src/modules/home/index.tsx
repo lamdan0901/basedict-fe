@@ -55,6 +55,7 @@ export function Home() {
           search: trimAllSpaces(search),
           sort: "frequency_ranking",
           orderDirection: "asc",
+          isMaster: true,
         })}`
       : null,
     getRequest
@@ -74,17 +75,16 @@ export function Home() {
         );
         console.error("err searching lexeme: ", errMsg);
       },
-      shouldRetryOnError: false,
     }
   );
 
   const lexemeList = lexemeListRes?.data ?? [];
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
-  const hanviet = selectedLexeme?.hanviet
-    ? "(" + selectedLexeme.hanviet + ")"
+  const lexemeToShowHanviet = selectedLexeme ?? lexemeSearch;
+  const hanviet = lexemeToShowHanviet?.hanviet
+    ? "(" + lexemeToShowHanviet.hanviet + ")"
     : "";
-  const lexemeToShowHanviet = selectedLexeme || lexemeSearch;
   const lexemeHanViet = lexemeToShowHanviet
     ? lexemeToShowHanviet.standard === lexemeToShowHanviet.lexeme
       ? `${lexemeToShowHanviet.hiragana} ${hanviet}`
@@ -172,7 +172,7 @@ export function Home() {
                             setText(lexeme.standard);
                             setWord(lexeme.lexeme);
                           }}
-                          className="items-start text-xl py-7 font-normal relative px-1 w-full flex-col"
+                          className="items-center text-xl py-7 font-normal relative px-1 w-full flex-col"
                           variant="ghost"
                         >
                           <span>
@@ -190,7 +190,7 @@ export function Home() {
 
           <div className="flex mx-4 gap-2 mt-4 absolute top-[100%] left-0 flex-wrap">
             <p className="text-lg">Từ tương tự:</p>
-            {lexemeToShowHanviet?.similars?.map((word, i) => (
+            {(lexemeSearch || selectedLexeme)?.similars?.map((word, i) => (
               <Badge
                 className="cursor-pointer text-base"
                 onClick={() => {
@@ -217,8 +217,9 @@ export function Home() {
 
       <Card className="w-full rounded-2xl min-h-[325px] mt-2">
         <CardContent className="!p-4 space-y-2">
-          {loadingLexemeSearch && "Loading..."}
-          {lexemeSearch ? (
+          {loadingLexemeSearch ? (
+            "Loading..."
+          ) : lexemeSearch ? (
             <Fragment>
               <div className="flex justify-between items-center">
                 <div className="flex gap-1 items-center">
