@@ -13,11 +13,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { cn, stringifyParams, trimAllSpaces } from "@/lib/utils";
-import { getRequest } from "@/service/data";
+import { MeaningReportModal } from "@/modules/home/MeaningReportModal";
+import { getRequest, postRequest } from "@/service/data";
 import { CircleCheckBig, Flag, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 
 const MAX_LINES = 3;
 
@@ -38,6 +40,7 @@ export function Home() {
   const [selectedLexeme, setSelectedLexeme] = useState<TLexeme | null>(null);
   const [showExamples, setShowExamples] = useState(false);
   const [readyToSearch, setReadyToSearch] = useState(false);
+  // const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
 
   const [meaningIndex, setMeaningIndex] = useState(0);
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
@@ -77,6 +80,11 @@ export function Home() {
       },
     }
   );
+  const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
+    useSWRMutation(
+      `/v1/lexemes/report-wrong/${lexemeSearch?.id || selectedLexeme?.id}`,
+      postRequest
+    );
 
   const lexemeList = lexemeListRes?.data ?? [];
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
@@ -91,6 +99,12 @@ export function Home() {
       : `${lexemeToShowHanviet.hiragana} ${lexemeToShowHanviet.lexeme} ${hanviet}`
     : "";
 
+  async function reportWrongWord() {
+    await reportWrongWordTrigger();
+    // TODO: save info to cookie
+    // TODO: Thế thêm cho a cái là khi báo cáo xong đồng thời call cả báo sai nhé
+  }
+
   // After user select a lexeme from the list, user can click on that word again to search for similar ones
   useEffect(() => {
     if (readyToSearch) {
@@ -98,12 +112,6 @@ export function Home() {
       setReadyToSearch(false);
     }
   }, [setSearchParam, text, readyToSearch]);
-
-  // useEffect(() => {
-  //   console.log("lexemeSearchError", lexemeSearchError);
-  //   // if (!lexemeSearch?.meaning?.[0] && meaningErrMsg)
-  //   //   setMeaningErrMsg(true);
-  // }, [lexemeSearchError]);
 
   console.log("render...");
 
@@ -215,12 +223,12 @@ export function Home() {
         </TabsContent>
       </Tabs>
 
-      <Card className="w-full rounded-2xl min-h-[325px] mt-2">
+      <Card className="w-full relative rounded-2xl min-h-[325px] mt-2">
         <CardContent className="!p-4 space-y-2">
           {loadingLexemeSearch ? (
             "Loading..."
           ) : lexemeSearch ? (
-            <Fragment>
+            <>
               <div className="flex justify-between items-center">
                 <div className="flex gap-1 items-center">
                   <Popover
@@ -293,7 +301,17 @@ export function Home() {
                   </p>
                 </div>
               )}
-            </Fragment>
+
+              <Button
+                className="absolute bottom-3 underline hover:font-semibold text-blue-500 right-2"
+                variant="link"
+                size={"sm"}
+                disabled={isReportingWrongWord}
+                onClick={reportWrongWord}
+              >
+                Báo từ sai
+              </Button>
+            </>
           ) : meaningErrMsg ? (
             <div>
               <Button
@@ -308,6 +326,13 @@ export function Home() {
           ) : null}
         </CardContent>
       </Card>
+
+      {/* TODO */}
+      {/* <MeaningReportModal
+        lexeme={lexemeSearch || selectedLexeme}
+        open={meaningReportModalOpen}
+        onOpenChange={setMeaningReportModalOpen}
+      /> */}
     </div>
   );
 }
