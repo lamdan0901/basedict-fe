@@ -16,3 +16,16 @@ export function stringifyParams(params: Record<string, any>) {
 export const trimAllSpaces = (str: string): string => {
   return str.replace(/[\s\u3000]/g, "");
 };
+
+export function getLocalStorageItem(key: string, initialValue: any) {
+  if (typeof window === "undefined") {
+    return initialValue;
+  }
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : initialValue;
+  } catch (error) {
+    console.error(`Error reading localStorage key "${key}":`, error);
+    return initialValue;
+  }
+}

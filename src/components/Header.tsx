@@ -14,11 +14,10 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="flex items-center justify-between p-4 bg-gray-200">
-      <div className="flex items-center">
-        <div className="font-bold">Logo</div>
+    <header className="flex w-full fixed z-10 top-0 items-center justify-end p-4 bg-gray-200">
+      <div className="font-bold">
+        {isLogin ? "Xin chào ABC" : "Đăng nhập Đăng kí"}
       </div>
-      <div className="font-bold">BaseDict {isLogin ? " logged in" : ""}</div>
     </header>
   );
 };

@@ -1,14 +1,21 @@
 import { ReactNode } from "react";
 import Header from "@/components/Header";
+import Image from "next/image";
+import logo from "../../../public/images/logo.png";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="h-screen overflow-hidden bg-gray-50">
-      <div className="grid grid-rows-[56px_1fr] flex-1">
+    <div className="h-screen overflow-auto bg-gray-50">
+      <div className="flex-1">
         <Header />
-        <main className="h-[calc(100vh-60px)] max-w-[1440px] p-4 mx-auto w-full overflow-auto">
-          {children}
-        </main>
+        <Image
+          className="mt-[56px] mx-auto object-contain h-[150px] w-[417px]"
+          src={logo}
+          alt="logo"
+          width={500}
+          height={500}
+        />
+        <main className="max-w-[1440px] mx-auto p-4 w-full">{children}</main>
       </div>
     </div>
   );

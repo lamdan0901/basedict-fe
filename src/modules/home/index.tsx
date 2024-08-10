@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { cn, stringifyParams, trimAllSpaces } from "@/lib/utils";
+import { cn, getLocalStorageItem, stringifyParams, trimAllSpaces } from "@/lib";
 import { MeaningReportModal } from "@/modules/home/MeaningReportModal";
 import { getRequest, postRequest } from "@/service/data";
-import { CircleCheckBig, Flag, RotateCcw } from "lucide-react";
+import { Check, CircleCheckBig, Flag, RotateCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { Fragment, useEffect, useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
+import useSWRImmutable from "swr/immutable";
 import useSWRMutation from "swr/mutation";
 
 const MAX_LINES = 3;
@@ -31,6 +31,7 @@ const MEANING_ERR_MSG = {
 };
 
 export function Home() {
+  const reportedWords = getLocalStorageItem("reportedWords", {});
   const searchParams = useSearchParams();
   const search = searchParams.get("search") ?? "";
   const setSearchParam = useUrlSearchParams();
@@ -45,12 +46,13 @@ export function Home() {
   const [meaningIndex, setMeaningIndex] = useState(0);
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [meaningErrMsg, setMeaningErrMsg] = useState("");
+  const [isWordReported, setIsWordReported] = useState<boolean | null>(null);
 
   const {
     data: lexemeListRes,
     isLoading: loadingLexemeList,
     mutate,
-  } = useSWR<{
+  } = useSWRImmutable<{
     data: TLexeme[];
   }>(
     search
@@ -67,7 +69,7 @@ export function Home() {
     data: lexemeSearch,
     isLoading: loadingLexemeSearch,
     mutate: retryLexemeSearch,
-  } = useSWR<TLexeme>(
+  } = useSWRImmutable<TLexeme>(
     word ? `/v1/lexemes/search/${trimAllSpaces(word)}` : null,
     getRequest,
     {
@@ -80,11 +82,10 @@ export function Home() {
       },
     }
   );
+
+  const wordIdToReport = lexemeSearch?.id || selectedLexeme?.id || "";
   const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
-    useSWRMutation(
-      `/v1/lexemes/report-wrong/${lexemeSearch?.id || selectedLexeme?.id}`,
-      postRequest
-    );
+    useSWRMutation(`/v1/lexemes/report-wrong/${wordIdToReport}`, postRequest);
 
   const lexemeList = lexemeListRes?.data ?? [];
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
@@ -100,10 +101,20 @@ export function Home() {
     : "";
 
   async function reportWrongWord() {
+    if (isWordReported || !wordIdToReport) return;
+
     await reportWrongWordTrigger();
-    // TODO: save info to cookie
+
+    setIsWordReported(true);
+    reportedWords[wordIdToReport] = "true";
+    localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
+
     // TODO: Thế thêm cho a cái là khi báo cáo xong đồng thời call cả báo sai nhé
   }
+
+  useEffect(() => {
+    setIsWordReported(reportedWords[wordIdToReport] === "true");
+  }, [reportedWords, wordIdToReport]);
 
   // After user select a lexeme from the list, user can click on that word again to search for similar ones
   useEffect(() => {
@@ -116,8 +127,12 @@ export function Home() {
   console.log("render...");
 
   return (
-    <div className="flex h-full py-4 sm:flex-row flex-col gap-8 items-center">
-      <Tabs defaultValue="vocab" className="w-full h-fit  relative -top-5">
+    <div className="flex h-full  py-4 sm:flex-row flex-col gap-8 items-start">
+      <Tabs
+        id="VOCAB_AND_GRAMMAR_SECTION"
+        defaultValue="vocab"
+        className="w-full h-fit  relative -top-5"
+      >
         <TabsList className="grid rounded-xl w-[200px] grid-cols-2">
           <TabsTrigger className="rounded-xl" value="vocab">
             Từ vựng
@@ -215,7 +230,7 @@ export function Home() {
           </div>
         </TabsContent>
         <TabsContent value="grammar">
-          <Card className="rounded-2xl h-[325px] mb-10">
+          <Card className="rounded-2xl h-[326px]">
             <CardContent className="!p-4">
               <p>This function is not implemented</p>
             </CardContent>
@@ -223,8 +238,11 @@ export function Home() {
         </TabsContent>
       </Tabs>
 
-      <Card className="w-full relative rounded-2xl min-h-[325px] mt-2">
-        <CardContent className="!p-4 space-y-2">
+      <Card
+        id="MEANING_SECTION"
+        className="w-full rounded-2xl min-h-[325px] relative mt-7"
+      >
+        <CardContent className="!p-4 !pb-10 space-y-2">
           {loadingLexemeSearch ? (
             "Loading..."
           ) : lexemeSearch ? (
@@ -279,9 +297,7 @@ export function Home() {
                   </Button>
                 </div>
               </div>
-
               <p className="pl-1">{currentMeaning?.explaination}</p>
-
               {currentMeaning?.example && (
                 <div>
                   <Button
@@ -301,15 +317,22 @@ export function Home() {
                   </p>
                 </div>
               )}
-
               <Button
                 className="absolute bottom-3 underline hover:font-semibold text-blue-500 right-2"
                 variant="link"
                 size={"sm"}
-                disabled={isReportingWrongWord}
+                disabled={
+                  isReportingWrongWord || isWordReported || !wordIdToReport
+                }
                 onClick={reportWrongWord}
               >
-                Báo từ sai
+                {isWordReported ? (
+                  <>
+                    Đã báo <Check className="w-4 h-4 ml-2" />
+                  </>
+                ) : (
+                  "Báo từ sai"
+                )}
               </Button>
             </>
           ) : meaningErrMsg ? (
