@@ -5,14 +5,18 @@ export function SimilarWords({
   onClick,
 }: {
   lexeme: TLexeme | undefined | null;
-  onClick(): void;
+  onClick(word: string): void;
 }) {
   if (!lexeme) return null;
   return (
     <div className="flex mx-4 gap-2 mt-4 absolute top-[100%] left-0 flex-wrap">
       <p className="text-lg">Từ tương tự:</p>
       {lexeme?.similars?.map((word, i) => (
-        <Badge className="cursor-pointer text-base" onClick={onClick} key={i}>
+        <Badge
+          className="cursor-pointer text-base"
+          onClick={() => onClick(word)}
+          key={i}
+        >
           {word}
         </Badge>
       ))}

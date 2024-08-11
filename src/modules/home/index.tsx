@@ -160,11 +160,11 @@ export function Home() {
 
           <SimilarWords
             lexeme={lexemeSearch || selectedLexeme}
-            onClick={() => {
-              setSearchParam({ search: word });
+            onClick={(selectedSimilarWord) => {
               setSelectedLexeme(null);
-              setText(word);
-              setWord(word);
+              setSearchParam({ search: selectedSimilarWord });
+              setText(selectedSimilarWord);
+              setWord(selectedSimilarWord);
             }}
           />
         </div>

@@ -14,7 +14,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="flex w-full fixed z-10 top-0 items-center justify-end p-4 bg-gray-200">
+    <header className="flex w-full fixed z-10 top-0 text-white items-center justify-end p-4 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
       <div className="font-bold">
         {isLogin ? "Xin chào ABC" : "Đăng nhập Đăng kí"}
       </div>
