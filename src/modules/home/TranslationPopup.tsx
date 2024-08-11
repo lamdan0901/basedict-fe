@@ -223,7 +223,7 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
 
   return (
     <div ref={containerRef}>
-      <p>聞く | 厳しい目 聞く 厳しい目 られた</p>
+      {/* <p>聞く | 厳しい目 聞く 厳しい目 られた</p> */}
       {showButton && (
         <button
           ref={buttonRef}
