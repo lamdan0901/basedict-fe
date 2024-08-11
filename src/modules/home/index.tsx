@@ -1,37 +1,22 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Command, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MEANING_ERR_MSG } from "@/constants";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { cn, getLocalStorageItem, stringifyParams, trimAllSpaces } from "@/lib";
-import { MeaningReportModal } from "@/modules/home/MeaningReportModal";
-import { getRequest, postRequest } from "@/service/data";
-import { Check, CircleCheckBig, Flag, RotateCcw } from "lucide-react";
+import { stringifyParams, trimAllSpaces } from "@/lib";
+import { MeaningSection } from "@/modules/home/MeaningSection";
+import { SimilarWords } from "@/modules/home/SimilarWords";
+import { TranslationPopup } from "@/modules/home/TranslationPopup";
+import { getRequest } from "@/service/data";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import useSWRMutation from "swr/mutation";
 
 const MAX_LINES = 3;
 
-const MEANING_ERR_MSG = {
-  NOT_FOUND: "Không tìm thấy từ",
-  VALIDATION_FAILED:
-    "Từ vựng chỉ được bao gồm hán tự, hiragana hoặc toàn bộ là katakana và tối đa là 7 kí tự",
-  UNKNOWN: "Đã xảy ra lỗi không xác định",
-};
-
 export function Home() {
-  const reportedWords = getLocalStorageItem("reportedWords", {});
   const searchParams = useSearchParams();
   const search = searchParams.get("search") ?? "";
   const setSearchParam = useUrlSearchParams();
@@ -39,14 +24,8 @@ export function Home() {
   const [word, setWord] = useState("");
 
   const [selectedLexeme, setSelectedLexeme] = useState<TLexeme | null>(null);
-  const [showExamples, setShowExamples] = useState(false);
   const [readyToSearch, setReadyToSearch] = useState(false);
-  // const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
-
-  const [meaningIndex, setMeaningIndex] = useState(0);
-  const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [meaningErrMsg, setMeaningErrMsg] = useState("");
-  const [isWordReported, setIsWordReported] = useState<boolean | null>(null);
 
   const {
     data: lexemeListRes,
@@ -83,12 +62,8 @@ export function Home() {
     }
   );
 
-  const wordIdToReport = lexemeSearch?.id || selectedLexeme?.id || "";
-  const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
-    useSWRMutation(`/v1/lexemes/report-wrong/${wordIdToReport}`, postRequest);
-
   const lexemeList = lexemeListRes?.data ?? [];
-  const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
+  const wordIdToReport = lexemeSearch?.id || selectedLexeme?.id || "";
 
   const lexemeToShowHanviet = selectedLexeme ?? lexemeSearch;
   const hanviet = lexemeToShowHanviet?.hanviet
@@ -99,22 +74,6 @@ export function Home() {
       ? `${lexemeToShowHanviet.hiragana} ${hanviet}`
       : `${lexemeToShowHanviet.hiragana} ${lexemeToShowHanviet.lexeme} ${hanviet}`
     : "";
-
-  async function reportWrongWord() {
-    if (isWordReported || !wordIdToReport) return;
-
-    await reportWrongWordTrigger();
-
-    setIsWordReported(true);
-    reportedWords[wordIdToReport] = "true";
-    localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
-
-    // TODO: Thế thêm cho a cái là khi báo cáo xong đồng thời call cả báo sai nhé
-  }
-
-  useEffect(() => {
-    setIsWordReported(reportedWords[wordIdToReport] === "true");
-  }, [reportedWords, wordIdToReport]);
 
   // After user select a lexeme from the list, user can click on that word again to search for similar ones
   useEffect(() => {
@@ -127,23 +86,11 @@ export function Home() {
   console.log("render...");
 
   return (
-    <div className="flex h-full  py-4 sm:flex-row flex-col gap-8 items-start">
-      <Tabs
-        id="VOCAB_AND_GRAMMAR_SECTION"
-        defaultValue="vocab"
-        className="w-full h-fit  relative -top-5"
-      >
-        <TabsList className="grid rounded-xl w-[200px] grid-cols-2">
-          <TabsTrigger className="rounded-xl" value="vocab">
-            Từ vựng
-          </TabsTrigger>
-          <TabsTrigger className="rounded-xl" value="grammar">
-            Ngữ pháp
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent className="relative" value="vocab">
-          <Card className="rounded-2xl h-fit">
-            <CardContent className="!p-4  h-[325px]">
+    <TranslationPopup>
+      <div className="flex h-full  py-4 sm:flex-row flex-col gap-8 items-start">
+        <div id="VOCAB_AND_GRAMMAR_SECTION" className="w-full h-fit relative">
+          <Card className="rounded-2xl">
+            <CardContent className="!p-4 h-[325px]">
               <Input
                 value={text}
                 autoFocus
@@ -171,7 +118,7 @@ export function Home() {
                     mutate({ data: [] });
                   }
                 }}
-                placeholder="Enter text here..."
+                placeholder="Thêm 〜 để tìm kiếm ngữ pháp"
                 className="border-none px-1 text-3xl focus-visible:ring-transparent"
               />
               {lexemeHanViet}
@@ -211,151 +158,25 @@ export function Home() {
             </CardContent>
           </Card>
 
-          <div className="flex mx-4 gap-2 mt-4 absolute top-[100%] left-0 flex-wrap">
-            <p className="text-lg">Từ tương tự:</p>
-            {(lexemeSearch || selectedLexeme)?.similars?.map((word, i) => (
-              <Badge
-                className="cursor-pointer text-base"
-                onClick={() => {
-                  setSearchParam({ search: word });
-                  setSelectedLexeme(null);
-                  setText(word);
-                  setWord(word);
-                }}
-                key={i}
-              >
-                {word}
-              </Badge>
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="grammar">
-          <Card className="rounded-2xl h-[326px]">
-            <CardContent className="!p-4">
-              <p>This function is not implemented</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          <SimilarWords
+            lexeme={lexemeSearch || selectedLexeme}
+            onClick={() => {
+              setSearchParam({ search: word });
+              setSelectedLexeme(null);
+              setText(word);
+              setWord(word);
+            }}
+          />
+        </div>
 
-      <Card
-        id="MEANING_SECTION"
-        className="w-full rounded-2xl min-h-[325px] relative mt-7"
-      >
-        <CardContent className="!p-4 !pb-10 space-y-2">
-          {loadingLexemeSearch ? (
-            "Loading..."
-          ) : lexemeSearch ? (
-            <>
-              <div className="flex justify-between items-center">
-                <div className="flex gap-1 items-center">
-                  <Popover
-                    open={meaningSelectorOpen}
-                    onOpenChange={setMeaningSelectorOpen}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button className="text-2xl px-1" variant={"ghost"}>
-                        {currentMeaning?.meaning}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-fit min-w-40 px-0">
-                      <Command className="p-0">
-                        <CommandList>
-                          {lexemeSearch.meaning.map((m, i) => (
-                            <CommandItem
-                              key={i}
-                              className="text-xl"
-                              onSelect={() => {
-                                setMeaningIndex(i);
-                                setMeaningSelectorOpen(false);
-                              }}
-                            >
-                              {m.meaning}
-                            </CommandItem>
-                          ))}
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  {lexemeSearch.approved && (
-                    <CircleCheckBig className="text-green-500 w-4 h-4 mb-1" />
-                  )}
-                </div>
-
-                <div className="flex gap-2 items-center">
-                  {currentMeaning?.context && (
-                    <div className="bg-slate-50 text-black rounded-full px-6 text-sm border">
-                      {currentMeaning?.context}
-                    </div>
-                  )}
-                  <Button
-                    className="rounded-full p-2"
-                    size="sm"
-                    variant="ghost"
-                  >
-                    <Flag className=" w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
-              <p className="pl-1">{currentMeaning?.explaination}</p>
-              {currentMeaning?.example && (
-                <div>
-                  <Button
-                    onClick={() => setShowExamples((prev) => !prev)}
-                    className="underline text-base px-1"
-                    variant={"link"}
-                  >
-                    {showExamples ? "Ẩn" : "Xem"} ví dụ
-                  </Button>
-                  <p
-                    className={cn(
-                      "whitespace-pre-line",
-                      showExamples ? "block" : "hidden"
-                    )}
-                  >
-                    {currentMeaning?.example}
-                  </p>
-                </div>
-              )}
-              <Button
-                className="absolute bottom-3 underline hover:font-semibold text-blue-500 right-2"
-                variant="link"
-                size={"sm"}
-                disabled={
-                  isReportingWrongWord || isWordReported || !wordIdToReport
-                }
-                onClick={reportWrongWord}
-              >
-                {isWordReported ? (
-                  <>
-                    Đã báo <Check className="w-4 h-4 ml-2" />
-                  </>
-                ) : (
-                  "Báo từ sai"
-                )}
-              </Button>
-            </>
-          ) : meaningErrMsg ? (
-            <div>
-              <Button
-                onClick={() => retryLexemeSearch()}
-                variant={"link"}
-                className="text-xl px-1"
-              >
-                <RotateCcw className="w-5 h-5 mr-2" /> Thử lại
-              </Button>
-              <p className="text-destructive">{meaningErrMsg}</p>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      {/* TODO */}
-      {/* <MeaningReportModal
-        lexeme={lexemeSearch || selectedLexeme}
-        open={meaningReportModalOpen}
-        onOpenChange={setMeaningReportModalOpen}
-      /> */}
-    </div>
+        <MeaningSection
+          lexemeSearch={lexemeSearch}
+          loadingLexemeSearch={loadingLexemeSearch}
+          retryLexemeSearch={retryLexemeSearch}
+          meaningErrMsg={meaningErrMsg}
+          wordIdToReport={wordIdToReport}
+        />
+      </div>
+    </TranslationPopup>
   );
 }
