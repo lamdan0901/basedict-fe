@@ -21,3 +21,14 @@ type TLexeme = {
   frequency_ranking: number;
   word_origin: string;
 };
+
+type TGrammar = {
+  id: string;
+  grammar: string;
+  meaning: string;
+  structure: string;
+  summary: string;
+  detail: string;
+  jlptLevel: string;
+  similars: string[];
+};
