@@ -9,7 +9,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <div className="flex-1">
         <Header />
         <Image
-          className="mt-[56px] mx-auto object-contain h-[150px] w-[417px]"
+          className="mt-[56px] mx-auto object-contain max-h-[150px] w-[417px]"
           src={logo}
           priority
           alt="logo"

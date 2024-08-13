@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { cn, getLocalStorageItem } from "@/lib";
 import { postRequest } from "@/service/data";
+import { useLexemeStore } from "@/store/useLexemeStore";
 import { Check, CircleCheckBig, Flag, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type KeyedMutator } from "swr";
@@ -15,7 +16,6 @@ import useSWRMutation from "swr/mutation";
 
 type MeaningSectionProps = {
   lexemeSearch: TLexeme | undefined;
-  meaningErrMsg: string;
   loadingLexemeSearch: boolean;
   wordIdToReport: string;
   retryLexemeSearch: KeyedMutator<TLexeme>;
@@ -23,12 +23,12 @@ type MeaningSectionProps = {
 
 export function MeaningSection({
   lexemeSearch,
-  meaningErrMsg,
   loadingLexemeSearch,
   wordIdToReport,
   retryLexemeSearch,
 }: MeaningSectionProps) {
   // const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
+  const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
   const [meaningIndex, setMeaningIndex] = useState(0);
@@ -56,7 +56,12 @@ export function MeaningSection({
   }, [reportedWords, wordIdToReport]);
 
   return (
-    <Card className="w-full rounded-2xl min-h-[325px] relative ">
+    <Card
+      className={cn(
+        "w-full rounded-2xl sm:min-h-[325px] relative ",
+        !lexemeSearch && "min-h-[325px]"
+      )}
+    >
       <CardContent className="!p-4 !pb-10 space-y-2">
         {loadingLexemeSearch ? (
           "Đang tìm kiếm..."
@@ -69,7 +74,10 @@ export function MeaningSection({
                   onOpenChange={setMeaningSelectorOpen}
                 >
                   <PopoverTrigger asChild>
-                    <Button className="text-2xl px-1" variant={"ghost"}>
+                    <Button
+                      className="sm:text-2xl whitespace-pre-wrap text-start text-xl px-1"
+                      variant={"ghost"}
+                    >
                       {currentMeaning?.meaning}
                     </Button>
                   </PopoverTrigger>
@@ -146,7 +154,7 @@ export function MeaningSection({
               )}
             </Button>
           </>
-        ) : meaningErrMsg ? (
+        ) : vocabMeaningErrMsg ? (
           <div>
             <Button
               onClick={() => retryLexemeSearch()}
@@ -155,7 +163,7 @@ export function MeaningSection({
             >
               <RotateCcw className="w-5 h-5 mr-2" /> Thử lại
             </Button>
-            <p className="text-destructive">{meaningErrMsg}</p>
+            <p className="text-destructive">{vocabMeaningErrMsg}</p>
           </div>
         ) : null}
       </CardContent>

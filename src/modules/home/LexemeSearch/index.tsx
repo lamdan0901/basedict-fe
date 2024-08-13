@@ -1,45 +1,42 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { SimilarWords } from "@/modules/home/SimilarWords";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { stringifyParams, trimAllSpaces } from "@/lib";
+import { cn, stringifyParams, trimAllSpaces } from "@/lib";
 import { getRequest } from "@/service/data";
-import { useState, KeyboardEvent, useEffect, ChangeEvent } from "react";
+import { useState, KeyboardEvent, useEffect, ChangeEvent, useRef } from "react";
 import useSWRImmutable from "swr/immutable";
 import { useSearchParams } from "next/navigation";
+import { useLexemeStore } from "@/store/useLexemeStore";
+import { SimilarWords } from "@/modules/home/LexemeSearch/SimilarWords";
+import { GRAMMAR_CHAR } from "@/constants";
 
 type LexemeSearchProps = {
-  selectedLexeme: TLexeme | null;
   lexemeSearch: TLexeme | undefined;
-  setMeaningErrMsg: (msg: string) => void;
-  setWord: (word: string) => void;
-  setSelectedLexeme: (lexeme: TLexeme | null) => void;
 };
 
-const GRAMMAR_CHAR = "〜";
+export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
+  const {
+    text,
+    setText,
+    selectedVocab,
+    setSelectedVocab,
+    setVocabMeaningErrMsg,
+    selectedGrammar,
+    setSelectedGrammar,
+    setGrammarMeaningErrMsg,
+    setWord,
+    setGrammar,
+  } = useLexemeStore();
 
-// enum TranslationMode {
-//   Vocab,
-//   Grammar,
-//   Paragraph,
-// }
-
-export function LexemeSearch({
-  selectedLexeme,
-  lexemeSearch,
-  setMeaningErrMsg,
-  setWord,
-  setSelectedLexeme,
-}: LexemeSearchProps) {
+  const initTextSet = useRef(false);
   const setSearchParam = useUrlSearchParams();
   const searchParams = useSearchParams();
   const search = searchParams.get("search") ?? "";
-  const [text, setText] = useState(search);
   const [readyToSearch, setReadyToSearch] = useState(false);
 
-  const isVocabMode = !search.startsWith(GRAMMAR_CHAR);
-  const isGrammarMode = search.startsWith(GRAMMAR_CHAR);
+  const isVocabMode = search && !search.startsWith(GRAMMAR_CHAR);
+  const isGrammarMode = search.length > 1 && search.startsWith(GRAMMAR_CHAR);
 
   const {
     data: lexemeVocabRes,
@@ -65,13 +62,17 @@ export function LexemeSearch({
   } = useSWRImmutable<{
     data: TGrammar[];
   }>(
-    isGrammarMode ? `v1/grammars/?search=?${trimAllSpaces(search)}` : null,
+    isGrammarMode
+      ? `v1/grammars/?search=?${trimAllSpaces(search.slice(1))}`
+      : null,
     getRequest
   );
   const lexemeVocabs = lexemeVocabRes?.data ?? [];
   const lexemeGrammars = lexemeGrammarRes?.data ?? [];
+  const isDisplayingSuggestions =
+    lexemeVocabs.length > 0 || lexemeGrammars.length > 0;
 
-  const lexemeToShowHanviet = selectedLexeme ?? lexemeSearch;
+  const lexemeToShowHanviet = selectedVocab ?? lexemeSearch;
   const hanviet = lexemeToShowHanviet?.hanviet
     ? "(" + lexemeToShowHanviet.hanviet + ")"
     : "";
@@ -86,38 +87,45 @@ export function LexemeSearch({
     setText(value);
     setSearchParam({ search: value });
 
-    if (selectedLexeme) setSelectedLexeme(null);
-
     if (value.trim().length === 0) {
       setSearchParam({ search: "" });
       mutateLexemeVocab({ data: [] });
       setWord("");
+      setGrammar("");
+      setSelectedGrammar(null);
+      setSelectedVocab(null);
     }
   }
 
   function handleSearchLexeme(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && text) {
-      setMeaningErrMsg("");
-      setWord(text);
+    if (!(e.key === "Enter" && text)) return;
 
-      // when user press Enter, we need to cancel the request to get vocab list
-      setSearchParam({ search: "" });
+    // when user press Enter, we need to cancel the request to get vocab list
+    setSearchParam({ search: "" });
+
+    if (isVocabMode) {
+      setWord(text);
+      setVocabMeaningErrMsg("");
       mutateLexemeVocab({ data: [] });
+    } else {
+      setGrammar(text);
+      setGrammarMeaningErrMsg("");
+      setSelectedGrammar(null);
+      mutateLexemeGrammar({ data: [] });
     }
   }
 
   function handleVocabClick(lexeme: TLexeme) {
-    setSelectedLexeme(lexeme);
+    setSelectedVocab(lexeme);
     setSearchParam({ search: "" });
     setText(lexeme.standard);
     setWord(lexeme.lexeme);
   }
 
   function handleGrammarClick(grammar: TGrammar) {
-    // setSelectedLexeme(lexeme);
-    // setSearchParam({ search: "" });
-    // setText(lexeme.standard);
-    // setWord(lexeme.lexeme);
+    setSelectedGrammar(grammar);
+    setSearchParam({ search: "" });
+    setText(grammar.grammar);
   }
 
   // After user select a lexeme from the list, user can click on that word again to search for similar ones
@@ -128,28 +136,42 @@ export function LexemeSearch({
     }
   }, [setSearchParam, text, readyToSearch]);
 
+  useEffect(() => {
+    if (search && !text && !initTextSet.current) {
+      setText(search);
+    }
+    initTextSet.current = true;
+  }, [search, setText, text]);
+
   return (
-    <div className="w-full h-fit relative">
+    <div className="w-full h-fit">
       <Card className="rounded-2xl">
-        <CardContent className="!p-4 h-[325px]">
+        <CardContent className={cn("!p-4 sm:min-h-[325px]")}>
           <Input
+            id="lexeme-search"
             value={text}
             autoFocus
             type="search"
             onChange={handleSearchTextChange}
             onClick={() => {
-              if (!readyToSearch) setReadyToSearch(true);
+              if (text && !readyToSearch) {
+                setReadyToSearch(true);
+              }
             }}
             onKeyDown={handleSearchLexeme}
             placeholder="Thêm 〜 để tìm kiếm ngữ pháp"
-            className="border-none px-1 text-3xl focus-visible:ring-transparent"
+            className="border-none px-1 sm:placeholder:text-2xl placeholder:text-lg text-[26px] sm:text-3xl focus-visible:ring-transparent"
           />
           {lexemeHanViet}
-          {lexemeVocabs.length ||
-            (lexemeGrammars.length > 0 && (
-              <div className="w-full h-px bg-muted-foreground "></div>
-            ))}
-          <div className="flex flex-col gap-6 overflow-auto h-[220px] items-start mt-3">
+          {(lexemeVocabs.length > 0 || lexemeGrammars.length > 0) && (
+            <div className="w-full h-px bg-muted-foreground "></div>
+          )}
+          <div
+            className={cn(
+              "flex flex-col gap-6 overflow-auto sm:h-[220px] h-[137px] items-start mt-3",
+              !isDisplayingSuggestions && "h-auto"
+            )}
+          >
             {loadingLexemeVocab
               ? "Searching..."
               : lexemeVocabs.map((lexeme) => {
@@ -161,7 +183,7 @@ export function LexemeSearch({
                     <Button
                       key={lexeme.id}
                       onClick={() => handleVocabClick(lexeme)}
-                      className="items-center text-xl py-7 font-normal relative px-1 w-full flex-col"
+                      className="items-center text-lg sm:text-xl py-7 font-normal relative px-1 w-full flex-col"
                       variant="ghost"
                     >
                       <span>
@@ -193,16 +215,6 @@ export function LexemeSearch({
           </div>
         </CardContent>
       </Card>
-
-      <SimilarWords
-        lexeme={lexemeSearch || selectedLexeme}
-        onClick={(selectedSimilarWord) => {
-          setSelectedLexeme(null);
-          setSearchParam({ search: selectedSimilarWord });
-          setText(selectedSimilarWord);
-          setWord(selectedSimilarWord);
-        }}
-      />
     </div>
   );
 }

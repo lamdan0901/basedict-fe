@@ -5,3 +5,5 @@ export const MEANING_ERR_MSG = {
   ENDING_WITH_FORBIDDEN: "Không được kết thúc bằng các từ không được phép",
   UNKNOWN: "Đã xảy ra lỗi không xác định",
 };
+
+export const GRAMMAR_CHAR = "〜";

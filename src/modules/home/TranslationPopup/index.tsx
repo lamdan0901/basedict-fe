@@ -42,8 +42,10 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const handleSelectionChange = () => {
-      if (showPopup) return;
+    const handleSelectionChange = (event: Event) => {
+      // Prevent popupTrigger from showing up on search input
+      if (showPopup || lexemeSearchInput?.contains(event.target as Node))
+        return;
 
       const selection = window.getSelection();
       if (!selection) return;
@@ -66,7 +68,13 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
     };
 
     const handleDoubleClick = (event: MouseEvent) => {
-      if (showPopup || popupRef.current?.contains(event.target as Node)) return;
+      // Prevent popupTrigger from showing up on popup text or search input
+      if (
+        showPopup ||
+        popupRef.current?.contains(event.target as Node) ||
+        lexemeSearchInput?.contains(event.target as Node)
+      )
+        return;
 
       const selection = window.getSelection();
       if (!selection) return;
@@ -89,6 +97,8 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
         setShowTriggerButton(false);
       }
     };
+
+    const lexemeSearchInput = document.getElementById("lexeme-search");
 
     document.addEventListener("selectionchange", handleSelectionChange);
     document.addEventListener("dblclick", handleDoubleClick);
