@@ -18,6 +18,8 @@ export function GrammarSection() {
   } = useLexemeStore();
   const [showExamples, setShowExamples] = useState(false);
 
+  console.log("render");
+
   const {
     data: grammarSearchRes,
     isLoading: loadingGrammarSearch,
