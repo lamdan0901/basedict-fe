@@ -210,7 +210,7 @@ export function LexemeSearch({
               }
             }}
             onKeyDown={handleSearchLexeme}
-            placeholder="Thêm 〜 để tìm kiếm ngữ pháp"
+            placeholder="Nhập text để tìm kiếm"
             className={cn(
               "border-none px-1 sm:placeholder:text-2xl placeholder:text-lg text-[26px] sm:text-3xl focus-visible:ring-transparent",
               isParagraphMode ? "hidden" : "block"
@@ -304,6 +304,19 @@ export function LexemeSearch({
               {text.length}/{MAX_CHARS_LENGTH}
             </div>
           )}
+
+          <p
+            className={cn(
+              "absolute top-1/2 left-5 w-[90%] text-muted-foreground -translate-y-1/2 pointer-events-none",
+              text ? "hidden" : "block"
+            )}
+          >
+            Tips: <br />
+            1. Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
+            chữ hán, hiragana hoặc katakana <br />
+            2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br />
+            3. Bạn có thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
+          </p>
         </CardContent>
       </Card>
     </div>
