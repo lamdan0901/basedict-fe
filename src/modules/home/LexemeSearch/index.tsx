@@ -4,29 +4,42 @@ import { Input } from "@/components/ui/input";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { cn, stringifyParams, trimAllSpaces } from "@/lib";
 import { getRequest } from "@/service/data";
-import { useState, KeyboardEvent, useEffect, ChangeEvent, useRef } from "react";
+import { useState, KeyboardEvent, useEffect, useRef } from "react";
 import useSWRImmutable from "swr/immutable";
 import { useSearchParams } from "next/navigation";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { SimilarWords } from "@/modules/home/LexemeSearch/SimilarWords";
-import { GRAMMAR_CHAR } from "@/constants";
+import {
+  GRAMMAR_CHAR,
+  PARAGRAPH_MIN_LENGTH,
+  MAX_CHARS_LENGTH,
+} from "@/constants";
+import { Textarea } from "@/components/ui/textarea";
+import { TriggerWithOptionsArgs } from "swr/mutation";
+import { X } from "lucide-react";
 
 type LexemeSearchProps = {
   lexemeSearch: TLexeme | undefined;
+  translateParagraph: TriggerWithOptionsArgs<
+    string,
+    any,
+    "/v1/paragraphs/translate",
+    { text: string }
+  >;
 };
 
-export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
+export function LexemeSearch({
+  lexemeSearch,
+  translateParagraph,
+}: LexemeSearchProps) {
   const {
     text,
     setText,
     selectedVocab,
     setSelectedVocab,
     setVocabMeaningErrMsg,
-    selectedGrammar,
     setSelectedGrammar,
-    setGrammarMeaningErrMsg,
     setWord,
-    setGrammar,
+    setTranslatedParagraph,
   } = useLexemeStore();
 
   const initTextSet = useRef(false);
@@ -35,8 +48,11 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
   const search = searchParams.get("search") ?? "";
   const [readyToSearch, setReadyToSearch] = useState(false);
 
-  const isVocabMode = search && !search.startsWith(GRAMMAR_CHAR);
-  const isGrammarMode = search.length > 1 && search.startsWith(GRAMMAR_CHAR);
+  const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
+  const isVocabMode =
+    !isParagraphMode && search && !search.startsWith(GRAMMAR_CHAR);
+  const isGrammarMode =
+    !isParagraphMode && search.length > 1 && search.startsWith(GRAMMAR_CHAR);
 
   const {
     data: lexemeVocabRes,
@@ -55,18 +71,16 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
       : null,
     getRequest
   );
-  const {
-    data: lexemeGrammarRes,
-    isLoading: loadingLexemeGrammar,
-    mutate: mutateLexemeGrammar,
-  } = useSWRImmutable<{
-    data: TGrammar[];
-  }>(
-    isGrammarMode
-      ? `v1/grammars/?search=?${trimAllSpaces(search.slice(1))}`
-      : null,
-    getRequest
-  );
+  const { data: lexemeGrammarRes, isLoading: loadingLexemeGrammar } =
+    useSWRImmutable<{
+      data: TGrammar[];
+    }>(
+      isGrammarMode
+        ? `v1/grammars/?search=?${trimAllSpaces(search.slice(1))}`
+        : null,
+      getRequest
+    );
+
   const lexemeVocabs = lexemeVocabRes?.data ?? [];
   const lexemeGrammars = lexemeGrammarRes?.data ?? [];
   const isDisplayingSuggestions =
@@ -82,8 +96,12 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
       : `${lexemeToShowHanviet.hiragana} ${lexemeToShowHanviet.lexeme} ${hanviet}`
     : "";
 
-  function handleSearchTextChange(e: ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
+  function handleSearchTextChange(value: string) {
+    if (value.length >= PARAGRAPH_MIN_LENGTH) {
+      handleParagraphInputChange(value);
+      return;
+    }
+
     setText(value);
     setSearchParam({ search: value });
 
@@ -91,9 +109,25 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
       setSearchParam({ search: "" });
       mutateLexemeVocab({ data: [] });
       setWord("");
-      setGrammar("");
       setSelectedGrammar(null);
       setSelectedVocab(null);
+    }
+  }
+
+  function handleParagraphInputChange(value: string) {
+    if (value.length < PARAGRAPH_MIN_LENGTH) {
+      handleSearchTextChange(value);
+      return;
+    }
+    if (search && isParagraphMode) setSearchParam({ search: "" });
+    setText(value);
+  }
+
+  async function handleTranslateGrammar(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey && text) {
+      e.preventDefault();
+      const data = await translateParagraph({ text });
+      setTranslatedParagraph(data);
     }
   }
 
@@ -107,11 +141,9 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
       setWord(text);
       setVocabMeaningErrMsg("");
       mutateLexemeVocab({ data: [] });
-    } else {
-      setGrammar(text);
-      setGrammarMeaningErrMsg("");
-      setSelectedGrammar(null);
-      mutateLexemeGrammar({ data: [] });
+    } else if (lexemeGrammars.length > 0) {
+      setSelectedGrammar(lexemeGrammars[0]);
+      // setGrammarMeaningErrMsg("");
     }
   }
 
@@ -143,16 +175,35 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
     initTextSet.current = true;
   }, [search, setText, text]);
 
+  useEffect(() => {
+    if (isParagraphMode) {
+      setSearchParam({ search: "" });
+      setWord("");
+      setSelectedGrammar(null);
+      setSelectedVocab(null);
+    }
+  }, [
+    isParagraphMode,
+    setSearchParam,
+    setSelectedGrammar,
+    setSelectedVocab,
+    setWord,
+  ]);
+
   return (
     <div className="w-full h-fit">
       <Card className="rounded-2xl">
-        <CardContent className={cn("!p-4 sm:min-h-[325px]")}>
+        <CardContent
+          className={cn(
+            "!p-4 !pr-8 relative ",
+            isParagraphMode ? "min-h-0" : " sm:min-h-[325px]"
+          )}
+        >
           <Input
             id="lexeme-search"
             value={text}
             autoFocus
-            type="search"
-            onChange={handleSearchTextChange}
+            onChange={(e) => handleSearchTextChange(e.target.value)}
             onClick={() => {
               if (text && !readyToSearch) {
                 setReadyToSearch(true);
@@ -160,16 +211,45 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
             }}
             onKeyDown={handleSearchLexeme}
             placeholder="Thêm 〜 để tìm kiếm ngữ pháp"
-            className="border-none px-1 sm:placeholder:text-2xl placeholder:text-lg text-[26px] sm:text-3xl focus-visible:ring-transparent"
+            className={cn(
+              "border-none px-1 sm:placeholder:text-2xl placeholder:text-lg text-[26px] sm:text-3xl focus-visible:ring-transparent",
+              isParagraphMode ? "hidden" : "block"
+            )}
           />
+          <Textarea
+            id="paragraph-input"
+            maxLength={MAX_CHARS_LENGTH}
+            className={cn(
+              "border-none resize-none h-full sm:min-h-[280px] px-1 text-xl focus-visible:ring-transparent",
+              isParagraphMode ? "block" : "hidden"
+            )}
+            onChange={(e) => handleParagraphInputChange(e.target.value)}
+            onKeyDown={handleTranslateGrammar}
+            value={text}
+          />
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              handleSearchTextChange("");
+            }}
+            className={cn(
+              "rounded-full px-2 absolute  right-1 top-4",
+              text ? "flex" : "hidden"
+            )}
+          >
+            <X />
+          </Button>
+
           {lexemeHanViet}
           {(lexemeVocabs.length > 0 || lexemeGrammars.length > 0) && (
             <div className="w-full h-px bg-muted-foreground "></div>
           )}
+
           <div
             className={cn(
-              "flex flex-col gap-6 overflow-auto sm:h-[220px] h-[137px] items-start mt-3",
-              !isDisplayingSuggestions && "h-auto"
+              "flex flex-col gap-6 overflow-auto items-start mt-3",
+              !isDisplayingSuggestions && "h-auto",
+              isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] "
             )}
           >
             {loadingLexemeVocab
@@ -212,7 +292,18 @@ export function LexemeSearch({ lexemeSearch }: LexemeSearchProps) {
                     </Button>
                   );
                 })}
+            {isGrammarMode &&
+              !loadingLexemeGrammar &&
+              lexemeGrammars.length === 0 && (
+                <div className="text-lg">Không tìm thấy ngữ pháp</div>
+              )}
           </div>
+
+          {isParagraphMode && (
+            <div className="absolute right-8 bottom-1 text-muted-foreground text-base">
+              {text.length}/{MAX_CHARS_LENGTH}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

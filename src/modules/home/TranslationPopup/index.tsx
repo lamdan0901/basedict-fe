@@ -43,8 +43,12 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleSelectionChange = (event: Event) => {
-      // Prevent popupTrigger from showing up on search input
-      if (showPopup || lexemeSearchInput?.contains(event.target as Node))
+      if (
+        showPopup ||
+        lexemeSearchInput?.contains(event.target as Node) ||
+        paragraphInput?.contains(event.target as Node) ||
+        translatedParagraph?.contains(event.target as Node)
+      )
         return;
 
       const selection = window.getSelection();
@@ -72,7 +76,9 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
       if (
         showPopup ||
         popupRef.current?.contains(event.target as Node) ||
-        lexemeSearchInput?.contains(event.target as Node)
+        lexemeSearchInput?.contains(event.target as Node) ||
+        paragraphInput?.contains(event.target as Node) ||
+        translatedParagraph?.contains(event.target as Node)
       )
         return;
 
@@ -99,6 +105,8 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
     };
 
     const lexemeSearchInput = document.getElementById("lexeme-search");
+    const paragraphInput = document.getElementById("paragraph-input");
+    const translatedParagraph = document.getElementById("translated-paragraph");
 
     document.addEventListener("selectionchange", handleSelectionChange);
     document.addEventListener("dblclick", handleDoubleClick);

@@ -7,3 +7,5 @@ export const MEANING_ERR_MSG = {
 };
 
 export const GRAMMAR_CHAR = "〜";
+export const MAX_CHARS_LENGTH = 500;
+export const PARAGRAPH_MIN_LENGTH = 20;

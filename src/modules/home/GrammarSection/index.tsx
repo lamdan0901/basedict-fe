@@ -1,53 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MEANING_ERR_MSG } from "@/constants";
-import { cn, trimAllSpaces } from "@/lib";
-import { getRequest } from "@/service/data";
+import { cn } from "@/lib";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { Flag, RotateCcw } from "lucide-react";
+import { Flag } from "lucide-react";
 import { useState } from "react";
-import useSWRImmutable from "swr/immutable";
 
 export function GrammarSection() {
-  const {
-    selectedGrammar,
-    setSelectedGrammar,
-    grammar,
-    grammarMeaningErrMsg,
-    setGrammarMeaningErrMsg,
-  } = useLexemeStore();
+  const { selectedGrammar: grammarSearch } = useLexemeStore();
   const [showExamples, setShowExamples] = useState(false);
 
-  console.log("render");
-
-  const {
-    data: grammarSearchRes,
-    isLoading: loadingGrammarSearch,
-    mutate: retryGrammarSearch,
-  } = useSWRImmutable<TGrammar>(
-    grammar ? `/v1/grammars/${trimAllSpaces(grammar)}` : null,
-    getRequest,
-    {
-      onError(errMsg) {
-        setGrammarMeaningErrMsg(
-          MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
-            MEANING_ERR_MSG.UNKNOWN
-        );
-        console.error("err searching lexeme: ", errMsg);
-      },
-      onSuccess(data) {
-        setSelectedGrammar(data);
-      },
-    }
-  );
-  const grammarSearch = selectedGrammar || grammarSearchRes;
+  // const {
+  //   data: grammarSearchRes,
+  //   isLoading: loadingGrammarSearch,
+  //   mutate: retryGrammarSearch,
+  // } = useSWRImmutable<TGrammar>(
+  //   grammar ? `/v1/grammars/${trimAllSpaces(grammar)}` : null,
+  //   getRequest,
+  //   {
+  //     onError(errMsg) {
+  //       setGrammarMeaningErrMsg(
+  //         MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
+  //           MEANING_ERR_MSG.UNKNOWN
+  //       );
+  //       console.error("err searching lexeme: ", errMsg);
+  //     },
+  //     onSuccess(data) {
+  //       setSelectedGrammar(data);
+  //     },
+  //   }
+  // );
 
   return (
     <Card className="w-full rounded-2xl sm:min-h-[325px] relative ">
       <CardContent className="!p-4 space-y-2">
-        {loadingGrammarSearch ? (
-          "Đang tìm kiếm..."
-        ) : grammarSearch ? (
+        {grammarSearch ? (
           <>
             <div className="flex justify-between items-center">
               <div className="flex gap-1 items-center">
@@ -96,17 +82,6 @@ export function GrammarSection() {
               </div>
             )}
           </>
-        ) : grammarMeaningErrMsg ? (
-          <div>
-            <Button
-              onClick={() => retryGrammarSearch()}
-              variant={"link"}
-              className="text-xl px-1"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" /> Thử lại
-            </Button>
-            <p className="text-destructive">{grammarMeaningErrMsg}</p>
-          </div>
         ) : null}
       </CardContent>
     </Card>

@@ -6,29 +6,22 @@ import { GrammarSection } from "@/modules/home/GrammarSection";
 import { LexemeSearch } from "@/modules/home/LexemeSearch";
 import { MeaningSection } from "@/modules/home/MeaningSection";
 import { TranslationPopup } from "@/modules/home/TranslationPopup";
-import { getRequest } from "@/service/data";
+import { getRequest, postRequest } from "@/service/data";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { GRAMMAR_CHAR } from "@/constants";
 import useSWRImmutable from "swr/immutable";
+import useSWRMutation from "swr/mutation";
 import { SimilarWords } from "@/modules/home/LexemeSearch/SimilarWords";
+import { TranslatedParagraph } from "@/modules/home/TranslatedParagraph";
 
 export function Home() {
-  const {
-    text,
-    word,
-    setText,
-    selectedVocab,
-    setSelectedVocab,
-    selectedGrammar,
-    setSelectedGrammar,
-    setGrammarMeaningErrMsg,
-    setWord,
-    setGrammar,
-    setVocabMeaningErrMsg,
-  } = useLexemeStore();
+  const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
+    useLexemeStore();
 
-  const isVocabMode = !text.startsWith(GRAMMAR_CHAR);
-  const isGrammarMode = text.length > 1 && text.startsWith(GRAMMAR_CHAR);
+  const isParagraphMode = text.length >= 20;
+  const isVocabMode = !isParagraphMode && !text.startsWith(GRAMMAR_CHAR);
+  const isGrammarMode =
+    !isParagraphMode && text.length > 1 && text.startsWith(GRAMMAR_CHAR);
 
   const {
     data: lexemeSearch,
@@ -47,11 +40,19 @@ export function Home() {
       },
     }
   );
+  const {
+    trigger: translateParagraph,
+    isMutating: translatingParagraph,
+    error,
+  } = useSWRMutation("/v1/paragraphs/translate", postRequest);
 
   return (
     <TranslationPopup>
       <div className="flex h-full  py-4 sm:flex-row flex-col gap-8 items-start">
-        <LexemeSearch lexemeSearch={lexemeSearch} />
+        <LexemeSearch
+          translateParagraph={translateParagraph}
+          lexemeSearch={lexemeSearch}
+        />
         {isVocabMode && (
           <MeaningSection
             lexemeSearch={lexemeSearch}
@@ -61,6 +62,9 @@ export function Home() {
           />
         )}
         {isGrammarMode && <GrammarSection />}
+        {isParagraphMode && (
+          <TranslatedParagraph error={error} isLoading={translatingParagraph} />
+        )}
       </div>
       <SimilarWords
         similars={
@@ -68,19 +72,6 @@ export function Home() {
           selectedVocab?.similars ||
           selectedGrammar?.similars
         }
-        onClick={(selectedSimilarWord) => {
-          setText(selectedSimilarWord);
-
-          if (!text.startsWith(GRAMMAR_CHAR)) {
-            setWord(selectedSimilarWord);
-            setVocabMeaningErrMsg("");
-            setSelectedVocab(null);
-          } else {
-            setGrammar(selectedSimilarWord);
-            setGrammarMeaningErrMsg("");
-            setSelectedGrammar(null);
-          }
-        }}
       />
     </TranslationPopup>
   );

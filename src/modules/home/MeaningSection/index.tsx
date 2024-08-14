@@ -21,6 +21,14 @@ type MeaningSectionProps = {
   retryLexemeSearch: KeyedMutator<TLexeme>;
 };
 
+function isDifferenceGreaterSpecifiedDay(dateISO: string, days = 1) {
+  const millisPerDay = 86400000; // 24 * 60 * 60 * 1000
+  const difference = Math.abs(
+    new Date().getTime() - new Date(dateISO).getTime()
+  );
+  return difference >= millisPerDay * days;
+}
+
 export function MeaningSection({
   lexemeSearch,
   loadingLexemeSearch,
@@ -46,13 +54,16 @@ export function MeaningSection({
     await reportWrongWordTrigger();
 
     setIsWordReported(true);
-    reportedWords[wordIdToReport] = "true";
+    reportedWords[wordIdToReport] = new Date().toISOString();
     localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
     // TODO: Thế thêm cho a cái là khi báo cáo xong đồng thời call cả báo sai nhé
   }
 
   useEffect(() => {
-    setIsWordReported(reportedWords[wordIdToReport] === "true");
+    setIsWordReported(
+      reportedWords[wordIdToReport] &&
+        !isDifferenceGreaterSpecifiedDay(reportedWords[wordIdToReport])
+    );
   }, [reportedWords, wordIdToReport]);
 
   return (
