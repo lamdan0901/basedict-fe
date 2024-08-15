@@ -307,7 +307,7 @@ export function LexemeSearch({
 
           <p
             className={cn(
-              "absolute top-1/2 left-5 w-[90%] text-muted-foreground -translate-y-1/2 pointer-events-none",
+              "absolute sm:top-1/2 top-[60%] left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
               text ? "hidden" : "block"
             )}
           >
