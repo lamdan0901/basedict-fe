@@ -22,7 +22,7 @@ type MeaningSectionProps = {
 };
 
 function isDifferenceGreaterSpecifiedDay(dateISO: string, days = 1) {
-  const millisPerDay = 86400000; // 24 * 60 * 60 * 1000
+  const millisPerDay = 86400000 / 24; // 24 * 60 * 60 * 1000
   const difference = Math.abs(
     new Date().getTime() - new Date(dateISO).getTime()
   );
@@ -151,9 +151,7 @@ export function MeaningSection({
               className="absolute bottom-3 underline hover:font-semibold text-blue-500 right-2"
               variant="link"
               size={"sm"}
-              disabled={
-                isReportingWrongWord || isWordReported || !wordIdToReport
-              }
+              disabled={isReportingWrongWord || !!isWordReported}
               onClick={reportWrongWord}
             >
               {isWordReported ? (

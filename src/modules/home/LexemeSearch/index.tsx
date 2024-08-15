@@ -249,7 +249,8 @@ export function LexemeSearch({
             className={cn(
               "flex flex-col gap-6 overflow-auto items-start mt-3",
               !isDisplayingSuggestions && "h-auto",
-              isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] "
+              isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] ",
+              (!lexemeVocabs.length || !lexemeGrammars.length) && "sm:h-0 h-0"
             )}
           >
             {loadingLexemeVocab
