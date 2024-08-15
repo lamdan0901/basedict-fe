@@ -49,30 +49,42 @@ export function Home() {
   return (
     <TranslationPopup>
       <div className="flex h-full  py-4 sm:flex-row flex-col gap-8 items-start">
-        <LexemeSearch
-          translateParagraph={translateParagraph}
-          lexemeSearch={lexemeSearch}
-        />
-        {isVocabMode && (
-          <MeaningSection
+        <div className="w-full ">
+          <LexemeSearch
+            translateParagraph={translateParagraph}
             lexemeSearch={lexemeSearch}
-            loadingLexemeSearch={loadingLexemeSearch}
-            retryLexemeSearch={retryLexemeSearch}
-            wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
           />
-        )}
-        {isGrammarMode && <GrammarSection />}
-        {isParagraphMode && (
-          <TranslatedParagraph error={error} isLoading={translatingParagraph} />
-        )}
+          <SimilarWords
+            similars={
+              lexemeSearch?.similars ||
+              selectedVocab?.similars ||
+              selectedGrammar?.similars
+            }
+          />
+        </div>
+        <div className="w-full ">
+          {isVocabMode && (
+            <MeaningSection
+              lexemeSearch={lexemeSearch}
+              loadingLexemeSearch={loadingLexemeSearch}
+              retryLexemeSearch={retryLexemeSearch}
+              wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
+            />
+          )}
+          {isGrammarMode && <GrammarSection />}
+          {isParagraphMode && (
+            <TranslatedParagraph
+              error={error}
+              isLoading={translatingParagraph}
+            />
+          )}
+        </div>
       </div>
-      <SimilarWords
-        similars={
-          lexemeSearch?.similars ||
-          selectedVocab?.similars ||
-          selectedGrammar?.similars
-        }
-      />
+      <div className="container">
+        <div className="item item1">Item 1</div>
+        <div className="item item2">Item 2</div>
+        <div className="item item3">Item 3</div>
+      </div>
     </TranslationPopup>
   );
 }
