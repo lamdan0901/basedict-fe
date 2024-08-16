@@ -48,8 +48,8 @@ export function Home() {
 
   return (
     <TranslationPopup>
-      <div className="flex h-full  py-4 sm:flex-row flex-col gap-8 items-start">
-        <div className="w-full ">
+      <div className="py-4 gap-4 sm:flex-row flex-col flex">
+        <div className="w-full space-y-4">
           <LexemeSearch
             translateParagraph={translateParagraph}
             lexemeSearch={lexemeSearch}
@@ -62,25 +62,18 @@ export function Home() {
             }
           />
         </div>
-        <div className="w-full ">
-          {isVocabMode && (
-            <MeaningSection
-              lexemeSearch={lexemeSearch}
-              loadingLexemeSearch={loadingLexemeSearch}
-              retryLexemeSearch={retryLexemeSearch}
-              wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
-            />
-          )}
-          {isGrammarMode && <GrammarSection />}
-          {isParagraphMode && (
-            <TranslatedParagraph
-              error={error}
-              isLoading={translatingParagraph}
-            />
-          )}
-        </div>
-      </div>
-      <div className="container">
+        {isVocabMode && (
+          <MeaningSection
+            lexemeSearch={lexemeSearch}
+            loadingLexemeSearch={loadingLexemeSearch}
+            retryLexemeSearch={retryLexemeSearch}
+            wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
+          />
+        )}
+        {isGrammarMode && <GrammarSection />}
+        {isParagraphMode && (
+          <TranslatedParagraph error={error} isLoading={translatingParagraph} />
+        )}
       </div>
     </TranslationPopup>
   );

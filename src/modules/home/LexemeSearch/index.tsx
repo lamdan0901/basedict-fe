@@ -191,135 +191,134 @@ export function LexemeSearch({
   ]);
 
   return (
-    <div className="w-full h-fit">
-      <Card className="rounded-2xl">
-        <CardContent
+    <Card className="rounded-2xl">
+      <CardContent
+        className={cn(
+          "!p-4 h-fit !pr-8 relative ",
+          isParagraphMode ? "min-h-0" : " sm:min-h-[325px]",
+          !text && "min-h-[225px]"
+        )}
+      >
+        <Input
+          id="lexeme-search"
+          value={text}
+          autoFocus
+          onChange={(e) => handleSearchTextChange(e.target.value)}
+          onClick={() => {
+            if (text && !readyToSearch) {
+              setReadyToSearch(true);
+            }
+          }}
+          onKeyDown={handleSearchLexeme}
+          placeholder="Nhập text để tìm kiếm"
           className={cn(
-            "!p-4 !pr-8 relative ",
-            isParagraphMode ? "min-h-0" : " sm:min-h-[325px]"
+            "border-none px-1 sm:placeholder:text-2xl placeholder:text-lg text-[26px] sm:text-3xl focus-visible:ring-transparent",
+            isParagraphMode ? "hidden" : "block"
+          )}
+        />
+        <Textarea
+          id="paragraph-input"
+          maxLength={MAX_CHARS_LENGTH}
+          className={cn(
+            "border-none resize-none h-full sm:min-h-[280px] px-1 text-xl focus-visible:ring-transparent",
+            isParagraphMode ? "block" : "hidden"
+          )}
+          onChange={(e) => handleParagraphInputChange(e.target.value)}
+          onKeyDown={handleTranslateGrammar}
+          value={text}
+        />
+        <Button
+          variant={"ghost"}
+          onClick={() => {
+            handleSearchTextChange("");
+          }}
+          className={cn(
+            "rounded-full px-2 absolute  right-1 top-4",
+            text ? "flex" : "hidden"
           )}
         >
-          <Input
-            id="lexeme-search"
-            value={text}
-            autoFocus
-            onChange={(e) => handleSearchTextChange(e.target.value)}
-            onClick={() => {
-              if (text && !readyToSearch) {
-                setReadyToSearch(true);
-              }
-            }}
-            onKeyDown={handleSearchLexeme}
-            placeholder="Nhập text để tìm kiếm"
-            className={cn(
-              "border-none px-1 sm:placeholder:text-2xl placeholder:text-lg text-[26px] sm:text-3xl focus-visible:ring-transparent",
-              isParagraphMode ? "hidden" : "block"
-            )}
-          />
-          <Textarea
-            id="paragraph-input"
-            maxLength={MAX_CHARS_LENGTH}
-            className={cn(
-              "border-none resize-none h-full sm:min-h-[280px] px-1 text-xl focus-visible:ring-transparent",
-              isParagraphMode ? "block" : "hidden"
-            )}
-            onChange={(e) => handleParagraphInputChange(e.target.value)}
-            onKeyDown={handleTranslateGrammar}
-            value={text}
-          />
-          <Button
-            variant={"ghost"}
-            onClick={() => {
-              handleSearchTextChange("");
-            }}
-            className={cn(
-              "rounded-full px-2 absolute  right-1 top-4",
-              text ? "flex" : "hidden"
-            )}
-          >
-            <X />
-          </Button>
+          <X />
+        </Button>
 
-          {lexemeHanViet}
-          {(lexemeVocabs.length > 0 || lexemeGrammars.length > 0) && (
-            <div className="w-full h-px bg-muted-foreground "></div>
+        <div className="absolute left-5 top-13"> {lexemeHanViet}</div>
+
+        {isDisplayingSuggestions && (
+          <div className="w-full h-px bg-muted-foreground "></div>
+        )}
+
+        <div
+          className={cn(
+            "flex flex-col gap-6 overflow-auto items-start mt-3",
+            isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] ",
+            !isParagraphMode && !isDisplayingSuggestions && "h-0"
           )}
+        >
+          {loadingLexemeVocab
+            ? "Searching..."
+            : lexemeVocabs.map((lexeme) => {
+                const lexemeStandard =
+                  lexeme.standard === lexeme.lexeme
+                    ? lexeme.standard
+                    : `${lexeme.standard} ${lexeme.lexeme}`;
+                return (
+                  <Button
+                    key={lexeme.id}
+                    onClick={() => handleVocabClick(lexeme)}
+                    className="items-center text-lg sm:text-xl py-7 font-normal relative px-1 w-full flex-col"
+                    variant="ghost"
+                  >
+                    <span>
+                      {lexemeStandard}{" "}
+                      {lexeme.hiragana ? `(${lexeme.hiragana})` : ""}
+                    </span>
+                    <span>{lexeme.hanviet}</span>
+                    <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
+                  </Button>
+                );
+              })}
 
-          <div
-            className={cn(
-              "flex flex-col gap-6 overflow-auto items-start mt-3",
-              !isDisplayingSuggestions && "h-auto",
-              isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] ",
-              (!lexemeVocabs.length || !lexemeGrammars.length) && "sm:h-0 h-0"
+          {loadingLexemeGrammar
+            ? "Searching..."
+            : lexemeGrammars.map((grammar) => {
+                return (
+                  <Button
+                    key={grammar.id}
+                    onClick={() => handleGrammarClick(grammar)}
+                    className="items-center text-xl py-7 font-normal relative px-1 w-full flex-col"
+                    variant="ghost"
+                  >
+                    <span>{grammar.grammar}</span>
+                    <span>{grammar.meaning}</span>
+                    <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
+                  </Button>
+                );
+              })}
+          {isGrammarMode &&
+            !loadingLexemeGrammar &&
+            lexemeGrammars.length === 0 && (
+              <div className="text-lg">Không tìm thấy ngữ pháp</div>
             )}
-          >
-            {loadingLexemeVocab
-              ? "Searching..."
-              : lexemeVocabs.map((lexeme) => {
-                  const lexemeStandard =
-                    lexeme.standard === lexeme.lexeme
-                      ? lexeme.standard
-                      : `${lexeme.standard} ${lexeme.lexeme}`;
-                  return (
-                    <Button
-                      key={lexeme.id}
-                      onClick={() => handleVocabClick(lexeme)}
-                      className="items-center text-lg sm:text-xl py-7 font-normal relative px-1 w-full flex-col"
-                      variant="ghost"
-                    >
-                      <span>
-                        {lexemeStandard}{" "}
-                        {lexeme.hiragana ? `(${lexeme.hiragana})` : ""}
-                      </span>
-                      <span>{lexeme.hanviet}</span>
-                      <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
-                    </Button>
-                  );
-                })}
+        </div>
 
-            {loadingLexemeGrammar
-              ? "Searching..."
-              : lexemeGrammars.map((grammar) => {
-                  return (
-                    <Button
-                      key={grammar.id}
-                      onClick={() => handleGrammarClick(grammar)}
-                      className="items-center text-xl py-7 font-normal relative px-1 w-full flex-col"
-                      variant="ghost"
-                    >
-                      <span>{grammar.grammar}</span>
-                      <span>{grammar.meaning}</span>
-                      <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
-                    </Button>
-                  );
-                })}
-            {isGrammarMode &&
-              !loadingLexemeGrammar &&
-              lexemeGrammars.length === 0 && (
-                <div className="text-lg">Không tìm thấy ngữ pháp</div>
-              )}
+        {isParagraphMode && (
+          <div className="absolute right-8 bottom-1 text-muted-foreground text-base">
+            {text.length}/{MAX_CHARS_LENGTH}
           </div>
+        )}
 
-          {isParagraphMode && (
-            <div className="absolute right-8 bottom-1 text-muted-foreground text-base">
-              {text.length}/{MAX_CHARS_LENGTH}
-            </div>
+        <p
+          className={cn(
+            "absolute sm:top-1/2 top-[60%] left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
+            text ? "hidden" : "block"
           )}
-
-          <p
-            className={cn(
-              "absolute sm:top-1/2 top-[60%] left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
-              text ? "hidden" : "block"
-            )}
-          >
-            Tips: <br />
-            1. Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
-            chữ hán, hiragana hoặc katakana <br />
-            2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br />
-            3. Bạn có thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+        >
+          Tips: <br />
+          1. Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
+          chữ hán, hiragana hoặc katakana <br />
+          2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br />
+          3. Bạn có thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
+        </p>
+      </CardContent>
+    </Card>
   );
 }

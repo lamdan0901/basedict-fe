@@ -34,7 +34,7 @@ export function SimilarWords({
   }
 
   return (
-    <div className="flex gap-2 sm:max-w-[50%] flex-wrap">
+    <div className="flex gap-2 px-4 h-fit flex-wrap">
       <p className="text-base sm:text-lg">Từ tương tự:</p>
       {similars?.map((word, i) => (
         <Badge

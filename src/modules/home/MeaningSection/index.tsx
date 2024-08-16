@@ -69,7 +69,7 @@ export function MeaningSection({
   return (
     <Card
       className={cn(
-        "w-full rounded-2xl sm:min-h-[325px] relative ",
+        "w-full rounded-2xl sm:min-h-[325px] h-fit relative ",
         !lexemeSearch && "min-h-[325px]"
       )}
     >
