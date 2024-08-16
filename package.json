@@ -28,6 +28,8 @@
     "cmdk": "^1.0.0",
     "immer": "^10.1.1",
     "js-cookie": "^3.0.5",
+    "jsurl": "^0.1.5",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.419.0",
     "next": "14.2.5",
     "qs": "^6.13.0",
@@ -43,6 +45,8 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
+    "@types/jsurl": "^0.1.2",
+    "@types/lodash": "^4.17.7",
     "@types/node": "^20",
     "@types/qs": "^6.9.15",
     "@types/react": "^18",

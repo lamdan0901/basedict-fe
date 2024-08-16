@@ -195,7 +195,7 @@ export function LexemeSearch({
       <CardContent
         className={cn(
           "!p-4 h-fit !pr-8 relative ",
-          isParagraphMode ? "min-h-0" : " sm:min-h-[325px]",
+          isParagraphMode ? "min-h-0" : " sm:min-h-[328px]",
           !text && "min-h-[225px]"
         )}
       >
@@ -240,17 +240,18 @@ export function LexemeSearch({
           <X />
         </Button>
 
-        <div className="absolute left-5 top-13"> {lexemeHanViet}</div>
+        <div> {lexemeHanViet}</div>
 
         {isDisplayingSuggestions && (
-          <div className="w-full h-px bg-muted-foreground "></div>
+          <div className="w-full h-px bg-muted-foreground"></div>
         )}
 
         <div
           className={cn(
             "flex flex-col gap-6 overflow-auto items-start mt-3",
             isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] ",
-            !isParagraphMode && !isDisplayingSuggestions && "h-0"
+            !isParagraphMode && !isDisplayingSuggestions && "h-0",
+            loadingLexemeVocab && " min-h-[137px]"
           )}
         >
           {loadingLexemeVocab

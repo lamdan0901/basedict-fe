@@ -1,5 +1,5 @@
-import React from "react";
+import { Reading } from "@/modules/reading";
 
 export default function ReadingPage() {
-  return <div>ReadingPage</div>;
+  return <Reading />;
 }

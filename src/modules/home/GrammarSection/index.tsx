@@ -33,8 +33,8 @@ export function GrammarSection() {
   return (
     <Card
       className={cn(
-        "w-full rounded-2xl sm:min-h-[325px] h-fit relative ",
-        !grammarSearch && "min-h-[325px]"
+        "w-full rounded-2xl sm:min-h-[328px] h-fit relative ",
+        !grammarSearch && "min-h-[328px]"
       )}
     >
       <CardContent className="!p-4 space-y-2">
