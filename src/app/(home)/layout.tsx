@@ -9,10 +9,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
       <div className="flex-1">
         <Header />
         <Image
-          className="mt-[82px] mx-auto object-contain max-h-[150px] w-[417px]"
+          className="mt-16 mx-auto object-contain max-h-[150px] w-[417px]"
           src={logo}
           priority
-          alt="logo"
+          alt="basedict | học tiếng nhật"
           width={500}
           height={500}
         />
