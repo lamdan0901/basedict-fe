@@ -6,6 +6,7 @@ type TReadingMaterial = {
   jlptLevel: TJlptLevel;
   readingType: number;
   isRead: boolean;
+  createdAt: string;
 };
 
 type TReadingQuestion = {
@@ -14,6 +15,9 @@ type TReadingQuestion = {
 };
 
 type TReadingDetail = TReadingMaterial & {
-  content: string;
+  japanese: string;
+  vietnamese: string;
+  topic: string;
+  lexemes: string[];
   readingQuestions: TReadingQuestion[];
 };

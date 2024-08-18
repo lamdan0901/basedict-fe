@@ -9,6 +9,7 @@ export function ReadingItem({
   jlptLevel,
   readingType,
   isRead,
+  createdAt,
 }: TReadingMaterial) {
   const { selectedReadingItemId, setSheetOpen, setReadingItemId } =
     useReadingStore();
@@ -17,6 +18,8 @@ export function ReadingItem({
     (type) => type.value === readingType
   )?.title;
   const isActive = selectedReadingItemId === id;
+  const isNewlyCreated =
+    createdAt.slice(0, 10) === new Date().toISOString().slice(0, 10);
 
   function handleReadingClick() {
     if (isActive) return;
@@ -43,7 +46,12 @@ export function ReadingItem({
             </div>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex justify-end items-center gap-2">
+          {isNewlyCreated && (
+            <div className="rounded-full text-white px-2 text-sm bg-red-500">
+              Mới
+            </div>
+          )}
           <div className="bg-slate-50 rounded-full px-2 text-sm border">
             {readingTypeTitle}
           </div>

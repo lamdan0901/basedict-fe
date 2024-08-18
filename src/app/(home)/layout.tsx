@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import Header from "@/components/Header";
 import Image from "next/image";
 import logo from "../../../public/images/logo.png";
+import { TranslationPopup } from "@/components/TranslationPopup";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -16,7 +17,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
           width={500}
           height={500}
         />
-        <main className="max-w-[1440px] mx-auto p-4 w-full">{children}</main>
+        <main className="max-w-[1440px] mx-auto p-4 w-full">
+          <TranslationPopup>{children} </TranslationPopup>
+        </main>
       </div>
     </div>
   );

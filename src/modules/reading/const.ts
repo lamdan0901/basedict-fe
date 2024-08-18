@@ -46,10 +46,6 @@ export const readingTypes = [
     title: "Bài đọc tóm tắt",
     value: 6,
   },
-  {
-    title: "Bài đọc đồ họa, biểu đồ",
-    value: 7,
-  },
 ];
 
 export const jlptDescriptions = [
@@ -93,12 +89,5 @@ export const jlptDescriptions = [
     purpose:
       "Đánh giá khả năng tóm tắt thông tin và hiểu được ý chính của đoạn văn.",
     level: "N3, N2, và N1.",
-  },
-  {
-    title: "7. Bài đọc đồ họa, biểu đồ（グラフ・図表読解)",
-    length: "Ngắn hoặc trung bình.",
-    purpose:
-      "Kiểm tra khả năng hiểu thông tin được trình bày dưới dạng đồ họa hoặc số liệu, và cách giải thích những thông tin đó trong ngữ cảnh.",
-    level: "N2 và N1.",
   },
 ];

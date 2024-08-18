@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -17,7 +16,7 @@ import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingD
 import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import { getRequest } from "@/service/data";
 import useSWR from "swr";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useReadingStore } from "@/store/useReadingStore";
 
 export function ReadingList() {
@@ -39,7 +38,7 @@ export function ReadingList() {
 }
 
 function InnerReadingList() {
-  const { searchText, setSearchText, hasRead, setHasRead } = useReadingStore();
+  const { hasRead, setHasRead } = useReadingStore();
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel: "N1",
     readingType: 1,
@@ -51,12 +50,7 @@ function InnerReadingList() {
   );
 
   const filteredReadingList = readingList.filter((reading) => {
-    const isMatchSearchText = reading.title
-      .toLowerCase()
-      .includes(searchText.toLowerCase());
-
-    const isMatchHasRead = hasRead === reading.isRead;
-    return isMatchSearchText && isMatchHasRead;
+    return hasRead === reading.isRead;
   });
 
   return (
@@ -114,12 +108,6 @@ function InnerReadingList() {
                 id="isRead"
               />
             </div>
-            <Input
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              type="search"
-              placeholder="Tìm bài đọc theo tên"
-            />
           </div>
 
           <div className="w-full h-px bg-muted-foreground"></div>

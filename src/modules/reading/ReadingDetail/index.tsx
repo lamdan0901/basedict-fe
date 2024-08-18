@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQueryParams } from "@/hooks/useQueryParam";
@@ -12,6 +13,7 @@ import useSWRMutation from "swr/mutation";
 
 export function ReadingDetail() {
   const { sheetOpen, setSheetOpen, selectedReadingItemId } = useReadingStore();
+  const [showVietnamese, setShowVietnamese] = useState(false);
   const [answersShowed, toggleAnswers] = useState<Record<string, boolean>>({});
   const [readingParams] = useQueryParams({
     jlptLevel: "N1",
@@ -50,6 +52,11 @@ export function ReadingDetail() {
     mutate(`/v1/readings?${stringifyParams(readingParams)}`);
   }
 
+  function handleLexemeClick(lexeme: string) {
+    setSheetOpen(true);
+    setSheetOpen(true);
+  }
+
   return (
     <div className="w-full mb-2">
       <div className="flex ml-4 items-center">
@@ -60,7 +67,9 @@ export function ReadingDetail() {
         >
           <SquareMenu className="size-7" />
         </Button>
-        <h1 className="text-3xl ml-2 font-bold">Luyện đọc theo cấp độ</h1>
+        <h1 className="sm:text-3xl text-2xl ml-2 font-bold">
+          Luyện đọc theo cấp độ
+        </h1>
       </div>
 
       <Card className="relative rounded-2xl mt-4">
@@ -71,45 +80,72 @@ export function ReadingDetail() {
             "Đang tải bài đọc..."
           ) : (
             <>
-              <div className="flex w-full items-center justify-between">
+              <div className="flex w-full flex-wrap gap-2 items-center justify-between">
                 <h2 className="text-lg font-semibold">{readingItem?.title}</h2>
                 <div className="flex items-center gap-2">
-                  <div className="bg-slate-50 rounded-full px-2 text-sm border">
+                  <div className="bg-slate-50 shrink-0 rounded-full px-2 text-sm border">
                     {readingTypeTitle}
                   </div>
-                  <div className="bg-slate-50 rounded-full px-4 text-sm border">
+                  <div className="bg-slate-50 shrink-0 rounded-full px-4 text-sm border">
                     {readingItem?.jlptLevel}
                   </div>
                 </div>
               </div>
 
-              <p>{readingItem?.content} </p>
+              <div className="relative">
+                <p className="mb-6">
+                  {showVietnamese
+                    ? readingItem?.vietnamese
+                    : readingItem?.japanese}
+                </p>
+                <Button
+                  onClick={() => setShowVietnamese(!showVietnamese)}
+                  variant={"link"}
+                  className="text-blue-500 absolute -bottom-7 right-0 p-0"
+                >
+                  {showVietnamese ? "Ẩn bản dịch" : "  Xem bản dịch"}
+                </Button>
+              </div>
 
               <div className="w-full h-px bg-muted-foreground"></div>
 
+              <div className="flex flex-wrap gap-2">
+                <h2 className="text-lg font-semibold">Từ vựng: </h2>
+                {readingItem?.lexemes?.map((lexeme, i) => (
+                  <Badge
+                    className="cursor-pointer text-sm sm:text-base"
+                    onClick={() => handleLexemeClick(lexeme)}
+                    key={i}
+                  >
+                    {lexeme}
+                  </Badge>
+                ))}
+              </div>
+
               <div className="space-y-2">
-                <h2 className="text-lg font-semibold">Câu hỏi</h2>
+                <h2 className="text-lg font-semibold">Câu hỏi:</h2>
                 {readingItem?.readingQuestions.map((question, index) => (
                   <div key={index}>
-                    <span>
+                    <div>
                       {index + 1}. {question.text}{" "}
-                    </span>
-                    {answersShowed[question.text] ? (
-                      <div>{question.answer}</div>
-                    ) : (
-                      <Button
-                        variant={"link"}
-                        onClick={() =>
-                          toggleAnswers({
-                            ...answersShowed,
-                            [question.text]: true,
-                          })
-                        }
-                        className="block h-fit p-0 text-blue-500"
-                      >
-                        Hiển thị đáp án
-                      </Button>
+                    </div>
+                    {answersShowed[question.text] && (
+                      <div className="font-semibold">{question.answer}</div>
                     )}
+                    <Button
+                      variant={"link"}
+                      onClick={() =>
+                        toggleAnswers({
+                          ...answersShowed,
+                          [question.text]: !answersShowed[question.text],
+                        })
+                      }
+                      className="flex h-fit p-0 text-blue-500"
+                    >
+                      {answersShowed[question.text]
+                        ? "Ẩn đáp án"
+                        : "Hiển thị đáp án"}
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -123,7 +159,7 @@ export function ReadingDetail() {
                   disabled={markingAsRead}
                   onClick={handleMarkAsRead}
                   variant={"link"}
-                  className="text-blue-500 absolute bottom-0 right-3 p-0"
+                  className="text-blue-500 absolute bottom-0 right-5 p-0"
                 >
                   Đã đọc xong
                 </Button>

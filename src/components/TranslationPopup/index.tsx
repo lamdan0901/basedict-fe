@@ -1,6 +1,11 @@
+"use client";
+
 import { isJapanese, isNotEndingWithForbiddenForms } from "@/lib";
-import { MeaningPopup } from "@/modules/home/TranslationPopup/MeaningPopup";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense } from "react";
+import { SWRConfig } from "swr";
+import { createPortal } from "react-dom";
 
 const isSelectionValid = (text: string) =>
   isJapanese(text) && isNotEndingWithForbiddenForms(text);
@@ -120,12 +125,12 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
     };
   }, [showPopup]);
 
-  return (
-    <div ref={containerRef}>
-      {showTriggerButton && (
+  const triggerBtn = useMemo(() => {
+    if (showTriggerButton)
+      return createPortal(
         <button
           ref={popupTriggerRef}
-          className="fixed bg-blue-500 text-white px-2 py-1 rounded text-sm"
+          className="fixed z-[99991] bg-blue-500 text-white px-2 py-1 rounded text-sm"
           style={{
             top: `${popupTriggerPosition.top}px`,
             left: `${popupTriggerPosition.left}px`,
@@ -134,8 +139,15 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
           onClick={showTranslationPopup}
         >
           Dịch từ
-        </button>
-      )}
+        </button>,
+        document.body,
+        "popup-trigger"
+      );
+  }, [popupTriggerPosition.left, popupTriggerPosition.top, showTriggerButton]);
+
+  return (
+    <div ref={containerRef}>
+      {triggerBtn}
       {showPopup && (
         <MeaningPopup
           ref={popupRef}
@@ -145,7 +157,9 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
           setShowPopup={setShowPopup}
         />
       )}
-      {children}
+      <Suspense>
+        <SWRConfig value={{ errorRetryCount: 2 }}>{children}</SWRConfig>
+      </Suspense>
     </div>
   );
 }
