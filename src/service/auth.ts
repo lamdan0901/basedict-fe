@@ -14,11 +14,20 @@ const logout = () => {
   return axiosAuth.post("/logout?scope=local");
 };
 
-const createUser = (data: { name: string; avatar: string | null }) => {
-  return axiosData.post("/v1/users", data);
+const createUser = (
+  data: { name: string; avatar: string | null },
+  token: string
+) => {
+  return axiosData.post("/v1/users", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
-const getRefreshToken = (refresh_token: string): Promise<TAuthBody> => {
+const getRefreshToken = (
+  refresh_token: string
+): Promise<{ data: TAuthBody }> => {
   return axiosAuth.post("/token?grant_type=refresh_token", {
     refresh_token,
   });

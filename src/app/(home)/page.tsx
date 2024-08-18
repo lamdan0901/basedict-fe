@@ -10,35 +10,35 @@ import { v4 as uuid } from "uuid";
 import { useAppStore } from "@/store/useAppStore";
 
 export default function HomePage() {
-  const setProfile = useAppStore((state) => state.setProfile);
+  // const setProfile = useAppStore((state) => state.setProfile);
 
-  useEffect(() => {
-    async function authenticate() {
-      try {
-        const refreshToken = getCookie(REFRESH_TOKEN);
-        if (refreshToken) {
-          return;
-        }
+  // useEffect(() => {
+  //   async function authenticate() {
+  //     try {
+  //       const refreshToken = getCookie(REFRESH_TOKEN);
+  //       if (refreshToken) {
+  //         return;
+  //       }
 
-        const res = await signup({
-          email: `${uuid()}@basedict.vn`,
-          password: uuid(),
-        });
+  //       const res = await signup({
+  //         email: `${uuid()}@basedict.vn`,
+  //         password: uuid(),
+  //       });
 
-        await setTokenServer(res.data);
-        setProfile(res.data.user);
-        const userCreated = localStorage.getItem("userCreated") === "true";
-        if (!userCreated) {
-          await createUser({ name: res.data.user.email, avatar: null });
-          localStorage.setItem("userCreated", "true");
-        }
-      } catch (err) {
-        console.log("Err in authentication", err);
-      }
-    }
+  //       await setTokenServer(res.data);
+  //       setProfile(res.data.user);
+  //       const userCreated = localStorage.getItem("userCreated") === "true";
+  //       if (!userCreated) {
+  //         await createUser({ name: res.data.user.email, avatar: null });
+  //         localStorage.setItem("userCreated", "true");
+  //       }
+  //     } catch (err) {
+  //       console.log("Err in authentication", err);
+  //     }
+  //   }
 
-    authenticate();
-  }, [setProfile]);
+  //   authenticate();
+  // }, [setProfile]);
 
   return (
     <Suspense>
