@@ -21,8 +21,8 @@ type MeaningSectionProps = {
   retryLexemeSearch: KeyedMutator<TLexeme>;
 };
 
-function isDifferenceGreaterSpecifiedDay(dateISO: string, days = 1) {
-  const millisPerDay = 86400000 / 24; // 24 * 60 * 60 * 1000
+function isDifferenceGreaterSpecifiedDay(dateISO: string, days = 7) {
+  const millisPerDay = 86400000; // 24 * 60 * 60 * 1000
   const difference = Math.abs(
     new Date().getTime() - new Date(dateISO).getTime()
   );
