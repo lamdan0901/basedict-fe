@@ -105,19 +105,20 @@ export function ReadingDetail() {
                 </div>
               </div>
 
-              <div className="relative">
-                <p className="mb-6">
-                  {showVietnamese
-                    ? readingItem?.vietnamese
-                    : readingItem?.japanese}
-                </p>
+              <div className="relative mb-6 ">
+                <p className="whitespace-pre-line">{readingItem?.japanese}</p>
                 <Button
                   onClick={() => setShowVietnamese(!showVietnamese)}
                   variant={"link"}
-                  className="text-blue-500 absolute -bottom-7 right-0 p-0"
+                  className="text-blue-500 h-fit block my-1 ml-auto p-0"
                 >
                   {showVietnamese ? "Ẩn bản dịch" : "  Xem bản dịch"}
                 </Button>
+                {showVietnamese && (
+                  <p className="mb-2 whitespace-pre-line">
+                    {readingItem?.vietnamese}
+                  </p>
+                )}
               </div>
 
               <div className="w-full h-px bg-muted-foreground"></div>
