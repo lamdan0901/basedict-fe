@@ -1,3 +1,4 @@
+import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { readingTypes } from "@/modules/reading/const";
 import { getRequest, postRequest } from "@/service/data";
 import { useReadingStore } from "@/store/useReadingStore";
 import { Check, SquareMenu } from "lucide-react";
-import { useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
@@ -18,6 +19,13 @@ export function ReadingDetail() {
   const [readingParams] = useQueryParams({
     jlptLevel: "N1",
     readingType: 1,
+  });
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupTriggerPosition, setPopupTriggerPosition] = useState({
+    top: 0,
+    left: 0,
   });
 
   const {
@@ -52,10 +60,15 @@ export function ReadingDetail() {
     mutate(`/v1/readings?${stringifyParams(readingParams)}`);
   }
 
-  function handleLexemeClick(lexeme: string) {
-    setSheetOpen(true);
-    setSheetOpen(true);
-  }
+  const handleLexemeClick =
+    (lexeme: string) => (e: MouseEvent<HTMLDivElement>) => {
+      setShowPopup(true);
+      setSelection(lexeme);
+      setPopupTriggerPosition({
+        top: e.clientY,
+        left: e.clientX,
+      });
+    };
 
   return (
     <div className="w-full mb-2">
@@ -114,13 +127,22 @@ export function ReadingDetail() {
                 {readingItem?.lexemes?.map((lexeme, i) => (
                   <Badge
                     className="cursor-pointer text-sm sm:text-base"
-                    onClick={() => handleLexemeClick(lexeme)}
+                    onClick={handleLexemeClick(lexeme)}
                     key={i}
                   >
                     {lexeme}
                   </Badge>
                 ))}
               </div>
+              {showPopup && (
+                <MeaningPopup
+                  ref={popupRef}
+                  selection={selection}
+                  popupTriggerPosition={popupTriggerPosition}
+                  showPopup={showPopup}
+                  setShowPopup={setShowPopup}
+                />
+              )}
 
               <div className="space-y-2">
                 <h2 className="text-lg font-semibold">Câu hỏi:</h2>
