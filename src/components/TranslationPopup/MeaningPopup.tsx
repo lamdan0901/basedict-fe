@@ -134,7 +134,7 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
     return createPortal(
       <div
         ref={popupRef}
-        className="fixed bg-white border min-h-[150px] border-gray-300 p-3 rounded-lg shadow-md"
+        className="fixed z-[99999] bg-white border min-h-[150px] border-gray-300 p-3 rounded-lg shadow-md"
         style={{
           top: `${coords.top}px`,
           left: `${coords.left}px`,
@@ -199,7 +199,8 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
           </div>
         ) : null}
       </div>,
-      document.body
+      document.body,
+      "meaning-popup"
     );
   }
 );

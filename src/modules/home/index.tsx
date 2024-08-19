@@ -5,7 +5,7 @@ import { trimAllSpaces } from "@/lib";
 import { GrammarSection } from "@/modules/home/GrammarSection";
 import { LexemeSearch } from "@/modules/home/LexemeSearch";
 import { MeaningSection } from "@/modules/home/MeaningSection";
-import { TranslationPopup } from "@/modules/home/TranslationPopup";
+import { TranslationPopup } from "@/components/TranslationPopup";
 import { getRequest, postRequest } from "@/service/data";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { GRAMMAR_CHAR } from "@/constants";

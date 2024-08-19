@@ -26,7 +26,7 @@ const Header = () => {
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            className="hover:bg-white/30 hover:text-white rounded-full gap-2 text-xl size-15 px-2 py-0.5"
+            className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
             variant="ghost"
           >
             <Image src="/apps.svg" width={50} height={50} alt="apps" />{" "}

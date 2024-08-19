@@ -55,7 +55,7 @@ const responseInterceptor = async (error: any) => {
       isRefreshing = true;
 
       try {
-        const data = await getRefreshToken(oldRefreshToken);
+        const { data } = await getRefreshToken(oldRefreshToken);
         setTokenServer(data);
 
         if (originalRequest.headers) {

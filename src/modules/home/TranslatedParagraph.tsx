@@ -10,7 +10,7 @@ export function TranslatedParagraph({
 }) {
   const { translatedParagraph } = useLexemeStore();
   return (
-    <Card className="w-full rounded-2xl h-fit sm:min-h-[325px] relative ">
+    <Card className="w-full rounded-2xl h-fit sm:min-h-[328px] relative ">
       <CardContent id="translated-paragraph" className="!p-4 space-y-2">
         {isLoading ? (
           "Đang dịch..."
