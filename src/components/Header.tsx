@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib";
+import { useState } from "react";
 
 const menu = [
   {
@@ -39,6 +40,8 @@ const menu = [
 
 const Header = () => {
   const pathname = usePathname();
+  const [openMenu, setOpenMenu] = useState(false);
+
   // const [isLogin, setIsLogin] = useState(false);
 
   // useEffect(() => {
@@ -49,7 +52,7 @@ const Header = () => {
 
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
-      <Popover>
+      <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
             className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
@@ -64,6 +67,7 @@ const Header = () => {
             {menu.map((item) => (
               <Link href={item.href} key={item.href}>
                 <Button
+                  onClick={() => setOpenMenu(false)}
                   className={cn(
                     "hover:bg-gray-300/30 py-10 text-[#444]  text-lg flex-col",
                     pathname === item.href && "bg-gray-300/30"
