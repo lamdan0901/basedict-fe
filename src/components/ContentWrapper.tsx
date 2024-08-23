@@ -10,7 +10,7 @@ export function ContentWrapper({ children }: PropsWithChildren) {
     <main className="max-w-[1440px] flex-1 mx-auto p-4 w-full">
       <TranslationPopup>
         <Suspense>
-          <SWRConfig value={{ errorRetryCount: 2 }}>
+          <SWRConfig value={{ errorRetryCount: 2, revalidateOnFocus: false }}>
             {children}
             <HistoryNFavorite />
           </SWRConfig>

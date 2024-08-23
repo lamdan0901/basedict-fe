@@ -11,6 +11,8 @@ import { Check, SquareMenu } from "lucide-react";
 import { MouseEvent, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export function ReadingDetail() {
   const { sheetOpen, setSheetOpen, selectedReadingItemId } = useReadingStore();
@@ -32,6 +34,7 @@ export function ReadingDetail() {
     data: readingItem,
     isLoading,
     mutate: updateReadingItem,
+    error,
   } = useSWR<TReadingDetail>(
     selectedReadingItemId ? `/v1/readings/${selectedReadingItemId}` : null,
     getRequest,
@@ -91,6 +94,8 @@ export function ReadingDetail() {
             "Chọn một bài đọc để bắt đầu"
           ) : isLoading ? (
             "Đang tải bài đọc..."
+          ) : error ? (
+            "Có lỗi xảy ra, vui lòng thử lại"
           ) : (
             <>
               <div className="flex w-full flex-wrap gap-2 items-center justify-between">
@@ -152,9 +157,18 @@ export function ReadingDetail() {
                     <div>
                       {index + 1}. {question.text}{" "}
                     </div>
-                    {answersShowed[question.text] && (
-                      <div className="font-semibold">{question.answer}</div>
-                    )}
+                    <RadioGroup>
+                      {answersShowed[question.text] &&
+                        question.answers.map((answer) => (
+                          <div
+                            key={answer}
+                            className="flex items-center space-x-2"
+                          >
+                            <RadioGroupItem value="default" id="r1" />
+                            <Label htmlFor="r1">Default</Label>
+                          </div>
+                        ))}
+                    </RadioGroup>
                     <Button
                       variant={"link"}
                       onClick={() =>
