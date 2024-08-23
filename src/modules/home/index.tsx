@@ -21,8 +21,8 @@ export function Home() {
 
   const isParagraphMode = text.length >= 20;
   const isVocabMode = !isParagraphMode && !text.startsWith(GRAMMAR_CHAR);
-  const isGrammarMode =
-    !isParagraphMode && text.length >= 1 && text.startsWith(GRAMMAR_CHAR);
+  // const isGrammarMode =
+  //   !isParagraphMode && text.length >= 1 && text.startsWith(GRAMMAR_CHAR);
 
   const {
     data: lexemeSearch,
@@ -77,7 +77,7 @@ export function Home() {
           wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
         />
       )}
-      {isGrammarMode && <GrammarSection />}
+      {/* {isGrammarMode && <GrammarSection />} */}
       {isParagraphMode && (
         <TranslatedParagraph error={error} isLoading={translatingParagraph} />
       )}
