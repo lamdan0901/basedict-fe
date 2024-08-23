@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
+import { PropsWithChildren } from "react";
 import Header from "@/components/Header";
 import Image from "next/image";
-import { TranslationPopup } from "@/components/TranslationPopup";
 import { Footer } from "@/components/Footer";
+import { ContentWrapper } from "@/components/ContentWrapper";
 
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = ({ children }: PropsWithChildren) => {
   return (
     <div className="h-screen flex flex-col overflow-auto bg-gray-50">
       <div className="flex flex-col flex-1">
@@ -17,9 +17,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
           width={500}
           height={500}
         />
-        <main className="max-w-[1440px] flex-1 mx-auto p-4 w-full">
-          <TranslationPopup>{children} </TranslationPopup>
-        </main>
+        <ContentWrapper>{children}</ContentWrapper>
         <Footer />
       </div>
     </div>

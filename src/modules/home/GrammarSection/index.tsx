@@ -43,7 +43,6 @@ export function GrammarSection() {
             <div className="flex justify-between items-center">
               <div className="flex gap-1 items-center">
                 <h2 className="sm:text-2xl text-xl">
-                  {" "}
                   {grammarSearch?.meaning}
                 </h2>
               </div>

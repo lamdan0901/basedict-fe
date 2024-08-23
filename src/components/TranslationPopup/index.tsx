@@ -1,10 +1,8 @@
 "use client";
 
-import { isJapanese, isNotEndingWithForbiddenForms } from "@/lib";
 import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
+import { isJapanese, isNotEndingWithForbiddenForms } from "@/lib";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { Suspense } from "react";
-import { SWRConfig } from "swr";
 import { createPortal } from "react-dom";
 
 const isSelectionValid = (text: string) =>
@@ -157,9 +155,7 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
           setShowPopup={setShowPopup}
         />
       )}
-      <Suspense>
-        <SWRConfig value={{ errorRetryCount: 2 }}>{children}</SWRConfig>
-      </Suspense>
+      {children}
     </div>
   );
 }

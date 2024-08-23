@@ -9,3 +9,11 @@ export const MEANING_ERR_MSG = {
 export const GRAMMAR_CHAR = "〜";
 export const MAX_CHARS_LENGTH = 500;
 export const PARAGRAPH_MIN_LENGTH = 20;
+export const MAX_HISTORY_ITEMS = 50;
+export const MAX_FAVORITE_ITEMS = 100;
+
+export enum HistoryItemType {
+  Lexeme,
+  Grammar,
+  Paragraph,
+}

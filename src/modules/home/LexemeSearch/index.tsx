@@ -12,10 +12,12 @@ import {
   GRAMMAR_CHAR,
   PARAGRAPH_MIN_LENGTH,
   MAX_CHARS_LENGTH,
+  HistoryItemType,
 } from "@/constants";
 import { Textarea } from "@/components/ui/textarea";
 import { TriggerWithOptionsArgs } from "swr/mutation";
 import { X } from "lucide-react";
+import { useHistoryStore } from "@/store/useHistoryStore";
 
 type LexemeSearchProps = {
   lexemeSearch: TLexeme | undefined;
@@ -41,6 +43,7 @@ export function LexemeSearch({
     setWord,
     setTranslatedParagraph,
   } = useLexemeStore();
+  const { addHistoryItem } = useHistoryStore();
 
   const initTextSet = useRef(false);
   const setSearchParam = useUrlSearchParams();
@@ -51,8 +54,8 @@ export function LexemeSearch({
   const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
   const isVocabMode =
     !isParagraphMode && search && !search.startsWith(GRAMMAR_CHAR);
-  const isGrammarMode =
-    !isParagraphMode && search.length > 1 && search.startsWith(GRAMMAR_CHAR);
+  const isGrammarMode = false; // temporarily disabled feature
+  // !isParagraphMode && search.length > 1 && search.startsWith(GRAMMAR_CHAR);
 
   const {
     data: lexemeVocabRes,
@@ -128,6 +131,12 @@ export function LexemeSearch({
       e.preventDefault();
       const data = await translateParagraph({ text });
       setTranslatedParagraph(data);
+      addHistoryItem({
+        rawParagraph: text,
+        translatedParagraph: data,
+        uid: crypto.randomUUID(),
+        type: HistoryItemType.Paragraph,
+      });
     }
   }
 
@@ -158,6 +167,11 @@ export function LexemeSearch({
     setSelectedGrammar(grammar);
     setSearchParam({ search: "" });
     setText(grammar.grammar);
+    addHistoryItem({
+      ...grammar,
+      uid: crypto.randomUUID(),
+      type: HistoryItemType.Grammar,
+    });
   }
 
   // After user select a lexeme from the list, user can click on that word again to search for similar ones
@@ -195,7 +209,7 @@ export function LexemeSearch({
       <CardContent
         className={cn(
           "!p-4 h-fit !pr-8 relative ",
-          isParagraphMode ? "min-h-0" : " sm:min-h-[328px]",
+          isParagraphMode ? "min-h-0 sm:min-h-[328px]" : " sm:min-h-[328px]",
           !text && "min-h-[225px]"
         )}
       >
@@ -316,8 +330,8 @@ export function LexemeSearch({
           Tips: <br />
           1. Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
           chữ hán, hiragana hoặc katakana <br />
-          2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br />
-          3. Bạn có thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
+          {/* 2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br /> */}
+          2. Bạn có thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
         </p>
       </CardContent>
     </Card>
