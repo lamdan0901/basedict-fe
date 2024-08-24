@@ -11,7 +11,8 @@ type TReadingMaterial = {
 
 type TReadingQuestion = {
   text: string;
-  answer: string;
+  answers: string[];
+  correctAnswer: string;
 };
 
 type TReadingDetail = TReadingMaterial & {

@@ -16,7 +16,7 @@ import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingD
 import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import { getRequest } from "@/service/data";
 import useSWR from "swr";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetTitle, SheetContent } from "@/components/ui/sheet";
 import { useReadingStore } from "@/store/useReadingStore";
 
 export function ReadingList() {
@@ -30,7 +30,8 @@ export function ReadingList() {
 
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-      <SheetContent side="left">
+      <SheetTitle></SheetTitle>
+      <SheetContent aria-describedby={undefined} side="left">
         <InnerReadingList />
       </SheetContent>
     </Sheet>

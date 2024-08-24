@@ -1,9 +1,12 @@
+import { cn } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
 
 export function Footer() {
   return (
-    <div className="bg-[#e7e7e7] border-t mt-10 sm:mt-40 border-[#b4b4b4]">
+    <div
+      className={cn("bg-[#e7e7e7] border-t sm:mt-16 mt-10 border-[#b4b4b4]")}
+    >
       <div className="grid max-w-[1440px] mx-auto px-4 py-6 w-full grid-flow-row-dense gap-3 lg:grid-cols-10 md:grid-cols-9">
         <div className="lg:col-span-4 md:col-span-5 sm:max-w-[400px]">
           <div className="flex gap-5">

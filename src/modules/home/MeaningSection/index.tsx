@@ -6,16 +6,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
 import { postRequest } from "@/service/data";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { Check, CircleCheckBig, Flag, RotateCcw } from "lucide-react";
+import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
+import { v4 as uuid } from "uuid";
 
 type MeaningSectionProps = {
-  lexemeSearch: TLexeme | undefined;
+  lexemeSearch: TLexeme | null | undefined;
   loadingLexemeSearch: boolean;
   wordIdToReport: string;
   retryLexemeSearch: KeyedMutator<TLexeme>;
@@ -35,6 +38,8 @@ export function MeaningSection({
   wordIdToReport,
   retryLexemeSearch,
 }: MeaningSectionProps) {
+  const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
+    useFavoriteStore();
   // const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
   const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
@@ -43,6 +48,7 @@ export function MeaningSection({
   const [isWordReported, setIsWordReported] = useState<boolean | null>(null);
   const reportedWords = getLocalStorageItem("reportedWords", {});
 
+  const isFavorite = isFavoriteItem(lexemeSearch?.id);
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
   const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
@@ -57,6 +63,20 @@ export function MeaningSection({
     reportedWords[wordIdToReport] = new Date().toISOString();
     localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
     // TODO: Thế thêm cho a cái là khi báo cáo xong đồng thời call cả báo sai nhé
+  }
+
+  function toggleFavorite() {
+    if (!lexemeSearch) return;
+
+    if (isFavorite) {
+      removeFavoriteItem(lexemeSearch?.id);
+    } else {
+      addFavoriteItem({
+        ...lexemeSearch,
+        uid: uuid(),
+        type: HistoryItemType.Lexeme,
+      });
+    }
   }
 
   useEffect(() => {
@@ -122,6 +142,16 @@ export function MeaningSection({
                     {currentMeaning?.context}
                   </div>
                 )}
+                <Button
+                  onClick={toggleFavorite}
+                  className="rounded-full p-2"
+                  size="sm"
+                  variant="ghost"
+                >
+                  <Heart
+                    className={cn(" w-5 h-5", isFavorite && "text-destructive")}
+                  />
+                </Button>
                 <Button className="rounded-full p-2" size="sm" variant="ghost">
                   <Flag className=" w-5 h-5" />
                 </Button>
