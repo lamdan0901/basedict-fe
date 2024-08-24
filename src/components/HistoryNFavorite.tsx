@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { HistoryItemType } from "@/constants";
 import { ChevronRight, Trash } from "lucide-react";
 import { cn } from "@/lib";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
+import { usePathname } from "next/navigation";
 
 enum SheetType {
   History = "Lịch sử",
@@ -15,6 +16,7 @@ enum SheetType {
 }
 
 export function HistoryNFavorite() {
+  const pathname = usePathname();
   const { historyItems, clearHistory } = useHistoryStore();
   const { favoriteItems, clearFavorite, removeFavoriteItem } =
     useFavoriteStore();
@@ -27,6 +29,8 @@ export function HistoryNFavorite() {
   const [sheetType, setSheetType] = useState<SheetType | null>(null);
 
   const data = sheetType === SheetType.History ? historyItems : favoriteItems;
+
+  if (pathname !== "/") return <div className="mt-24"></div>;
 
   return (
     <>
@@ -55,7 +59,8 @@ export function HistoryNFavorite() {
       </div>
 
       <Sheet open={!!sheetType} onOpenChange={() => setSheetType(null)}>
-        <SheetContent side="right">
+        <SheetTitle></SheetTitle>
+        <SheetContent aria-describedby={undefined} side="right">
           <h2 className="text-2xl border-b-2 pb-4 border-muted-foreground">
             {sheetType}
           </h2>

@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { TriggerWithOptionsArgs } from "swr/mutation";
 import { X } from "lucide-react";
 import { useHistoryStore } from "@/store/useHistoryStore";
+import { v4 as uuid } from "uuid";
 
 type LexemeSearchProps = {
   lexemeSearch: TLexeme | undefined;
@@ -134,7 +135,7 @@ export function LexemeSearch({
       addHistoryItem({
         rawParagraph: text,
         translatedParagraph: data,
-        uid: crypto.randomUUID(),
+        uid: uuid(),
         type: HistoryItemType.Paragraph,
       });
     }
@@ -169,7 +170,7 @@ export function LexemeSearch({
     setText(grammar.grammar);
     addHistoryItem({
       ...grammar,
-      uid: crypto.randomUUID(),
+      uid: uuid(),
       type: HistoryItemType.Grammar,
     });
   }

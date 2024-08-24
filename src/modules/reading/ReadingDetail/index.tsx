@@ -5,19 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
 import { readingTypes } from "@/modules/reading/const";
+import { ReadingQuestions } from "@/modules/reading/ReadingDetail/ReadingQuestions";
 import { getRequest, postRequest } from "@/service/data";
 import { useReadingStore } from "@/store/useReadingStore";
 import { Check, SquareMenu } from "lucide-react";
 import { MouseEvent, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export function ReadingDetail() {
   const { sheetOpen, setSheetOpen, selectedReadingItemId } = useReadingStore();
   const [showVietnamese, setShowVietnamese] = useState(false);
-  const [answersShowed, toggleAnswers] = useState<Record<string, boolean>>({});
   const [readingParams] = useQueryParams({
     jlptLevel: "N1",
     readingType: 1,
@@ -37,16 +35,16 @@ export function ReadingDetail() {
     error,
   } = useSWR<TReadingDetail>(
     selectedReadingItemId ? `/v1/readings/${selectedReadingItemId}` : null,
-    getRequest,
-    {
-      onSuccess: (data) => {
-        const initVal = data.readingQuestions.reduce((acc, question) => {
-          acc[question.text] = false;
-          return acc;
-        }, {} as Record<string, boolean>);
-        toggleAnswers(initVal);
-      },
-    }
+    getRequest
+    // {
+    //   onSuccess: (data) => {
+    //     const initVal = data.readingQuestions.reduce((acc, question) => {
+    //       acc[question.text] = false;
+    //       return acc;
+    //     }, {} as Record<string, boolean>);
+    //     toggleAnswers(initVal);
+    //   },
+    // }
   );
   const { trigger: markAsRead, isMutating: markingAsRead } = useSWRMutation(
     `/v1/readings/read/${selectedReadingItemId}`,
@@ -150,42 +148,9 @@ export function ReadingDetail() {
                 />
               )}
 
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold">Câu hỏi:</h2>
-                {readingItem?.readingQuestions.map((question, index) => (
-                  <div key={index}>
-                    <div>
-                      {index + 1}. {question.text}{" "}
-                    </div>
-                    <RadioGroup>
-                      {answersShowed[question.text] &&
-                        question.answers.map((answer) => (
-                          <div
-                            key={answer}
-                            className="flex items-center space-x-2"
-                          >
-                            <RadioGroupItem value="default" id="r1" />
-                            <Label htmlFor="r1">Default</Label>
-                          </div>
-                        ))}
-                    </RadioGroup>
-                    <Button
-                      variant={"link"}
-                      onClick={() =>
-                        toggleAnswers({
-                          ...answersShowed,
-                          [question.text]: !answersShowed[question.text],
-                        })
-                      }
-                      className="flex h-fit p-0 text-blue-500"
-                    >
-                      {answersShowed[question.text]
-                        ? "Ẩn đáp án"
-                        : "Hiển thị đáp án"}
-                    </Button>
-                  </div>
-                ))}
-              </div>
+              <ReadingQuestions
+                readingQuestions={readingItem?.readingQuestions}
+              />
 
               {readingItem?.isRead ? (
                 <div className="flex items-center absolute bottom-3 right-3 text-sm text-muted-foreground">

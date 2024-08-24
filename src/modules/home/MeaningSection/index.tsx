@@ -15,6 +15,7 @@ import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
+import { v4 as uuid } from "uuid";
 
 type MeaningSectionProps = {
   lexemeSearch: TLexeme | null | undefined;
@@ -72,7 +73,7 @@ export function MeaningSection({
     } else {
       addFavoriteItem({
         ...lexemeSearch,
-        uid: crypto.randomUUID(),
+        uid: uuid(),
         type: HistoryItemType.Lexeme,
       });
     }

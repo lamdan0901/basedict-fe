@@ -13,6 +13,7 @@ import useSWRMutation from "swr/mutation";
 import { SimilarWords } from "@/modules/home/LexemeSearch/SimilarWords";
 import { TranslatedParagraph } from "@/modules/home/TranslatedParagraph";
 import { useHistoryStore } from "@/store/useHistoryStore";
+import { v4 as uuid } from "uuid";
 
 export function Home() {
   const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
@@ -42,7 +43,7 @@ export function Home() {
       onSuccess(data) {
         addHistoryItem({
           ...data,
-          uid: crypto.randomUUID(),
+          uid: uuid(),
           type: HistoryItemType.Lexeme,
         });
       },
