@@ -10,10 +10,12 @@ import { useLexemeStore } from "@/store/useLexemeStore";
 import { GRAMMAR_CHAR } from "@/constants";
 import useSWRImmutable from "swr/immutable";
 import useSWRMutation from "swr/mutation";
-import { SimilarWords } from "@/modules/home/LexemeSearch/SimilarWords";
+import { SimilarWords } from "@/modules/home/SimilarWords";
 import { TranslatedParagraph } from "@/modules/home/TranslatedParagraph";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { v4 as uuid } from "uuid";
+import { HistoryNFavorite } from "@/components/HistoryNFavorite";
+import { TodaysTopic } from "@/modules/home/TodaysTopic";
 
 export function Home() {
   const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
@@ -56,32 +58,38 @@ export function Home() {
   } = useSWRMutation("/v1/paragraphs/translate", postRequest);
 
   return (
-    <div className="py-4 gap-4 sm:flex-row flex-col flex">
-      <div className="w-full space-y-4">
-        <LexemeSearch
-          translateParagraph={translateParagraph}
-          lexemeSearch={lexemeSearch}
-        />
-        <SimilarWords
-          similars={
-            lexemeSearch?.similars ||
-            selectedVocab?.similars ||
-            selectedGrammar?.similars
-          }
-        />
+    <>
+      <div className="py-4 gap-4 sm:flex-row flex-col flex">
+        <div className="w-full space-y-4">
+          <LexemeSearch
+            translateParagraph={translateParagraph}
+            lexemeSearch={lexemeSearch}
+          />
+          <SimilarWords
+            similars={
+              lexemeSearch?.similars ||
+              selectedVocab?.similars ||
+              selectedGrammar?.similars
+            }
+          />
+        </div>
+        {isVocabMode && (
+          <MeaningSection
+            lexemeSearch={lexemeSearch || selectedVocab}
+            loadingLexemeSearch={loadingLexemeSearch}
+            retryLexemeSearch={retryLexemeSearch}
+            wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
+          />
+        )}
+        {/* {isGrammarMode && <GrammarSection />} */}
+        {isParagraphMode && (
+          <TranslatedParagraph error={error} isLoading={translatingParagraph} />
+        )}
       </div>
-      {isVocabMode && (
-        <MeaningSection
-          lexemeSearch={lexemeSearch || selectedVocab}
-          loadingLexemeSearch={loadingLexemeSearch}
-          retryLexemeSearch={retryLexemeSearch}
-          wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
-        />
-      )}
-      {/* {isGrammarMode && <GrammarSection />} */}
-      {isParagraphMode && (
-        <TranslatedParagraph error={error} isLoading={translatingParagraph} />
-      )}
-    </div>
+
+      <HistoryNFavorite />
+
+      <TodaysTopic />
+    </>
   );
 }

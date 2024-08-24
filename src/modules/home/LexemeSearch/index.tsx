@@ -206,7 +206,7 @@ export function LexemeSearch({
   ]);
 
   return (
-    <Card className="rounded-2xl">
+    <Card id="top" className="rounded-2xl">
       <CardContent
         className={cn(
           "!p-4 h-fit !pr-8 relative ",
