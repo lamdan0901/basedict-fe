@@ -329,10 +329,10 @@ export function LexemeSearch({
           )}
         >
           Tips: <br />
-          1. Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
+          - Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
           chữ hán, hiragana hoặc katakana <br />
-          {/* 2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br /> */}
-          2. Bạn có thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
+          {/* 2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br /> */}- Bạn có
+          thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
         </p>
       </CardContent>
     </Card>
