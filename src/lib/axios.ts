@@ -3,6 +3,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants";
 import { getCookie } from "@/lib/cookies";
 import { useAppStore } from "@/store/useAppStore";
 import { getRefreshToken, setTokenServer } from "@/service/auth";
+import { createClient } from "@/utils/supabase/client";
 
 type IRequestCb = (token: string) => void;
 
@@ -23,12 +24,16 @@ const axiosAuth = axios.create({
 });
 
 const axiosData = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_DATA_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_AUTH_BASE_URL,
 });
 
 // Shared interceptor for both instances
-const sharedInterceptor = (config: any) => {
-  const token = getCookie(ACCESS_TOKEN);
+const sharedInterceptor = async (config: any) => {
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const token = session?.access_token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

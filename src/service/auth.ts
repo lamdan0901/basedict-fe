@@ -1,4 +1,4 @@
-import { axiosAuth, axiosData } from "@/lib/axios";
+import { axiosAuth } from "@/lib/axios";
 import { TAuthBody } from "@/service/types";
 import axios from "axios";
 
@@ -14,15 +14,8 @@ const logout = () => {
   return axiosAuth.post("/logout?scope=local");
 };
 
-const createUser = (
-  data: { name: string; avatar: string | null },
-  token: string
-) => {
-  return axiosData.post("/v1/users", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+const createUser = (data: { name: string; avatar: string | null }) => {
+  return axiosAuth.post("/v1/users", data);
 };
 
 const getRefreshToken = (
