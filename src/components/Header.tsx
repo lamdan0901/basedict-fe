@@ -1,8 +1,5 @@
 "use client";
 
-// import { useEffect, useState } from "react";
-// import { getCookie } from "@/lib/cookies";
-// import { ACCESS_TOKEN } from "@/constants";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,10 +7,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { login } from "@/service/actions";
+import { createClient } from "@/utils/supabase/client";
+import { useAppStore } from "@/store/useAppStore";
 
 const menu = [
   {
@@ -38,20 +44,65 @@ const menu = [
   },
 ];
 
-const Header = () => {
+const defaultAvatarUrl = "/default-avatar.svg";
+
+const Header = ({ user }: { user: TUser | undefined }) => {
+  const router = useRouter();
   const pathname = usePathname();
+  const { clearProfile, setProfile, profile } = useAppStore();
   const [openMenu, setOpenMenu] = useState(false);
 
-  // const [isLogin, setIsLogin] = useState(false);
+  async function signOut() {
+    const client = createClient();
+    const { error } = await client.auth.signOut({ scope: "local" });
+    if (!error) {
+      clearProfile();
+      router.refresh();
+    }
+  }
 
-  // useEffect(() => {
-  //   if (getCookie(ACCESS_TOKEN)) {
-  //     setIsLogin(true);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!profile && user) setProfile(user);
+  }, [profile, setProfile, user]);
 
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
+      {!user && (
+        <form action={login}>
+          <Button type="submit" variant={"secondary"} className="text-lg">
+            Đăng nhập
+          </Button>
+        </form>
+      )}
+
+      {user && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
+              variant="ghost"
+            >
+              <Image
+                src={user.avatar || defaultAvatarUrl}
+                width={50}
+                height={50}
+                className="rounded-full"
+                alt="avatar"
+              />
+              <div>{user.name}</div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem asChild className="text-xl">
+              <Link href={"/profile"}>Trang cá nhân</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-xl" onClick={signOut}>
+              Đăng xuất
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
@@ -87,9 +138,6 @@ const Header = () => {
           </div>
         </PopoverContent>
       </Popover>
-      {/* <div className="font-bold">
-        {isLogin ? "Xin chào ABC" : "Đăng nhập Đăng kí"}
-      </div> */}
     </header>
   );
 };
