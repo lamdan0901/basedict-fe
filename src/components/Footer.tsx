@@ -56,6 +56,9 @@ export function Footer() {
             <Link className="hover:underline" href={"/#"}>
               Cộng đồng
             </Link>
+            <Link className="hover:underline" href={"https://docs.google.com/forms/d/1MtO5RCWdGR7SX3qTSjyeKVBX_tocLc2k6s3BVr0ZlUo"} target="_blank">
+              Hòm thư góp ý
+            </Link>
           </div>
         </div>
       </div>
