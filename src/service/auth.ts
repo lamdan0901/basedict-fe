@@ -14,8 +14,12 @@ const logout = () => {
   return axiosAuth.post("/logout?scope=local");
 };
 
-const createUser = (data: { name: string; avatar: string | null }) => {
+const updateUser = (data: { name: string; avatar: string | null }) => {
   return axiosAuth.post("/v1/users", data);
+};
+
+const fetchUser = () => {
+  return axiosAuth.get("/v1/users/profile");
 };
 
 const getRefreshToken = (
@@ -50,6 +54,7 @@ export {
   getRefreshToken,
   logout,
   deleteTokenServer,
-  createUser,
+  updateUser,
+  fetchUser,
   signup,
 };

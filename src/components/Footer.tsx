@@ -41,7 +41,7 @@ export function Footer() {
             <Link className="hover:underline" href={"/reading"}>
               Luyện đọc
             </Link>
-            <Link className="hover:underline" href={"/#"}>
+            <Link className="hover:underline" href={"/grammar"}>
               Ngữ pháp
             </Link>
           </div>
@@ -50,13 +50,19 @@ export function Footer() {
         <div className="lg:col-span-3 md:col-span-2">
           <h2 className="font-semibold text-xl">Về chúng tôi</h2>
           <div className="ml-4 mt-2 flex flex-col gap-2 w-fit ">
-            <Link className="hover:underline" href={"/#"}>
+            <Link className="hover:underline" href={"/about-us"}>
               Về chúng tôi
             </Link>
-            <Link className="hover:underline" href={"/#"}>
-              Cộng đồng
+            <Link className="hover:underline" href={"/policy"}>
+              Chính sách bảo mật
             </Link>
-            <Link className="hover:underline" href={"https://docs.google.com/forms/d/1MtO5RCWdGR7SX3qTSjyeKVBX_tocLc2k6s3BVr0ZlUo"} target="_blank">
+            <Link
+              className="hover:underline"
+              href={
+                "https://docs.google.com/forms/d/1MtO5RCWdGR7SX3qTSjyeKVBX_tocLc2k6s3BVr0ZlUo"
+              }
+              target="_blank"
+            >
               Hòm thư góp ý
             </Link>
           </div>
