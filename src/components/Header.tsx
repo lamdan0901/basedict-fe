@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { login } from "@/service/actions";
 import { createClient } from "@/utils/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
+import { DEFAULT_AVATAR_URL } from "@/constants";
 
 const menu = [
   {
@@ -43,8 +44,6 @@ const menu = [
     title: "Luyện thi",
   },
 ];
-
-const defaultAvatarUrl = "/default-avatar.svg";
 
 const Header = ({ user }: { user: TUser | undefined }) => {
   const router = useRouter();
@@ -83,7 +82,7 @@ const Header = ({ user }: { user: TUser | undefined }) => {
               variant="ghost"
             >
               <Image
-                src={user.avatar || defaultAvatarUrl}
+                src={user.avatar || DEFAULT_AVATAR_URL}
                 width={50}
                 height={50}
                 className="rounded-full"
