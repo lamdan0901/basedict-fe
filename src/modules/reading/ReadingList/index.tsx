@@ -18,6 +18,8 @@ import { getRequest } from "@/service/data";
 import useSWR from "swr";
 import { Sheet, SheetTitle, SheetContent } from "@/components/ui/sheet";
 import { useReadingStore } from "@/store/useReadingStore";
+import { useRef } from "react";
+import { useAppStore } from "@/store/useAppStore";
 
 export function ReadingList() {
   const { sheetOpen, setSheetOpen } = useReadingStore();
@@ -39,15 +41,25 @@ export function ReadingList() {
 }
 
 function InnerReadingList() {
-  const { hasRead, setHasRead } = useReadingStore();
+  const hasSetInitialReading = useRef(false);
+  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
+  const { hasRead, setHasRead, setReadingItemId } = useReadingStore();
   const [readingParams, setReadingParams] = useQueryParams({
-    jlptLevel: "N1",
+    jlptLevel,
     readingType: 1,
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     `/v1/readings?${stringifyParams(readingParams)}`,
-    getRequest
+    getRequest,
+    {
+      onSuccess(data) {
+        if (data[0] && !hasSetInitialReading.current) {
+          setReadingItemId(data[0].id);
+          hasSetInitialReading.current = true;
+        }
+      },
+    }
   );
 
   const filteredReadingList = readingList.filter((reading) => {
@@ -66,7 +78,7 @@ function InnerReadingList() {
               <Select
                 value={readingParams.jlptLevel}
                 onValueChange={(value) =>
-                  setReadingParams({ jlptLevel: value })
+                  setReadingParams({ jlptLevel: value as TJlptLevel })
                 }
               >
                 <SelectTrigger className="w-full">

@@ -4,7 +4,14 @@ import { Input } from "@/components/ui/input";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { cn, stringifyParams, trimAllSpaces } from "@/lib";
 import { getRequest } from "@/service/data";
-import { useState, KeyboardEvent, useEffect, useRef } from "react";
+import {
+  useState,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import useSWRImmutable from "swr/immutable";
 import { useSearchParams } from "next/navigation";
 import { useLexemeStore } from "@/store/useLexemeStore";
@@ -30,10 +37,10 @@ type LexemeSearchProps = {
   >;
 };
 
-export function LexemeSearch({
-  lexemeSearch,
-  translateParagraph,
-}: LexemeSearchProps) {
+export const LexemeSearch = forwardRef<
+  { hideSuggestions: () => void },
+  LexemeSearchProps
+>(({ lexemeSearch, translateParagraph }, ref) => {
   const {
     text,
     setText,
@@ -205,6 +212,13 @@ export function LexemeSearch({
     setWord,
   ]);
 
+  useImperativeHandle(ref, () => ({
+    hideSuggestions: () => {
+      if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
+      if (search) setSearchParam({ search: "" });
+    },
+  }));
+
   return (
     <Card id="top" className="rounded-2xl">
       <CardContent
@@ -337,4 +351,4 @@ export function LexemeSearch({
       </CardContent>
     </Card>
   );
-}
+});

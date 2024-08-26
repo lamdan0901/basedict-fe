@@ -5,8 +5,10 @@ import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 
 export function SimilarWords({
   similars,
+  onWordClick,
 }: {
   similars: string[] | undefined | null;
+  onWordClick: () => void;
 }) {
   const setSearchParam = useUrlSearchParams();
   const {
@@ -27,6 +29,7 @@ export function SimilarWords({
       setWord(word);
       setVocabMeaningErrMsg("");
       setSelectedVocab(null);
+      onWordClick();
     } else {
       setSelectedGrammar(null);
       setSearchParam({ search: word });

@@ -36,15 +36,6 @@ export function ReadingDetail() {
   } = useSWR<TReadingDetail>(
     selectedReadingItemId ? `/v1/readings/${selectedReadingItemId}` : null,
     getRequest
-    // {
-    //   onSuccess: (data) => {
-    //     const initVal = data.readingQuestions.reduce((acc, question) => {
-    //       acc[question.text] = false;
-    //       return acc;
-    //     }, {} as Record<string, boolean>);
-    //     toggleAnswers(initVal);
-    //   },
-    // }
   );
   const { trigger: markAsRead, isMutating: markingAsRead } = useSWRMutation(
     `/v1/readings/read/${selectedReadingItemId}`,
@@ -73,20 +64,21 @@ export function ReadingDetail() {
 
   return (
     <div className="w-full mb-2">
-      <div className="flex ml-4 items-center">
-        <Button
-          onClick={() => setSheetOpen(!sheetOpen)}
-          variant={"ghost"}
-          className="p-2 md:hidden"
-        >
-          <SquareMenu className="size-7" />
-        </Button>
+      <div className="ml-4 ">
         <h1 className="sm:text-3xl text-2xl ml-2 font-bold">
           Luyện đọc theo cấp độ
         </h1>
+        <Button
+          onClick={() => setSheetOpen(!sheetOpen)}
+          variant={"ghost"}
+          className="p-2 gap-2 mt-1 text-primary md:hidden"
+        >
+          <SquareMenu className="size-6" />{" "}
+          <span className="text-lg">Chọn bài đọc khác</span>
+        </Button>
       </div>
 
-      <Card className="relative rounded-2xl mt-4">
+      <Card className="relative rounded-2xl mt-3">
         <CardContent className="py-4 min-h-[250px] space-y-4">
           {!selectedReadingItemId ? (
             "Chọn một bài đọc để bắt đầu"
