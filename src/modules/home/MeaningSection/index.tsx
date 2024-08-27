@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
+import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
 import { postRequest } from "@/service/data";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
@@ -40,7 +41,8 @@ export function MeaningSection({
 }: MeaningSectionProps) {
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
-  // const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
+  const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
+  console.log("meaningReportModalOpen: ", meaningReportModalOpen);
   const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
@@ -62,7 +64,6 @@ export function MeaningSection({
     setIsWordReported(true);
     reportedWords[wordIdToReport] = new Date().toISOString();
     localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
-    // TODO: Thế thêm cho a cái là khi báo cáo xong đồng thời call cả báo sai nhé
   }
 
   function toggleFavorite() {
@@ -152,7 +153,14 @@ export function MeaningSection({
                     className={cn(" w-5 h-5", isFavorite && "text-destructive")}
                   />
                 </Button>
-                <Button className="rounded-full p-2" size="sm" variant="ghost">
+                <Button
+                  onClick={() => {
+                    setMeaningReportModalOpen(true);
+                  }}
+                  className="rounded-full p-2"
+                  size="sm"
+                  variant="ghost"
+                >
                   <Flag className=" w-5 h-5" />
                 </Button>
               </div>
@@ -218,12 +226,12 @@ export function MeaningSection({
         </p>
       </CardContent>
 
-      {/* TODO */}
-      {/* <MeaningReportModal
-        lexeme={lexemeSearch || selectedLexeme}
+      <MeaningReportModal
+        lexeme={lexemeSearch}
         open={meaningReportModalOpen}
         onOpenChange={setMeaningReportModalOpen}
-      /> */}
+        onMeaningReported={reportWrongWord}
+      />
     </Card>
   );
 }
