@@ -1,27 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
-import { jlptLevels, readingTypes, TabVal } from "@/modules/reading/const";
+import { TabVal } from "@/modules/reading/const";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
-import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
+import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
-import useSWR from "swr";
-import { Sheet, SheetTitle, SheetContent } from "@/components/ui/sheet";
+import { useAppStore } from "@/store/useAppStore";
 import { useReadingStore } from "@/store/useReadingStore";
 import { useRef } from "react";
-import { useAppStore } from "@/store/useAppStore";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
+import useSWR from "swr";
 
 export function ReadingList() {
   const { sheetOpen, setSheetOpen } = useReadingStore();
@@ -56,18 +45,18 @@ function InnerReadingList() {
         <TabsContent value={TabVal.BaseDict}>
           <BaseDictReadingList />
         </TabsContent>
-        <TabsContent value={TabVal.JLPT}></TabsContent>
+        <TabsContent value={TabVal.JLPT}>
+          <JPLTTestReadingList />
+        </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-// TODO: hasRead of basedict n jlpt tests are different -> more props for jlpt tests
-
 function BaseDictReadingList() {
   const hasSetInitialReading = useRef(false);
   const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
-  const { hasRead, setReadingItemId } = useReadingStore();
+  const { hasReadBaseDict, setReadingItemId } = useReadingStore();
   const [readingParams] = useQueryParams({
     jlptLevel,
     readingType: 1,
@@ -87,7 +76,7 @@ function BaseDictReadingList() {
   );
 
   const filteredReadingList = readingList.filter((reading) => {
-    return hasRead === reading.isRead;
+    return hasReadBaseDict === reading.isRead;
   });
 
   return (
@@ -95,6 +84,44 @@ function BaseDictReadingList() {
       readingList={filteredReadingList}
       isLoading={isLoading}
       tab={TabVal.BaseDict}
+    />
+  );
+}
+
+function JPLTTestReadingList() {
+  const hasSetInitialReading = useRef(false);
+  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
+  const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
+  const [readingParams] = useQueryParams({
+    jlptTestLevel: jlptLevel,
+    examCode: "1",
+  });
+
+  const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
+    `/v1/readings?${stringifyParams({
+      ...readingParams,
+      jlptLevel: readingParams.jlptTestLevel,
+    })}&isJlpt=true`,
+    getRequest,
+    {
+      onSuccess(data) {
+        if (data[0] && !hasSetInitialReading.current) {
+          setReadingItemId(data[0].id);
+          hasSetInitialReading.current = true;
+        }
+      },
+    }
+  );
+
+  const filteredReadingList = readingList.filter((reading) => {
+    return hasReadJLPTTest === reading.isRead;
+  });
+
+  return (
+    <ReadingListContent
+      readingList={filteredReadingList}
+      isLoading={isLoading}
+      tab={TabVal.JLPT}
     />
   );
 }

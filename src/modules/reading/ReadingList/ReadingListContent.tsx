@@ -9,7 +9,12 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
-import { jlptLevels, readingTypes, TabVal } from "@/modules/reading/const";
+import {
+  jlptLevels,
+  readingTypes,
+  TabVal,
+  testPeriods,
+} from "@/modules/reading/const";
 import { useQueryParams } from "@/hooks/useQueryParam";
 import { useAppStore } from "@/store/useAppStore";
 import { useReadingStore } from "@/store/useReadingStore";
@@ -21,7 +26,12 @@ type Props = {
 };
 
 export function ReadingListContent({ readingList, isLoading, tab }: Props) {
-  const { hasRead, setHasRead } = useReadingStore();
+  const {
+    hasReadBaseDict,
+    setHasReadBaseDict,
+    hasReadJLPTTest,
+    setHasReadJLPTTest,
+  } = useReadingStore();
   const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
@@ -30,6 +40,8 @@ export function ReadingListContent({ readingList, isLoading, tab }: Props) {
     examCode: "1",
   });
 
+  const isBaseDictTab = tab === TabVal.BaseDict;
+
   return (
     <Card className="w-full md:w-[280px] lg:w-[320px] rounded-2xl">
       <CardContent className="py-4">
@@ -37,13 +49,20 @@ export function ReadingListContent({ readingList, isLoading, tab }: Props) {
           <div className="flex items-center justify-start">
             <p className="basis-[80px] shrink-0">Cấp</p>
             <Select
-              value={readingParams.jlptLevel}
+              value={
+                isBaseDictTab
+                  ? readingParams.jlptLevel
+                  : readingParams.jlptTestLevel
+              }
               onValueChange={(value) =>
-                setReadingParams({ jlptLevel: value as TJlptLevel })
+                setReadingParams({
+                  [isBaseDictTab ? "jlptLevel" : "jlptTestLevel"]:
+                    value as TJlptLevel,
+                })
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a level" />
+                <SelectValue placeholder="" />
               </SelectTrigger>
               <SelectContent>
                 {jlptLevels.map((level) => (
@@ -56,31 +75,53 @@ export function ReadingListContent({ readingList, isLoading, tab }: Props) {
           </div>
           <div className="flex items-center justify-start">
             <p className="basis-[80px] shrink-0">
-              {tab === TabVal.BaseDict ? "Dạng bài" : "Đề thi"}
+              {isBaseDictTab ? "Dạng bài" : "Đề thi"}
             </p>
-            <Select
-              value={readingParams.readingType.toString()}
-              onValueChange={(value) =>
-                setReadingParams({ readingType: +value })
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a fruit" />
-              </SelectTrigger>
-              <SelectContent>
-                {readingTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value.toString()}>
-                    {type.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {isBaseDictTab ? (
+              <Select
+                value={readingParams.readingType.toString()}
+                onValueChange={(value) =>
+                  setReadingParams({ readingType: +value })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent>
+                  {readingTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value.toString()}>
+                      {type.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Select
+                value={readingParams.examCode}
+                onValueChange={(value) => setReadingParams({ examCode: value })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent className="w-[100px]">
+                  {testPeriods.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
           <div className="flex items-center justify-start">
             <p className="basis-[80px] shrink-0">Đã đọc</p>{" "}
             <Switch
-              onCheckedChange={(value) => setHasRead(value)}
-              checked={hasRead}
+              onCheckedChange={(value) => {
+                isBaseDictTab
+                  ? setHasReadBaseDict(value)
+                  : setHasReadJLPTTest(value);
+              }}
+              checked={isBaseDictTab ? hasReadBaseDict : hasReadJLPTTest}
               id="isRead"
             />
           </div>

@@ -14,13 +14,12 @@ export function ReadingQuestions({
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
 
   function countCorrectAnswers() {
-    let correctAnswers = 0;
-    readingQuestions?.forEach((question, index) => {
+    return readingQuestions?.reduce((acc, question, index) => {
       if (question.correctAnswer === userAnswers[index]) {
-        correctAnswers++;
+        return acc + 1;
       }
-    });
-    return correctAnswers;
+      return acc;
+    }, 0);
   }
 
   return (
