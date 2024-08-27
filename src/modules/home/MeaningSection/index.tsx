@@ -42,7 +42,6 @@ export function MeaningSection({
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
   const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
-  console.log("meaningReportModalOpen: ", meaningReportModalOpen);
   const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [showExamples, setShowExamples] = useState(false);

@@ -40,7 +40,7 @@ export function HistoryNFavorite() {
           variant="ghost"
           onClick={() => setSheetType(SheetType.History)}
         >
-          <Image src={"/history.svg"} width={40} height={40} alt={"Lịch sử"} />
+          <Image src={"/history.svg"} width={40} height={40} alt={"lich-su"} />
           Lịch sử
         </Button>
         <Button
@@ -52,7 +52,7 @@ export function HistoryNFavorite() {
             src={"/favorite.svg"}
             width={40}
             height={40}
-            alt={"Yêu thích"}
+            alt={"yeu-thich"}
           />
           Yêu thích
         </Button>

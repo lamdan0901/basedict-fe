@@ -16,9 +16,13 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 import { v4 as uuid } from "uuid";
 import { HistoryNFavorite } from "@/components/HistoryNFavorite";
 import { TodaysTopic } from "@/modules/home/TodaysTopic";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
-export function Home() {
+export function Home({
+  _lexemeSearch,
+}: {
+  _lexemeSearch: TLexeme | undefined;
+}) {
   const lexemeRef = useRef<{ hideSuggestions: () => void }>(null);
   const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
     useLexemeStore();
@@ -37,6 +41,7 @@ export function Home() {
     word ? `/v1/lexemes/search/${trimAllSpaces(word)}` : null,
     getRequest,
     {
+      // fallbackData: _lexemeSearch,
       onError(errMsg) {
         setVocabMeaningErrMsg(
           MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
