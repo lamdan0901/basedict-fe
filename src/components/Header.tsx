@@ -21,6 +21,8 @@ import { login } from "@/service/actions";
 import { createClient } from "@/utils/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { DEFAULT_AVATAR_URL } from "@/constants";
+import useSWR from "swr";
+import { fetchUserProfile } from "@/service/user";
 
 const menu = [
   {
@@ -45,16 +47,19 @@ const menu = [
   },
 ];
 
-const Header = ({ user }: { user: TUser | undefined }) => {
+const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { clearProfile, setProfile, profile } = useAppStore();
   const [openMenu, setOpenMenu] = useState(false);
 
+  const { data: user, mutate } = useSWR<TUser>("get-user", fetchUserProfile);
+
   async function signOut() {
     const client = createClient();
     const { error } = await client.auth.signOut({ scope: "local" });
     if (!error) {
+      await mutate();
       clearProfile();
       router.refresh();
     }
