@@ -1,23 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useQueryParams } from "@/hooks/useQueryParam";
+import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
-import { jlptLevels, readingTypes } from "@/modules/reading/const";
+import { TabVal } from "@/modules/reading/const";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
-import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
+import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
-import useSWR from "swr";
-import { Sheet, SheetTitle, SheetContent } from "@/components/ui/sheet";
+import { useAppStore } from "@/store/useAppStore";
 import { useReadingStore } from "@/store/useReadingStore";
+import { useRef } from "react";
+import useSWR from "swr";
 
 export function ReadingList() {
   const { sheetOpen, setSheetOpen } = useReadingStore();
@@ -39,103 +32,96 @@ export function ReadingList() {
 }
 
 function InnerReadingList() {
-  const { hasRead, setHasRead } = useReadingStore();
-  const [readingParams, setReadingParams] = useQueryParams({
-    jlptLevel: "N1",
-    readingType: 1,
-  });
-
-  const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    `/v1/readings?${stringifyParams(readingParams)}`,
-    getRequest
-  );
-
-  const filteredReadingList = readingList.filter((reading) => {
-    return hasRead === reading.isRead;
-  });
+  const [tab, setTab] = useQueryParam("tab", TabVal.BaseDict);
 
   return (
     <div className=" mb-2">
       <JLPTReadingDescModal />
-
-      <Card className="w-full md:w-[280px] lg:w-[320px] rounded-2xl">
-        <CardContent className="py-4">
-          <div className="space-y-4 mb-4">
-            <div className="flex items-center justify-start">
-              <p className="basis-[80px] shrink-0">Cấp</p>
-              <Select
-                value={readingParams.jlptLevel}
-                onValueChange={(value) =>
-                  setReadingParams({ jlptLevel: value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a level" />
-                </SelectTrigger>
-                <SelectContent>
-                  {jlptLevels.map((level) => (
-                    <SelectItem key={level.value} value={level.value}>
-                      {level.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center justify-start">
-              <p className="basis-[80px] shrink-0">Dạng bài</p>
-              <Select
-                value={readingParams.readingType.toString()}
-                onValueChange={(value) =>
-                  setReadingParams({ readingType: +value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a fruit" />
-                </SelectTrigger>
-                <SelectContent>
-                  {readingTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value.toString()}>
-                      {type.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center justify-start">
-              <p className="basis-[80px] shrink-0">Đã đọc</p>{" "}
-              <Switch
-                onCheckedChange={(value) => setHasRead(value)}
-                checked={hasRead}
-                id="isRead"
-              />
-            </div>
-          </div>
-
-          <div className="w-full h-px bg-muted-foreground"></div>
-
-          <div className="mt-1">
-            {isLoading
-              ? "Đang tải các bài đọc..."
-              : readingList.length === 0
-              ? "Không có bài đọc nào"
-              : null}
-          </div>
-
-          {/* TODO: click on item to scroll top  */}
-          <div className="mt-1 max-h-[515px] overflow-auto space-y-1">
-            {filteredReadingList.map((reading) => (
-              <ReadingItem key={reading.id} {...reading} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* <Button
-        variant={"link"}
-        className="font-semibold block text-blue-500 mx-auto text-base"
-      >
-        Xem thêm
-      </Button> */}
+      <Tabs value={tab} onValueChange={(val) => setTab(val as TabVal)}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value={TabVal.BaseDict}>BaseDict</TabsTrigger>
+          <TabsTrigger value={TabVal.JLPT}>Đề JLPT</TabsTrigger>
+        </TabsList>
+        <TabsContent value={TabVal.BaseDict}>
+          <BaseDictReadingList />
+        </TabsContent>
+        <TabsContent value={TabVal.JLPT}>
+          <JPLTTestReadingList />
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+}
+
+function BaseDictReadingList() {
+  const hasSetInitialReading = useRef(false);
+  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
+  const { hasReadBaseDict, setReadingItemId } = useReadingStore();
+  const [readingParams] = useQueryParams({
+    jlptLevel,
+    readingType: 1,
+  });
+
+  const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
+    `/v1/readings?${stringifyParams(readingParams)}&isJlpt=false`,
+    getRequest,
+    {
+      onSuccess(data) {
+        if (data[0] && !hasSetInitialReading.current) {
+          setReadingItemId(data[0].id);
+          hasSetInitialReading.current = true;
+        }
+      },
+    }
+  );
+
+  const filteredReadingList = readingList.filter((reading) => {
+    return hasReadBaseDict === reading.isRead;
+  });
+
+  return (
+    <ReadingListContent
+      readingList={filteredReadingList}
+      isLoading={isLoading}
+      tab={TabVal.BaseDict}
+    />
+  );
+}
+
+function JPLTTestReadingList() {
+  const hasSetInitialReading = useRef(false);
+  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
+  const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
+  const [readingParams] = useQueryParams({
+    jlptTestLevel: jlptLevel,
+    examCode: "1",
+  });
+
+  const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
+    `/v1/readings?${stringifyParams({
+      ...readingParams,
+      jlptLevel: readingParams.jlptTestLevel,
+    })}&isJlpt=true`,
+    getRequest,
+    {
+      onSuccess(data) {
+        if (data[0] && !hasSetInitialReading.current) {
+          setReadingItemId(data[0].id);
+          hasSetInitialReading.current = true;
+        }
+      },
+    }
+  );
+
+  const filteredReadingList = readingList.filter((reading) => {
+    return hasReadJLPTTest === reading.isRead;
+  });
+
+  return (
+    <ReadingListContent
+      readingList={filteredReadingList}
+      isLoading={isLoading}
+      tab={TabVal.JLPT}
+    />
   );
 }

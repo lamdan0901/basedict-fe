@@ -7,7 +7,6 @@ import { immer } from "zustand/middleware/immer";
 interface IHistoryState {
   historyItems: THistoryItem[];
   addHistoryItem: (item: THistoryItem) => void;
-  // removeHistoryItem: (uid: string) => void;
   clearHistory: () => void;
 }
 
@@ -23,13 +22,6 @@ export const useHistoryStore = create<IHistoryState>()(
           state.historyItems.unshift(item);
         });
       },
-      // removeHistoryItem: (uid) => {
-      //   set((state) => {
-      //     state.historyItems = state.historyItems.filter(
-      //       (item) => item.uid !== uid
-      //     );
-      //   });
-      // },
       clearHistory: () => set({ historyItems: [] }),
     })),
     {

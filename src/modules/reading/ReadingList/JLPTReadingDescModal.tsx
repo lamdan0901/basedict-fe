@@ -16,7 +16,7 @@ export function JLPTReadingDescModal() {
       <Button
         onClick={() => setJLPTModalOpen(true)}
         variant={"link"}
-        className="mb-3 underline p-0 ml-6 pt-4"
+        className="mb-3 underline p-0 ml-1 pt-4"
       >
         Các dạng bài đọc JLPT <CircleHelp className="size-4 ml-2" />
       </Button>

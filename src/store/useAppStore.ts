@@ -8,16 +8,10 @@ interface AppState {
   clearProfile: () => void;
 }
 
-const initialState: AppState = {
-  profile: null,
-  setProfile: () => {},
-  clearProfile: () => {},
-};
-
 export const useAppStore = create<AppState>()(
   persist(
     immer((set) => ({
-      ...initialState,
+      profile: null,
       setProfile: (profile: TUser) => {
         set((state) => {
           state.profile = profile;

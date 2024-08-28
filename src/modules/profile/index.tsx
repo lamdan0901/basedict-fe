@@ -5,7 +5,7 @@ import { DEFAULT_AVATAR_URL } from "@/constants";
 import { getRequest, postRequest } from "@/service/data";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,7 +48,7 @@ export function Profile() {
   });
   const {
     data: user,
-    mutate,
+    mutate: mutateUser,
     isLoading,
   } = useSWR<TUser>("v1/users/profile", getRequest, {
     onSuccess: (data) => {
@@ -65,7 +65,10 @@ export function Profile() {
 
   async function submitForm(data: TUserForm) {
     await updateUser(data);
-    if (user) mutate({ ...user, ...data });
+    if (user) {
+      mutateUser({ ...user, ...data });
+      mutate("get-user", { ...user, ...data });
+    }
   }
 
   return (

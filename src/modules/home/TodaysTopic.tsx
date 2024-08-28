@@ -1,28 +1,26 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { getRequest } from "@/service/data";
+import { useAppStore } from "@/store/useAppStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import useSWRImmutable from "swr/immutable";
 
-// TODO: update based on user's level
-const userLevel = "N3";
-
 export function TodaysTopic() {
-  const { setText, setSelectedVocab, setWord } = useLexemeStore();
-  const setSearchParam = useUrlSearchParams();
+  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
+  const { setText, setVocabMeaningErrMsg, setSelectedVocab, setWord } =
+    useLexemeStore();
   const { data: todaysTopic, isLoading: loadingTodaysTopic } =
     useSWRImmutable<TReadingDetail>(
-      `/v1/readings/daily-reading?jlptLevel=${userLevel}`,
+      `/v1/readings/daily-reading?jlptLevel=${jlptLevel}`,
       getRequest
     );
 
   function handleWordClick(word: string) {
     setText(word);
-    setSearchParam({ search: word });
+    setWord(word);
+    setVocabMeaningErrMsg("");
     setSelectedVocab(null);
-    setWord("");
 
     const topEl = document.querySelector("#top");
     topEl?.scrollIntoView({ behavior: "smooth", block: "end" });

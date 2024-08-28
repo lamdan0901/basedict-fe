@@ -3,8 +3,10 @@ import { create } from "zustand";
 type TReadingStore = {
   selectedReadingItemId: number | null;
   setReadingItemId: (id: number | null) => void;
-  hasRead: boolean;
-  setHasRead: (hasRead: boolean) => void;
+  hasReadBaseDict: boolean;
+  setHasReadBaseDict: (hasReadBaseDict: boolean) => void;
+  hasReadJLPTTest: boolean;
+  setHasReadJLPTTest: (hasReadJLPTTest: boolean) => void;
   sheetOpen: boolean;
   setSheetOpen: (open: boolean) => void;
   jlptModalOpen: boolean;
@@ -14,8 +16,10 @@ type TReadingStore = {
 export const useReadingStore = create<TReadingStore>((set) => ({
   selectedReadingItemId: null,
   setReadingItemId: (id: number | null) => set({ selectedReadingItemId: id }),
-  hasRead: false,
-  setHasRead: (hasRead: boolean) => set({ hasRead }),
+  hasReadBaseDict: false,
+  setHasReadBaseDict: (hasReadBaseDict: boolean) => set({ hasReadBaseDict }),
+  hasReadJLPTTest: false,
+  setHasReadJLPTTest: (hasReadJLPTTest: boolean) => set({ hasReadJLPTTest }),
   sheetOpen: false,
   setSheetOpen: (open: boolean) => set({ sheetOpen: open }),
   jlptModalOpen: false,

@@ -1,9 +1,7 @@
-"use server";
-
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
 
-export async function fetchUserProfile() {
+export async function fetchUserProfile(): Promise<any> {
   const supabase = createClient();
   const {
     data: { session },

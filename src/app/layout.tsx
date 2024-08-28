@@ -22,6 +22,15 @@ export const metadata: Metadata = {
     "học tiếng Nhật N5",
     "từ điển tiếng Nhật online",
   ],
+  icons: [
+    {
+      url: "/favicon.ico",
+      sizes: "16x16",
+      type: "image/x-icon",
+    },
+  ],
+  applicationName: "Base Dict",
+  robots: "index, follow",
 };
 
 export default function RootLayout({
