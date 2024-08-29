@@ -16,17 +16,21 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 import { v4 as uuid } from "uuid";
 import { HistoryNFavorite } from "@/components/HistoryNFavorite";
 import { TodaysTopic } from "@/modules/home/TodaysTopic";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Home({
   _lexemeSearch,
 }: {
   _lexemeSearch: TLexeme | undefined;
 }) {
-  const lexemeRef = useRef<{ hideSuggestions: () => void }>(null);
   const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
     useLexemeStore();
   const { addHistoryItem } = useHistoryStore();
+  const lexemeRef = useRef<{ hideSuggestions: () => void }>(null);
+  const [initialLexemeSearch, setInitialLexemeSearch] = useState(_lexemeSearch);
+  const [initialLexemeText, setInitialLexemeText] = useState(
+    _lexemeSearch?.standard
+  );
 
   const isParagraphMode = text.length >= 20;
   const isVocabMode = !isParagraphMode && !text.startsWith(GRAMMAR_CHAR);
@@ -41,7 +45,6 @@ export function Home({
     word ? `/v1/lexemes/search/${trimAllSpaces(word)}` : null,
     getRequest,
     {
-      // fallbackData: _lexemeSearch,
       onError(errMsg) {
         setVocabMeaningErrMsg(
           MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
@@ -64,18 +67,36 @@ export function Home({
     error,
   } = useSWRMutation("/v1/paragraphs/translate", postRequest);
 
+  const effectiveLexemeSearch = lexemeSearch || initialLexemeSearch;
+
+  useEffect(() => {
+    if (lexemeSearch) {
+      setInitialLexemeSearch(undefined);
+    }
+  }, [lexemeSearch]);
+
   return (
     <>
       <div className="py-4 gap-4 sm:flex-row flex-col flex">
         <div className="w-full space-y-4">
           <LexemeSearch
             ref={lexemeRef}
+            initialText={initialLexemeText}
             translateParagraph={translateParagraph}
-            lexemeSearch={lexemeSearch}
+            onClearInitialText={() => {
+              setInitialLexemeText("");
+            }}
+            onInputClear={() => {
+              if (initialLexemeSearch) {
+                setInitialLexemeSearch(undefined);
+                setInitialLexemeText("");
+              }
+            }}
+            lexemeSearch={effectiveLexemeSearch}
           />
           <SimilarWords
             similars={
-              lexemeSearch?.similars ||
+              effectiveLexemeSearch?.similars ||
               selectedVocab?.similars ||
               selectedGrammar?.similars
             }
@@ -86,10 +107,12 @@ export function Home({
         </div>
         {isVocabMode && (
           <MeaningSection
-            lexemeSearch={lexemeSearch || selectedVocab}
+            lexemeSearch={effectiveLexemeSearch || selectedVocab}
             loadingLexemeSearch={loadingLexemeSearch}
             retryLexemeSearch={retryLexemeSearch}
-            wordIdToReport={lexemeSearch?.id || selectedVocab?.id || ""}
+            wordIdToReport={
+              effectiveLexemeSearch?.id || selectedVocab?.id || ""
+            }
           />
         )}
         {/* {isGrammarMode && <GrammarSection />} */}

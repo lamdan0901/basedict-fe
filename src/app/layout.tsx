@@ -30,7 +30,6 @@ export const metadata: Metadata = {
     },
   ],
   applicationName: "Base Dict",
-  robots: "index, follow",
 };
 
 export default function RootLayout({
