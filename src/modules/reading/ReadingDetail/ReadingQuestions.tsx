@@ -28,7 +28,7 @@ export function ReadingQuestions({
       {readingQuestions?.map((question, index) => (
         <div className="space-y-3 mb-4" key={index}>
           <div>
-            {index + 1}. {question.text}{" "}
+            {index + 1}. {question.question}{" "}
           </div>
           <RadioGroup
             key={`${index}-${resetKey}`}

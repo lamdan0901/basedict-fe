@@ -1,16 +1,24 @@
 type TJlptLevel = "N1" | "N2" | "N3" | "N4" | "N5";
 
+type TReadingType =
+  | "GrammarReading"
+  | "SumaryReading"
+  | "MediumReading"
+  | "LongReading"
+  | "CompareReading"
+  | "NoticeReading";
+
 type TReadingMaterial = {
   id: number;
   title: string;
   jlptLevel: TJlptLevel;
-  readingType: number;
+  readingType: TReadingType;
   isRead: boolean;
   createdAt: string;
 };
 
 type TReadingQuestion = {
-  text: string;
+  question: string;
   answers: string[];
   correctAnswer: string;
 };
@@ -21,4 +29,11 @@ type TReadingDetail = TReadingMaterial & {
   topic: string;
   lexemes: string[];
   readingQuestions: TReadingQuestion[];
+};
+
+type TTestPeriod = {
+  id: number;
+  jlptLevel: TJlptLevel;
+  source: string;
+  title: string;
 };

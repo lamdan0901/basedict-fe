@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
-import { readingTypes } from "@/modules/reading/const";
+import { ReadingType, readingTypeMap } from "@/modules/reading/const";
 import { ReadingQuestions } from "@/modules/reading/ReadingDetail/ReadingQuestions";
 import { getRequest, postRequest } from "@/service/data";
 import { useReadingStore } from "@/store/useReadingStore";
@@ -18,7 +18,7 @@ export function ReadingDetail() {
   const [showVietnamese, setShowVietnamese] = useState(false);
   const [readingParams] = useQueryParams({
     jlptLevel: "N1",
-    readingType: 1,
+    readingType: ReadingType.GrammarReading,
   });
   const popupRef = useRef<HTMLDivElement>(null);
   const [selection, setSelection] = useState("");
@@ -42,9 +42,7 @@ export function ReadingDetail() {
     postRequest
   );
 
-  const readingTypeTitle = readingTypes.find(
-    (type) => type.value === readingItem?.readingType
-  )?.title;
+  const readingTypeTitle = readingTypeMap[readingParams.readingType];
 
   async function handleMarkAsRead() {
     await markAsRead();

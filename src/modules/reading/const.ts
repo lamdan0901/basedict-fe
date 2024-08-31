@@ -21,32 +21,23 @@ export const jlptLevels: Record<string, TJlptLevel>[] = [
   },
 ];
 
-export const readingTypes = [
-  {
-    title: "Bài đọc ngắn",
-    value: 1,
-  },
-  {
-    title: "Bài đọc trung bình",
-    value: 2,
-  },
-  {
-    title: "Bài đọc dài",
-    value: 3,
-  },
-  {
-    title: "Bài đọc thực tế",
-    value: 4,
-  },
-  {
-    title: "Bài đọc suy luận",
-    value: 5,
-  },
-  {
-    title: "Bài đọc tóm tắt",
-    value: 6,
-  },
-];
+export enum ReadingType {
+  GrammarReading = "GrammarReading",
+  SumaryReading = "SumaryReading",
+  MediumReading = "MediumReading",
+  LongReading = "LongReading",
+  CompareReading = "CompareReading",
+  NoticeReading = "NoticeReading",
+}
+
+export const readingTypeMap: Record<ReadingType, string> = {
+  [ReadingType.GrammarReading]: "Bài đọc ngữ pháp",
+  [ReadingType.SumaryReading]: "Bài đọc ngắn",
+  [ReadingType.MediumReading]: "Bài đọc trung bình",
+  [ReadingType.LongReading]: "Bài đọc dài",
+  [ReadingType.CompareReading]: "Bài đọc so sánh",
+  [ReadingType.NoticeReading]: "Bài đọc bảng biểu",
+};
 
 export const jlptDescriptions = [
   {

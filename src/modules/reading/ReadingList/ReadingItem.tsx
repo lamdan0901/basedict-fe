@@ -1,5 +1,5 @@
 import { cn } from "@/lib";
-import { readingTypes } from "@/modules/reading/const";
+import { readingTypeMap } from "@/modules/reading/const";
 import { useReadingStore } from "@/store/useReadingStore";
 import { Check } from "lucide-react";
 
@@ -14,9 +14,7 @@ export function ReadingItem({
   const { selectedReadingItemId, setSheetOpen, setReadingItemId } =
     useReadingStore();
 
-  const readingTypeTitle = readingTypes.find(
-    (type) => type.value === readingType
-  )?.title;
+  const readingTypeTitle = readingTypeMap[readingType];
   const isActive = selectedReadingItemId === id;
   const isNewlyCreated =
     createdAt.slice(0, 10) === new Date().toISOString().slice(0, 10);
