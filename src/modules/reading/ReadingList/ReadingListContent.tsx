@@ -53,7 +53,7 @@ export function ReadingListContent({
     jlptLevel,
     jlptTestLevel: jlptLevel,
     readingType: ReadingType.GrammarReading,
-    examCode: "1",
+    examId: "1",
   });
 
   const isBaseDictTab = tab === TabVal.BaseDict;
@@ -114,8 +114,8 @@ export function ReadingListContent({
             ) : (
               <Select
                 disabled={isLoadingTestPeriods}
-                value={readingParams.examCode}
-                onValueChange={(value) => setReadingParams({ examCode: value })}
+                value={readingParams.examId}
+                onValueChange={(value) => setReadingParams({ examId: value })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="" />

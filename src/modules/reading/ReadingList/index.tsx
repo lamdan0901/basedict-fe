@@ -94,14 +94,14 @@ function JPLTTestReadingList() {
   const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
   const [readingParams, setReadingParams] = useQueryParams<{
     jlptTestLevel: TJlptLevel;
-    examCode: string | undefined;
+    examId: string | undefined;
   }>({
     jlptTestLevel: jlptLevel,
-    examCode: undefined,
+    examId: undefined,
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    readingParams.examCode
+    readingParams.examId
       ? `/v1/readings?${stringifyParams({
           ...readingParams,
           jlptLevel: readingParams.jlptTestLevel,
@@ -122,7 +122,7 @@ function JPLTTestReadingList() {
     TTestPeriod[]
   >(`v1/exams/jlpt?jlptLevel=${readingParams.jlptTestLevel}`, getRequest, {
     onSuccess(data) {
-      setReadingParams({ examCode: data[0].id.toString() });
+      setReadingParams({ examId: data[0].id.toString() });
     },
   });
 
