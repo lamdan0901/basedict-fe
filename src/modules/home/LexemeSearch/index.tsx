@@ -70,11 +70,15 @@ export const LexemeSearch = forwardRef<
     const setSearchParam = useUrlSearchParams();
     const searchParams = useSearchParams();
     const search = searchParams.get("search") ?? "";
+    console.log("search: ", search);
     const [readyToSearch, setReadyToSearch] = useState(false);
+    const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
 
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
     const isVocabMode =
-      !isParagraphMode && search && !search.startsWith(GRAMMAR_CHAR);
+      !isParagraphMode &&
+      lexemeSearchParam &&
+      !lexemeSearchParam.startsWith(GRAMMAR_CHAR);
     const isGrammarMode = false; // temporarily disabled feature
     // !isParagraphMode && search.length > 1 && search.startsWith(GRAMMAR_CHAR);
 
@@ -87,7 +91,7 @@ export const LexemeSearch = forwardRef<
     }>(
       isVocabMode && !initialText
         ? `/v1/lexemes?${stringifyParams({
-            search: trimAllSpaces(search),
+            search: trimAllSpaces(lexemeSearchParam),
             sort: "frequency_ranking",
             orderDirection: "asc",
             isMaster: true,
@@ -128,9 +132,11 @@ export const LexemeSearch = forwardRef<
 
       setText(value);
       setSearchParam({ search: value });
+      setLexemeSearchParam(value);
 
       if (value.trim().length === 0) {
         setSearchParam({ search: "" });
+        setLexemeSearchParam("");
         mutateLexemeVocab({ data: [] });
         setWord("");
         setSelectedGrammar(null);
@@ -144,7 +150,10 @@ export const LexemeSearch = forwardRef<
         handleSearchTextChange(value);
         return;
       }
-      if (search && isParagraphMode) setSearchParam({ search: "" });
+      if (search && isParagraphMode) {
+        setSearchParam({ search: "" });
+        setLexemeSearchParam("");
+      }
       setText(value);
     }
 
@@ -168,7 +177,8 @@ export const LexemeSearch = forwardRef<
       if (!(e.key === "Enter" && text)) return;
 
       // when user press Enter, we need to cancel the request to get vocab list
-      setSearchParam({ search: "" });
+      // setSearchParam({ search: "" });
+      setLexemeSearchParam("");
 
       if (isVocabMode) {
         setWord(text);
@@ -182,14 +192,17 @@ export const LexemeSearch = forwardRef<
 
     function handleVocabClick(lexeme: TLexeme) {
       setSelectedVocab(lexeme);
-      setSearchParam({ search: "" });
+      setSearchParam({ search: lexeme.standard });
+      setLexemeSearchParam("");
+      mutateLexemeVocab({ data: [] });
       setText(lexeme.standard);
       setWord(lexeme.lexeme);
     }
 
     function handleGrammarClick(grammar: TGrammar) {
       setSelectedGrammar(grammar);
-      setSearchParam({ search: "" });
+      setSearchParam({ search: grammar });
+      setLexemeSearchParam("");
       setText(grammar.grammar);
       addHistoryItem({
         ...grammar,
@@ -202,6 +215,7 @@ export const LexemeSearch = forwardRef<
     useEffect(() => {
       if (readyToSearch) {
         setSearchParam({ search: text });
+        setLexemeSearchParam(text);
         setReadyToSearch(false);
       }
     }, [setSearchParam, text, readyToSearch]);
@@ -216,6 +230,7 @@ export const LexemeSearch = forwardRef<
     useEffect(() => {
       if (isParagraphMode) {
         setSearchParam({ search: "" });
+        setLexemeSearchParam("");
         setWord("");
         setSelectedGrammar(null);
         setSelectedVocab(null);
@@ -231,7 +246,7 @@ export const LexemeSearch = forwardRef<
     useImperativeHandle(ref, () => ({
       hideSuggestions: () => {
         if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
-        if (search) setSearchParam({ search: "" });
+        if (lexemeSearchParam) setLexemeSearchParam("");
       },
     }));
 
@@ -342,6 +357,7 @@ export const LexemeSearch = forwardRef<
                     </Button>
                   );
                 })}
+
             {isGrammarMode &&
               !loadingLexemeGrammar &&
               lexemeGrammars.length === 0 && (
