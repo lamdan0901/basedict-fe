@@ -1,26 +1,3 @@
-export const jlptLevels: Record<string, TJlptLevel>[] = [
-  {
-    title: "N1",
-    value: "N1",
-  },
-  {
-    title: "N2",
-    value: "N2",
-  },
-  {
-    title: "N3",
-    value: "N3",
-  },
-  {
-    title: "N4",
-    value: "N4",
-  },
-  {
-    title: "N5",
-    value: "N5",
-  },
-];
-
 export enum ReadingType {
   GrammarReading = "GrammarReading",
   SumaryReading = "SumaryReading",

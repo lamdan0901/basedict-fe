@@ -2,10 +2,6 @@ import { ResolvingMetadata } from "next";
 import { Home } from "@/modules/home";
 import { cache } from "react";
 
-type Props = {
-  searchParams: { [key: string]: string | undefined };
-};
-
 const fetchLexemeSearch = cache(
   async (search?: string): Promise<TLexeme | undefined> => {
     if (!search) return;
@@ -25,7 +21,7 @@ const fetchLexemeSearch = cache(
 );
 
 export async function generateMetadata(
-  { searchParams }: Props,
+  { searchParams }: TComponentProps,
   parent: ResolvingMetadata
 ) {
   const { search } = searchParams;
@@ -47,7 +43,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function HomePage({ searchParams }: Props) {
+export default async function HomePage({ searchParams }: TComponentProps) {
   const { search } = searchParams;
   const lexemeSearch = await fetchLexemeSearch(search);
 
