@@ -92,7 +92,7 @@ function JPLTTestReadingList() {
   const hasSetInitialReading = useRef(false);
   const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
   const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
-  const [readingParams, setReadingParams] = useQueryParams<{
+  const [{ jlptTestLevel, examId }, setReadingParams] = useQueryParams<{
     jlptTestLevel: TJlptLevel;
     examId: string | undefined;
   }>({
@@ -101,10 +101,10 @@ function JPLTTestReadingList() {
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    readingParams.examId
+    examId
       ? `/v1/readings?${stringifyParams({
-          ...readingParams,
-          jlptLevel: readingParams.jlptTestLevel,
+          examId,
+          jlptLevel: jlptTestLevel,
         })}&source=JLPT`
       : null,
     getRequest,
@@ -120,9 +120,10 @@ function JPLTTestReadingList() {
 
   const { data: testPeriods = [], isLoading: isLoadingTestPeriods } = useSWR<
     TTestPeriod[]
-  >(`v1/exams/jlpt?jlptLevel=${readingParams.jlptTestLevel}`, getRequest, {
+  >(`v1/exams/jlpt?jlptLevel=${jlptTestLevel}`, getRequest, {
     onSuccess(data) {
-      setReadingParams({ examId: data[0].id.toString() });
+      if (!examId && data.length)
+        setReadingParams({ examId: data[0].id.toString() });
     },
   });
 

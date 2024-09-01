@@ -70,12 +70,13 @@ export function ReadingListContent({
                   ? readingParams.jlptLevel
                   : readingParams.jlptTestLevel
               }
-              onValueChange={(value) =>
+              onValueChange={(value) => {
                 setReadingParams({
                   [isBaseDictTab ? "jlptLevel" : "jlptTestLevel"]:
                     value as TJlptLevel,
-                })
-              }
+                  ...(!isBaseDictTab && { examId: undefined }),
+                });
+              }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="" />
@@ -118,7 +119,7 @@ export function ReadingListContent({
                 onValueChange={(value) => setReadingParams({ examId: value })}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="" />
+                  <SelectValue placeholder="Chọn đề thi" />
                 </SelectTrigger>
                 <SelectContent>
                   {testPeriods.map((p) => (
