@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -11,9 +10,9 @@ import { Switch } from "@/components/ui/switch";
 import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import {
   jlptLevels,
-  readingTypes,
+  ReadingType,
+  readingTypeMap,
   TabVal,
-  testPeriods,
 } from "@/modules/reading/const";
 import { useQueryParams } from "@/hooks/useQueryParam";
 import { useAppStore } from "@/store/useAppStore";
@@ -23,9 +22,26 @@ type Props = {
   readingList: TReadingMaterial[];
   isLoading: boolean;
   tab: TabVal;
-};
+} & (
+  | {
+      tab: TabVal.BaseDict;
+      testPeriods?: undefined;
+      isLoadingTestPeriods?: undefined;
+    }
+  | {
+      tab: TabVal.JLPT;
+      testPeriods: TTestPeriod[];
+      isLoadingTestPeriods?: boolean;
+    }
+);
 
-export function ReadingListContent({ readingList, isLoading, tab }: Props) {
+export function ReadingListContent({
+  readingList,
+  isLoading,
+  isLoadingTestPeriods,
+  testPeriods,
+  tab,
+}: Props) {
   const {
     hasReadBaseDict,
     setHasReadBaseDict,
@@ -36,8 +52,8 @@ export function ReadingListContent({ readingList, isLoading, tab }: Props) {
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
     jlptTestLevel: jlptLevel,
-    readingType: 1,
-    examCode: "1",
+    readingType: ReadingType.GrammarReading,
+    examId: "1",
   });
 
   const isBaseDictTab = tab === TabVal.BaseDict;
@@ -54,12 +70,13 @@ export function ReadingListContent({ readingList, isLoading, tab }: Props) {
                   ? readingParams.jlptLevel
                   : readingParams.jlptTestLevel
               }
-              onValueChange={(value) =>
+              onValueChange={(value) => {
                 setReadingParams({
                   [isBaseDictTab ? "jlptLevel" : "jlptTestLevel"]:
                     value as TJlptLevel,
-                })
-              }
+                  ...(!isBaseDictTab && { examId: undefined }),
+                });
+              }}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="" />
@@ -81,31 +98,32 @@ export function ReadingListContent({ readingList, isLoading, tab }: Props) {
               <Select
                 value={readingParams.readingType.toString()}
                 onValueChange={(value) =>
-                  setReadingParams({ readingType: +value })
+                  setReadingParams({ readingType: value as ReadingType })
                 }
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="" />
                 </SelectTrigger>
                 <SelectContent>
-                  {readingTypes.map((type) => (
-                    <SelectItem key={type.value} value={type.value.toString()}>
-                      {type.title}
+                  {Object.entries(readingTypeMap).map(([type, title]) => (
+                    <SelectItem key={type} value={type}>
+                      {title}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             ) : (
               <Select
-                value={readingParams.examCode}
-                onValueChange={(value) => setReadingParams({ examCode: value })}
+                disabled={isLoadingTestPeriods}
+                value={readingParams.examId}
+                onValueChange={(value) => setReadingParams({ examId: value })}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="" />
+                  <SelectValue placeholder="Chọn đề thi" />
                 </SelectTrigger>
-                <SelectContent className="w-[100px]">
+                <SelectContent>
                   {testPeriods.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
+                    <SelectItem key={p.id} value={p.id.toString()}>
                       {p.title}
                     </SelectItem>
                   ))}

@@ -23,16 +23,16 @@ export function SimilarWords({
   if (!similars?.length) return null;
 
   function handleWordClick(word: string) {
+    setSearchParam({ search: word });
     setText(word);
+    onWordClick();
 
     if (!text.startsWith(GRAMMAR_CHAR)) {
       setWord(word);
       setVocabMeaningErrMsg("");
       setSelectedVocab(null);
-      onWordClick();
     } else {
       setSelectedGrammar(null);
-      setSearchParam({ search: word });
     }
   }
 

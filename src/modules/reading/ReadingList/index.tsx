@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
-import { TabVal } from "@/modules/reading/const";
+import { ReadingType, TabVal } from "@/modules/reading/const";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
@@ -59,11 +59,11 @@ function BaseDictReadingList() {
   const { hasReadBaseDict, setReadingItemId } = useReadingStore();
   const [readingParams] = useQueryParams({
     jlptLevel,
-    readingType: 1,
+    readingType: ReadingType.GrammarReading,
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    `/v1/readings?${stringifyParams(readingParams)}&isJlpt=false`,
+    `/v1/readings?${stringifyParams(readingParams)}&source=BaseDict`,
     getRequest,
     {
       onSuccess(data) {
@@ -92,16 +92,21 @@ function JPLTTestReadingList() {
   const hasSetInitialReading = useRef(false);
   const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
   const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
-  const [readingParams] = useQueryParams({
+  const [{ jlptTestLevel, examId }, setReadingParams] = useQueryParams<{
+    jlptTestLevel: TJlptLevel;
+    examId: string | undefined;
+  }>({
     jlptTestLevel: jlptLevel,
-    examCode: "1",
+    examId: undefined,
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    `/v1/readings?${stringifyParams({
-      ...readingParams,
-      jlptLevel: readingParams.jlptTestLevel,
-    })}&isJlpt=true`,
+    examId
+      ? `/v1/readings?${stringifyParams({
+          examId,
+          jlptLevel: jlptTestLevel,
+        })}&source=JLPT`
+      : null,
     getRequest,
     {
       onSuccess(data) {
@@ -113,6 +118,15 @@ function JPLTTestReadingList() {
     }
   );
 
+  const { data: testPeriods = [], isLoading: isLoadingTestPeriods } = useSWR<
+    TTestPeriod[]
+  >(`v1/exams/jlpt?jlptLevel=${jlptTestLevel}`, getRequest, {
+    onSuccess(data) {
+      if (!examId && data.length)
+        setReadingParams({ examId: data[0].id.toString() });
+    },
+  });
+
   const filteredReadingList = readingList.filter((reading) => {
     return hasReadJLPTTest === reading.isRead;
   });
@@ -121,6 +135,8 @@ function JPLTTestReadingList() {
     <ReadingListContent
       readingList={filteredReadingList}
       isLoading={isLoading}
+      isLoadingTestPeriods={isLoadingTestPeriods}
+      testPeriods={testPeriods}
       tab={TabVal.JLPT}
     />
   );
