@@ -4,7 +4,7 @@ import { LevelSelector } from "@/modules/quizzes/basedict-test/LevelSelector";
 export function QuizBasedictTest() {
   return (
     <Card>
-      <CardContent className="space-y-6 mt-4">
+      <CardContent className="space-y-8 max-w-3xl mx-auto pb-12 mt-4">
         <h2 className="font-semibold text-2xl mx-auto w-fit">
           Luyện thi Basedict
         </h2>

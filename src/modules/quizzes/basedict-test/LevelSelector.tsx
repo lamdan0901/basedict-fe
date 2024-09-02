@@ -33,7 +33,7 @@ export function LevelSelector() {
               />
               <Label className={"cursor-pointer"} htmlFor={value}>
                 <Badge
-                  className="w-20 h-8 text-base justify-center"
+                  className="w-24 h-9 text-base justify-center"
                   variant={isSelected ? "default" : "outline"}
                 >
                   {value}
@@ -45,7 +45,7 @@ export function LevelSelector() {
       </RadioGroup>
       <Button
         onClick={() => router.push(`/quizzes/basedict-test/${selectedLevel}`)}
-        className="w-fit block mx-auto mt-4"
+        className="w-fit block mx-auto mt-8 text-base"
         variant={"secondary"}
       >
         Vào làm bài

@@ -13,7 +13,7 @@ export function JlptTestModule({ title = "", data }: Props) {
       <CardContent>
         <h2
           dangerouslySetInnerHTML={{ __html: title }}
-          className="font-semibold text-2xl mt-4 mx-auto w-fit"
+          className="font-semibold text-center text-2xl mt-4 mx-auto w-fit"
         ></h2>
         <div className="w-fit ml-auto">
           <JLPTTestDescModal />
