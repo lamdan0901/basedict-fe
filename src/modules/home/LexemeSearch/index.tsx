@@ -243,12 +243,16 @@ export const LexemeSearch = forwardRef<
       setWord,
     ]);
 
-    useImperativeHandle(ref, () => ({
-      hideSuggestions: () => {
-        if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
-        if (lexemeSearchParam) setLexemeSearchParam("");
-      },
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        hideSuggestions: () => {
+          if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
+          if (lexemeSearchParam) setLexemeSearchParam("");
+        },
+      }),
+      [isDisplayingSuggestions, lexemeSearchParam, mutateLexemeVocab]
+    );
 
     return (
       <Card id="top" className="rounded-2xl">

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { jlptLevels } from "@/modules/reading/const";
+import { jlptLevels } from "@/constants";
 import useSWRImmutable from "swr/immutable";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";

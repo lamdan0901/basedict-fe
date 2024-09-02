@@ -41,7 +41,7 @@ const menu = [
     title: "Ngữ pháp",
   },
   {
-    href: "/quizzes",
+    href: "/quizzes/general-info",
     icon: "/quiz.svg",
     title: "Luyện thi",
   },

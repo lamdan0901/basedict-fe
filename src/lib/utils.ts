@@ -29,3 +29,9 @@ export function getLocalStorageItem(key: string, initialValue: any) {
     return initialValue;
   }
 }
+
+export function formatSecToMinute(sec: number) {
+  const mins = Math.floor(sec / 60);
+  const secs = sec % 60 < 10 ? `0${sec % 60}` : sec % 60;
+  return `${mins}:${secs}`;
+}
