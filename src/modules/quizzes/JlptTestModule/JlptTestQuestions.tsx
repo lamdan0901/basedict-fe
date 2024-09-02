@@ -12,7 +12,7 @@ import { stateSwitcherVariant, TestState } from "@/modules/quizzes/const";
 import {
   StateSwitcher,
   TStateSwitcherRef,
-} from "@/modules/quizzes/jlpt-test/test-item/StateSwitcher";
+} from "@/modules/quizzes/JlptTestModule/StateSwitcher";
 import { useRef, useState } from "react";
 
 export function JlptTestQuestions({
@@ -147,7 +147,9 @@ export function JlptTestQuestions({
           <div className="w-fit mx-auto">
             <div>
               <span className="w-[140px] inline-block">Đề thi:</span>
-              <span className="font-semibold">{data?.title}</span>
+              <span className="font-semibold">
+                {data?.title ?? "Basedict Test"}
+              </span>
             </div>
             <div>
               <span className="w-[140px] inline-block">Cấp độ: </span>

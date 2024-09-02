@@ -1,5 +1,5 @@
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
-import { JLPTTestDescModal } from "@/modules/quizzes/jlpt-test/JLPTTestDescModal";
+import { JLPTTestDescModal } from "@/modules/quizzes/JLPTTestDescModal";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
