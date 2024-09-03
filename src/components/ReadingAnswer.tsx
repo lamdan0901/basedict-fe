@@ -1,6 +1,8 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { cn } from "@/lib";
+import { toast } from "@/components/ui/use-toast";
+import { TestState } from "@/modules/quizzes/const";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -10,6 +12,7 @@ interface ReadingAnswerProps {
   radioGroupKey: string;
   value: string | undefined;
   onValueChange?: (value: string) => void;
+  testState?: TestState;
 }
 
 export function ReadingAnswer({
@@ -17,6 +20,7 @@ export function ReadingAnswer({
   selectionDisabled,
   shouldShowAns,
   questionText,
+  testState,
   radioGroupKey,
   value,
   onValueChange,
@@ -53,8 +57,17 @@ export function ReadingAnswer({
               <RadioGroupItem
                 className="text-inherit"
                 value={answer}
-                disabled={selectionDisabled}
+                disabled={selectionDisabled && testState !== TestState.Ready}
                 id={answer}
+                onClick={(e) => {
+                  if (selectionDisabled && testState === TestState.Ready) {
+                    e.preventDefault();
+                    toast({
+                      title: 'Hãy chọn "Bắt đầu" để có thể làm bài thi',
+                      variant: "destructive",
+                    });
+                  }
+                }}
               />
               <Label
                 dangerouslySetInnerHTML={{

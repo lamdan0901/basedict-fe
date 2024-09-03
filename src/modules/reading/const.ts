@@ -1,4 +1,5 @@
 export enum ReadingType {
+  All = "all",
   GrammarReading = "GrammarReading",
   SumaryReading = "SumaryReading",
   MediumReading = "MediumReading",
@@ -8,6 +9,7 @@ export enum ReadingType {
 }
 
 export const readingTypeMap: Record<ReadingType, string> = {
+  [ReadingType.All]: "Tất cả",
   [ReadingType.GrammarReading]: "Bài đọc ngữ pháp",
   [ReadingType.SumaryReading]: "Bài đọc ngắn",
   [ReadingType.MediumReading]: "Bài đọc trung bình",

@@ -92,7 +92,7 @@ export function ReadingListContent({
             </p>
             {isBaseDictTab ? (
               <Select
-                value={readingParams.readingType.toString()}
+                value={readingParams.readingType}
                 onValueChange={(value) =>
                   setReadingParams({ readingType: value as ReadingType })
                 }

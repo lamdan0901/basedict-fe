@@ -42,7 +42,9 @@ export function ReadingDetail() {
     postRequest
   );
 
-  const readingTypeTitle = readingTypeMap[readingParams.readingType];
+  const readingTypeTitle = readingItem
+    ? readingTypeMap[readingItem.readingType]
+    : "";
 
   async function handleMarkAsRead() {
     await markAsRead();

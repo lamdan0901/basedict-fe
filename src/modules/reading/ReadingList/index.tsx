@@ -63,7 +63,14 @@ function BaseDictReadingList() {
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    `/v1/readings?${stringifyParams(readingParams)}&source=BaseDict`,
+    `/v1/readings?${stringifyParams({
+      source: "BaseDict",
+      jlptLevel: readingParams.jlptLevel,
+      readingType:
+        readingParams.readingType !== "all"
+          ? readingParams.readingType
+          : undefined,
+    })}`,
     getRequest,
     {
       onSuccess(data) {
@@ -103,9 +110,10 @@ function JPLTTestReadingList() {
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     examId
       ? `/v1/readings?${stringifyParams({
+          source: "JLPT",
           examId,
           jlptLevel: jlptTestLevel,
-        })}&source=JLPT`
+        })}`
       : null,
     getRequest,
     {

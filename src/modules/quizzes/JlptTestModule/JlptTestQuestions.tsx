@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { ReadingAnswer } from "@/components/ReadingAnswer";
 import {
   AlertDialog,
@@ -13,13 +14,14 @@ import {
   StateSwitcher,
   TStateSwitcherRef,
 } from "@/modules/quizzes/JlptTestModule/StateSwitcher";
-import { useRef, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export function JlptTestQuestions({
   data,
 }: {
   data: TJlptTestItem | undefined;
 }) {
+  const { toast } = useToast();
   const stateSwitcherRef = useRef<TStateSwitcherRef>(null);
   const [resetKey, setResetKey] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
@@ -73,6 +75,29 @@ export function JlptTestQuestions({
     }
   }
 
+  function handleAnswerChange(questionIndex: number, answer: string) {
+    if (selectionDisabled) return;
+
+    setUserAnswers((prevUserAnswers) => ({
+      ...prevUserAnswers,
+      [questionIndex]: answer,
+    }));
+  }
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (testState === TestState.Doing) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [testState]);
+
   return (
     <div>
       <div className="h-[calc(100vh-310px)] mb-2 overflow-auto">
@@ -87,12 +112,9 @@ export function JlptTestQuestions({
               question={question}
               value={userAnswers[index]}
               onValueChange={(ans) => {
-                if (selectionDisabled) return;
-                setUserAnswers({
-                  ...userAnswers,
-                  [index]: ans,
-                });
+                handleAnswerChange(index, ans);
               }}
+              testState={testState}
             />
           );
         })}
@@ -118,12 +140,9 @@ export function JlptTestQuestions({
                   question={question}
                   value={userAnswers[readingQuesIndex]}
                   onValueChange={(ans) => {
-                    if (selectionDisabled) return;
-                    setUserAnswers({
-                      ...userAnswers,
-                      [readingQuesIndex]: ans,
-                    });
+                    handleAnswerChange(readingQuesIndex, ans);
                   }}
+                  testState={testState}
                 />
               );
             })}
