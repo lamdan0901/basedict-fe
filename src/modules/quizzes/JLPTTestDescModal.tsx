@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/dialog";
 import { CircleHelp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { jlptDescriptions } from "@/modules/reading/const";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 
 export function JLPTTestDescModal() {
@@ -25,25 +24,47 @@ export function JLPTTestDescModal() {
           <DialogTitle>Các dạng đề thi JLPT</DialogTitle>
         </DialogHeader>
         <div className="">
-          Tùy thuộc vào cấp độ (N5 đến N1), các dạng đề thi có thể khác nhau về
-          độ khó, độ dài và nội dung. Dưới đây là các dạng đề thi phổ biến
-          thường gặp trong kỳ thi JLPT:
-          {jlptDescriptions.map((d) => (
-            <div key={d.title} className="mt-2">
-              <h3 className="font-bold">{d.title}</h3>
-              <ul>
-                <li className="">
-                  <b>・Độ dài:</b> {d.length}
-                </li>
-                <li className="">
-                  <b>・Mục đích:</b> {d.purpose}
-                </li>
-                <li className="">
-                  <b>・Cấp độ:</b> {d.level}
-                </li>
-              </ul>
-            </div>
-          ))}
+          <div>
+            Trang web luyện thi JLPT của chúng tôi cung cấp các bài thi mô phỏng
+            dựa trên cấu trúc thực tế của kỳ thi JLPT, được thiết kế đặc biệt để
+            giúp bạn chuẩn bị tốt nhất cho các cấp độ N1, N2, và N3. Dưới đây là
+            cấu trúc đề thi cho từng cấp độ:
+          </div>
+          <h2 className="text-lg font-semibold">Cấp độ N1:</h2>
+          <div>
+            ・Kanji to Hiragana: 6 câu hỏi.
+            <br /> Bạn sẽ chuyển đổi từ Kanji sang Hiragana, kiểm tra khả năng
+            nhận diện và hiểu ý nghĩa của Kanji.
+            <br />
+            ・Lexeme: 7 câu hỏi.
+            <br /> Kiểm tra sự hiểu biết về từ vựng, cách sử dụng từ trong ngữ
+            cảnh khác nhau.
+            <br /> ・Synonym: 6 câu hỏi.
+            <br /> Tìm từ đồng nghĩa, giúp bạn hiểu rõ hơn về sắc thái ý nghĩa
+            của từ.
+            <br /> ・Context Lexeme: 6 câu hỏi.
+            <br /> Tìm từ phù hợp nhất trong một ngữ cảnh cụ thể.
+            <br />
+            ・Grammar: 10 câu hỏi.
+            <br /> Kiểm tra kiến thức ngữ pháp, khả năng áp dụng vào câu.
+            <br /> ・Grammar Align: 5 câu hỏi.
+            <br /> Bạn sẽ sắp xếp các phần của câu sao cho đúng ngữ pháp và ý
+            nghĩa.
+            <br />
+          </div>
+          <h2 className="text-lg font-semibold">Cấp độ N2:</h2>
+          <div>
+            ・Kanji to Hiragana: 5 câu hỏi. <br />
+            ・Hiragana to Kanji: 5 câu hỏi. <br />
+            Kiểm tra khả năng viết Kanji từ Hiragana. <br />
+            ・Suffix Prefix: 3 câu hỏi. <br />
+            Xác định tiền tố/hậu tố phù hợp với từ vựng. <br />
+            ・Lexeme: 7 câu hỏi. <br />
+            ・Synonym: 5 câu hỏi. <br />
+            ・Context Lexeme: 5 câu hỏi. <br />
+            ・Grammar: 12 câu hỏi. <br />
+            ・Grammar Align: 5 câu hỏi. <br />
+          </div>
         </div>
       </DialogContent>
     </Dialog>
