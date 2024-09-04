@@ -70,10 +70,8 @@ export const LexemeSearch = forwardRef<
     const setSearchParam = useUrlSearchParams();
     const searchParams = useSearchParams();
     const search = searchParams.get("search") ?? "";
-    console.log("search: ", search);
     const [readyToSearch, setReadyToSearch] = useState(false);
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
-
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
     const isVocabMode =
       !isParagraphMode &&
@@ -135,8 +133,8 @@ export const LexemeSearch = forwardRef<
       setLexemeSearchParam(value);
 
       if (value.trim().length === 0) {
-        setSearchParam({ search: "" });
-        setLexemeSearchParam("");
+        // setSearchParam({ search: "" });
+        // setLexemeSearchParam("");
         mutateLexemeVocab({ data: [] });
         setWord("");
         setSelectedGrammar(null);

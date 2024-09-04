@@ -24,7 +24,7 @@ import { DEFAULT_AVATAR_URL } from "@/constants";
 import useSWR from "swr";
 import { fetchUserProfile } from "@/service/user";
 import { useToast } from "@/components/ui/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Check } from "lucide-react";
 
 const menu = [
   {
@@ -77,21 +77,21 @@ const Header = () => {
       setProfile(user);
       toast({
         title: "Đăng nhập thành công",
+        action: <Check className="h-5 w-5 text-green-500" />,
       });
     }
   }, [profile, setProfile, user, toast]);
 
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
-      {isLoading ? (
-        <Skeleton className="h-10 w-[100px]" />
-      ) : !user ? (
+      {!user && !isLoading && (
         <form action={login}>
           <Button type="submit" variant={"secondary"} className="text-lg">
             Đăng nhập
           </Button>
         </form>
-      ) : (
+      )}
+      {user && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -118,7 +118,6 @@ const Header = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button

@@ -3,6 +3,7 @@ import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { cn } from "@/lib";
 import { toast } from "@/components/ui/use-toast";
 import { TestState } from "@/modules/quizzes/const";
+import { Check } from "lucide-react";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;

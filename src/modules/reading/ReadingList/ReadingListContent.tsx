@@ -48,7 +48,7 @@ export function ReadingListContent({
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
     jlptTestLevel: jlptLevel,
-    readingType: ReadingType.GrammarReading,
+    readingType: ReadingType.All,
     examId: "1",
   });
 

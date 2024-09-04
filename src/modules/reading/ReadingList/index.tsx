@@ -59,7 +59,7 @@ function BaseDictReadingList() {
   const { hasReadBaseDict, setReadingItemId } = useReadingStore();
   const [readingParams] = useQueryParams({
     jlptLevel,
-    readingType: ReadingType.GrammarReading,
+    readingType: ReadingType.All,
   });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(

@@ -18,7 +18,7 @@ export function Toaster() {
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast
-            className="bottom-0 right-0 flex fixed md:max-w-[420px] md:bottom-4 md:right-4"
+            className="bottom-0 left-0 flex fixed md:max-w-[420px] md:bottom-4 md:left-4"
             key={id}
             {...props}
           >

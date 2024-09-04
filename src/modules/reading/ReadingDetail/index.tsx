@@ -18,7 +18,7 @@ export function ReadingDetail() {
   const [showVietnamese, setShowVietnamese] = useState(false);
   const [readingParams] = useQueryParams({
     jlptLevel: "N1",
-    readingType: ReadingType.GrammarReading,
+    readingType: ReadingType.All,
   });
   const popupRef = useRef<HTMLDivElement>(null);
   const [selection, setSelection] = useState("");
