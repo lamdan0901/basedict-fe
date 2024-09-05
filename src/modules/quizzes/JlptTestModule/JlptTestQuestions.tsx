@@ -14,19 +14,28 @@ import {
   StateSwitcher,
   TStateSwitcherRef,
 } from "@/modules/quizzes/JlptTestModule/StateSwitcher";
-import { useToast } from "@/components/ui/use-toast";
+import useSWRMutation from "swr/mutation";
+import { postRequest } from "@/service/data";
 
 export function JlptTestQuestions({
   data,
+  isDailyTest,
 }: {
   data: TJlptTestItem | undefined;
+  isDailyTest?: boolean;
 }) {
-  const { toast } = useToast();
   const stateSwitcherRef = useRef<TStateSwitcherRef>(null);
   const [resetKey, setResetKey] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [alertOpen, setAlertOpen] = useState(false);
-  const [testState, setTestState] = useState(TestState.Ready);
+  const [testState, setTestState] = useState(
+    data?.isDone ? TestState.Done : TestState.Ready
+  );
+
+  const { trigger: submitAnswers } = useSWRMutation(
+    `/v1/exams/${data?.id}/exam-execute`,
+    postRequest
+  );
 
   const questions = data?.questions ?? [];
   const readings = data?.readings ?? [];
@@ -84,6 +93,14 @@ export function JlptTestQuestions({
     }));
   }
 
+  function handleSubmitAnswers() {
+    const answers = Array.from(
+      { length: questions.length + readings.length },
+      (_, i) => userAnswers[i] || ""
+    );
+    submitAnswers({ answers });
+  }
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (testState === TestState.Doing) {
@@ -106,7 +123,7 @@ export function JlptTestQuestions({
             <ReadingAnswer
               key={index}
               selectionDisabled={selectionDisabled}
-              shouldShowAns={shouldShowAns}
+              shouldShowAns={shouldShowAns && !isDailyTest}
               questionText={`${index + 1}. ${question.question}`}
               radioGroupKey={`${index}-${resetKey}`}
               question={question}
@@ -134,7 +151,7 @@ export function JlptTestQuestions({
                 <ReadingAnswer
                   key={j}
                   selectionDisabled={selectionDisabled}
-                  shouldShowAns={shouldShowAns}
+                  shouldShowAns={shouldShowAns && !isDailyTest}
                   questionText={`${readingQuesIndex + 1}. ${question.question}`}
                   radioGroupKey={`${readingQuesIndex}-${resetKey}`}
                   question={question}
@@ -156,9 +173,10 @@ export function JlptTestQuestions({
         variant={stateSwitcherVariant[testState]}
         switchTestState={switchTestState}
         showAlert={() => setAlertOpen(true)}
+        isDailyTest={isDailyTest}
       />
 
-      {shouldShowAns && (
+      {shouldShowAns && !isDailyTest && (
         <div className="border mt-3 w-full max-w-[400px] mx-auto border-muted-foreground p-2">
           <h2 className="font-semibold mx-auto mb-4 w-fit text-lg">
             Kết quả làm đề thi
@@ -191,21 +209,22 @@ export function JlptTestQuestions({
       )}
 
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent aria-describedby="end-test">
           <AlertDialogHeader>
             <AlertDialogTitle>
               Bạn có muốn kết thúc bài thi ở đây không?
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setTestState(TestState.Done);
+                if (isDailyTest) handleSubmitAnswers();
               }}
             >
               Đồng ý
             </AlertDialogAction>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

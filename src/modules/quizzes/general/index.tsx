@@ -7,31 +7,65 @@ import { WeekdayCarousel } from "@/modules/quizzes/general/WeekdayCarousel";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
+import dayjs from "dayjs";
+import { MAX_POINT } from "@/modules/quizzes/const";
 
 export function QuizGeneralInfo() {
-  const profile = useAppStore((state) => state.profile);
-  const [currentSeason, setCurrentSeason] = useState("");
+  const { profile, setSeasonRank } = useAppStore();
+  const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
 
   // TODO: find a way to cache this data, refetch on every new day
   const { data: seasonList, isLoading: loadingSeasonList } = useSWR<TSeason[]>(
-    "/v1/exams/season-list",
+    profile ? "/v1/exams/season-list" : null,
     getRequest,
     {
       onSuccess(data) {
-        //TODO: từ ngày hiện tại tính ra season hiện tại dựa theo startDate vào endDate của season
         if (data.length > 0) {
-          setCurrentSeason(data[0].name);
+          const currentDate = new Date().getTime();
+          const currentSeason = data.find((season) => {
+            return (
+              currentDate >= new Date(season.startDate).getTime() &&
+              currentDate <= new Date(season.endDate).getTime()
+            );
+          });
+          setCurrentSeason(currentSeason);
         }
       },
     }
   );
   const { data: seasonProfile, isLoading: loadingSeasonProfile } =
     useSWR<TSeasonProfile>(
-      currentSeason ? `/v1/exams/profile?season=${currentSeason}` : null,
-      getRequest
+      currentSeason ? `/v1/exams/profile?season=${currentSeason.name}` : null,
+      getRequest,
+      {
+        onSuccess(data) {
+          setSeasonRank(data.rank);
+        },
+      }
     );
+  const { data: seasonHistory = [], isLoading: loadingSeasonHistory } = useSWR<
+    TExamResult[]
+  >(
+    currentSeason
+      ? `/v1/exams/season-history?season=${currentSeason.name}`
+      : null,
+    getRequest
+  );
+  const examHistory = useMemo(
+    () =>
+      seasonHistory.map((ex) => ({
+        ...ex,
+        createdAt: dayjs(ex.createdAt).format("DD/MM/YYYY"),
+      })),
+    [seasonHistory]
+  );
+
+  const passedDays = useMemo(
+    () => dayjs(new Date()).diff(dayjs(currentSeason?.startDate), "day"),
+    [currentSeason?.startDate]
+  );
 
   if (!profile)
     return (
@@ -68,7 +102,21 @@ export function QuizGeneralInfo() {
             </div>
           </div>
 
-          <WeekdayCarousel />
+          <p className="text-gray-800 my-3 text-sm">
+            {currentSeason?.name}:{" "}
+            {new Date(currentSeason?.startDate ?? "").toLocaleDateString()} ~{" "}
+            {new Date(currentSeason?.endDate ?? "").toLocaleDateString()}
+          </p>
+
+          <WeekdayCarousel
+            rankPoint={seasonProfile?.rankPoint}
+            currentSeason={currentSeason}
+            seasonHistory={seasonHistory}
+          />
+
+          <p className="text-gray-800 w-fit mx-auto my-3 text-sm">
+            Bạn đã hoàn thành {seasonHistory?.length}/{passedDays} bài thi daily
+          </p>
 
           <div className="w-fit mx-auto mt-12">
             <p className="text-xl text-center mb-1 font-semibold">
@@ -77,7 +125,7 @@ export function QuizGeneralInfo() {
             <div className="rounded-full text-white border-gray-700 border-[3px] flex flex-col items-center justify-center gap-2 bg-destructive size-40">
               <div className="text-xl">Điểm tích luỹ</div>
               <div className="text-2xl font-semibold">
-                {seasonProfile?.rankPoint}/180
+                {seasonProfile?.rankPoint}/{MAX_POINT}
               </div>
             </div>
           </div>

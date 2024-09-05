@@ -9,6 +9,7 @@ type TJlptTestItem = {
   jlptLevel: TJlptLevel;
   questions: TReadingQuestion[];
   readings: TTestReading[];
+  isDone?: boolean;
 };
 
 type TSeason = {
@@ -24,4 +25,18 @@ type TSeasonProfile = {
   badge: string[];
   rankPoint: number;
   season: TSeason["name"];
+};
+
+type TExamResult = {
+  id: number;
+  userId: string;
+  examId: number;
+  score: number;
+  goiScore: number;
+  grammarScore: number;
+  readingScore: number;
+  answers: string[];
+  isUpRank: boolean;
+  rankPoint: number;
+  createdAt: string;
 };
