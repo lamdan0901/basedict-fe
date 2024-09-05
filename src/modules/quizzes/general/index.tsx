@@ -57,7 +57,7 @@ export function QuizGeneralInfo() {
     () =>
       seasonHistory.map((ex) => ({
         ...ex,
-        createdAt: dayjs(ex.createdAt).format("DD/MM/YYYY"),
+        createdAt: dayjs(ex.createdAt).format("YYYY-MM-DD"),
       })),
     [seasonHistory]
   );
@@ -67,12 +67,17 @@ export function QuizGeneralInfo() {
     [currentSeason?.startDate]
   );
 
+  const isLoading =
+    loadingSeasonList || loadingSeasonProfile || loadingSeasonHistory;
+
   if (!profile)
     return (
       <div className="text-xl text-destructive">
         Vui lòng đăng nhập để tiếp tục
       </div>
     );
+
+  if (isLoading) return <div>Đang tải thông tin chung...</div>;
 
   return (
     <Card>
@@ -111,7 +116,7 @@ export function QuizGeneralInfo() {
           <WeekdayCarousel
             rankPoint={seasonProfile?.rankPoint}
             currentSeason={currentSeason}
-            seasonHistory={seasonHistory}
+            seasonHistory={examHistory}
           />
 
           <p className="text-gray-800 w-fit mx-auto my-3 text-sm">

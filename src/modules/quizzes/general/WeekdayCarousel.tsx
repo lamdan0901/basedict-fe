@@ -20,41 +20,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { cn } from "@/lib";
 import { DAYS_PER_WEEK, MAX_POINT, weekdayMap } from "@/modules/quizzes/const";
-
-dayjs.extend(isSameOrBefore);
+import {
+  generateDateRange,
+  mergeDateRangeWithHistory,
+  TDateWithExamRes,
+} from "@/modules/quizzes/general/utils";
 
 type Props = {
   currentSeason: TSeason | undefined;
   seasonHistory: TExamResult[] | undefined;
   rankPoint: number | undefined;
-};
-
-type TWeekDay = keyof typeof weekdayMap;
-
-interface DateInfo {
-  date: string;
-  day: string;
-  weekday: TWeekDay;
-}
-
-const generateDateRange = (start: string): DateInfo[] => {
-  const dateArray: DateInfo[] = [];
-  let currentDate = dayjs(start);
-  const lastDayOfWeek = dayjs().endOf("week").add(1, "day"); // Sunday, not Saturday
-
-  while (currentDate.isSameOrBefore(lastDayOfWeek)) {
-    dateArray.push({
-      date: currentDate.format("YYYY-MM-DD"),
-      day: currentDate.format("DD/MM"),
-      weekday: currentDate.format("ddd") as TWeekDay,
-    });
-    currentDate = currentDate.add(1, "day");
-  }
-
-  return dateArray;
 };
 
 const today = new Date();
@@ -67,7 +44,7 @@ export function WeekdayCarousel({
 }: Props) {
   const router = useRouter();
   const [selectedDay, setSelectedDay] = useState<{
-    examResult: TExamResult;
+    examResult: TDateWithExamRes;
     day: string;
   } | null>(null);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
@@ -81,6 +58,10 @@ export function WeekdayCarousel({
         ? generateDateRange(currentSeason.startDate)
         : [],
     [currentSeason?.startDate]
+  );
+  const dateRangeWithExamRes = mergeDateRangeWithHistory(
+    dateRange,
+    seasonHistory
   );
 
   const todayIndex = useMemo(
@@ -100,20 +81,19 @@ export function WeekdayCarousel({
         className="w-full border-y-[1px] max-w-2xl"
       >
         <CarouselContent>
-          {dateRange.map((d, index) => {
+          {dateRangeWithExamRes.map((d, index) => {
             const isDayPassed = d.date < formattedToday;
             const isToday = d.date === formattedToday;
             const isSat = d.weekday === "Sat";
             const isSun = d.weekday === "Sun";
             const isSunOfThisWeek = isSun && d.date >= formattedToday;
-            const isDoneTest = false;
+            const isDoneTest = d.createdAt === formattedToday;
             return (
               <CarouselItem
                 key={index}
                 onClick={() => {
-                  // if (!isToday) return;
                   if (isDoneTest) {
-                    setSelectedDay({ day: d.date, examResult: {} });
+                    setSelectedDay({ day: d.date, examResult: d });
                     setHistoryDialogOpen(true);
                   }
                 }}

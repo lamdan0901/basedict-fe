@@ -6,19 +6,18 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
 
 type Props = {
   open: boolean;
   onOpenChange(open: boolean): void;
   rankPoint: number;
-  examResult?: TExamResult;
-  day?: string;
+  examResult?: TDateWithExamRes;
 };
 
 export function HistoryDialog({
   open,
   onOpenChange,
-  day,
   examResult,
   rankPoint,
 }: Props) {
@@ -27,7 +26,8 @@ export function HistoryDialog({
       <DialogContent aria-describedby="" className="max-w-sm">
         <DialogHeader className="border-b pb-2 border-muted-foreground">
           <DialogTitle>
-            Lịch sử thi {new Date(day ?? "").toLocaleDateString()}
+            Lịch sử thi{" "}
+            {new Date(examResult?.createdAt ?? "").toLocaleDateString()}
           </DialogTitle>
         </DialogHeader>
         <div className="w-fit space-y-3 mx-auto text-start">
