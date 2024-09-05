@@ -30,7 +30,7 @@ import {
 
 type Props = {
   currentSeason: TSeason | undefined;
-  seasonHistory: TExamResult[] | undefined;
+  seasonHistory: TSeasonHistory[] | undefined;
   rankPoint: number | undefined;
 };
 

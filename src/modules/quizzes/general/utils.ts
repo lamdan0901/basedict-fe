@@ -12,7 +12,7 @@ type TDateInfo = {
   weekday: TWeekDay;
 };
 
-export type TDateWithExamRes = TDateInfo & Partial<TExamResult>;
+export type TDateWithExamRes = TDateInfo & Partial<TSeasonHistory>;
 
 export const generateDateRange = (start: string): TDateInfo[] => {
   const dateArray: TDateInfo[] = [];
@@ -33,7 +33,7 @@ export const generateDateRange = (start: string): TDateInfo[] => {
 
 export function mergeDateRangeWithHistory(
   dateRange: TDateInfo[],
-  seasonHistory: TExamResult[]
+  seasonHistory: TSeasonHistory[]
 ): TDateWithExamRes[] {
   if (!dateRange.length || !seasonHistory.length) return [];
 

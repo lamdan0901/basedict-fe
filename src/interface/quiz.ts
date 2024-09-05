@@ -27,7 +27,7 @@ type TSeasonProfile = {
   season: TSeason["name"];
 };
 
-type TExamResult = {
+type TSeasonHistory = {
   id: number;
   userId: string;
   examId: number;

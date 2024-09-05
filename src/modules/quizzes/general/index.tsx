@@ -17,7 +17,7 @@ export function QuizGeneralInfo() {
   const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
 
   // TODO: find a way to cache this data, refetch on every new day
-  const { data: seasonList, isLoading: loadingSeasonList } = useSWR<TSeason[]>(
+  const { isLoading: loadingSeasonList } = useSWR<TSeason[]>(
     profile ? "/v1/exams/season-list" : null,
     getRequest,
     {
@@ -46,14 +46,14 @@ export function QuizGeneralInfo() {
       }
     );
   const { data: seasonHistory = [], isLoading: loadingSeasonHistory } = useSWR<
-    TExamResult[]
+    TSeasonHistory[]
   >(
     currentSeason
       ? `/v1/exams/season-history?season=${currentSeason.name}`
       : null,
     getRequest
   );
-  const examHistory = useMemo(
+  const formattedSeasonHistory = useMemo(
     () =>
       seasonHistory.map((ex) => ({
         ...ex,
@@ -116,7 +116,7 @@ export function QuizGeneralInfo() {
           <WeekdayCarousel
             rankPoint={seasonProfile?.rankPoint}
             currentSeason={currentSeason}
-            seasonHistory={examHistory}
+            seasonHistory={formattedSeasonHistory}
           />
 
           <p className="text-gray-800 w-fit mx-auto my-3 text-sm">
