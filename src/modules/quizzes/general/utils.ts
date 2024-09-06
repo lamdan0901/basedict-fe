@@ -35,8 +35,6 @@ export function mergeDateRangeWithHistory(
   dateRange: TDateInfo[],
   seasonHistory: TSeasonHistory[]
 ): TDateWithExamRes[] {
-  if (!dateRange.length || !seasonHistory.length) return [];
-
   const mergedData: TDateWithExamRes[] = [];
   let historyIndex = 0;
 

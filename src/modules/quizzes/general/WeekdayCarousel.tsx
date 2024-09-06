@@ -87,7 +87,7 @@ export function WeekdayCarousel({
             const isSat = d.weekday === "Sat";
             const isSun = d.weekday === "Sun";
             const isSunOfThisWeek = isSun && d.date >= formattedToday;
-            const isDoneTest = d.createdAt === formattedToday;
+            const isDoneTest = !!d.createdAt;
             return (
               <CarouselItem
                 key={index}
@@ -95,6 +95,8 @@ export function WeekdayCarousel({
                   if (isDoneTest) {
                     setSelectedDay({ day: d.date, examResult: d });
                     setHistoryDialogOpen(true);
+                  } else if (isToday) {
+                    setAlertOpen(true);
                   }
                 }}
                 className="sm:basis-1/4 basis-1/3 my-3  md:basis-1/5 lg:basis-[14.25%]"
