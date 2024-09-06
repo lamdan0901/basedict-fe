@@ -3,7 +3,6 @@ import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { cn } from "@/lib";
 import { toast } from "@/components/ui/use-toast";
 import { TestState } from "@/modules/quizzes/const";
-import { Check } from "lucide-react";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -14,6 +13,7 @@ interface ReadingAnswerProps {
   value: string | undefined;
   onValueChange?: (value: string) => void;
   testState?: TestState;
+  index: string;
 }
 
 export function ReadingAnswer({
@@ -24,6 +24,7 @@ export function ReadingAnswer({
   testState,
   radioGroupKey,
   value,
+  index,
   onValueChange,
 }: ReadingAnswerProps) {
   return (
@@ -41,11 +42,11 @@ export function ReadingAnswer({
         className="space-y-3 ml-4"
       >
         {question.answers.map((answer) => {
-          const isUserSelectedAns = value === answer;
+          const isUserSelectedAns = value === answer + index;
           const isCorrectAnswer = answer === question.correctAnswer;
           return (
             <div
-              key={answer}
+              key={answer + index}
               className={cn(
                 "flex items-center space-x-2",
                 shouldShowAns && isCorrectAnswer && "text-green-500",
@@ -57,9 +58,9 @@ export function ReadingAnswer({
             >
               <RadioGroupItem
                 className="text-inherit"
-                value={answer}
+                value={answer + index}
                 disabled={selectionDisabled && testState !== TestState.Ready}
-                id={answer}
+                id={answer + index}
                 onClick={(e) => {
                   if (selectionDisabled && testState === TestState.Ready) {
                     e.preventDefault();
@@ -75,7 +76,7 @@ export function ReadingAnswer({
                   __html: answer,
                 }}
                 className=" cursor-pointer"
-                htmlFor={answer}
+                htmlFor={answer + index}
               ></Label>
             </div>
           );

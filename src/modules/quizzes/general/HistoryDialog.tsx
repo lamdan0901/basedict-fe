@@ -12,7 +12,7 @@ type Props = {
   open: boolean;
   onOpenChange(open: boolean): void;
   rankPoint: number;
-  examResult?: TDateWithExamRes;
+  examResult: TDateWithExamRes | null;
 };
 
 export function HistoryDialog({

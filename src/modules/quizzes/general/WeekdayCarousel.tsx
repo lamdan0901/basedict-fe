@@ -43,10 +43,7 @@ export function WeekdayCarousel({
   rankPoint = 0,
 }: Props) {
   const router = useRouter();
-  const [selectedDay, setSelectedDay] = useState<{
-    examResult: TDateWithExamRes;
-    day: string;
-  } | null>(null);
+  const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
@@ -93,7 +90,7 @@ export function WeekdayCarousel({
                 key={index}
                 onClick={() => {
                   if (isDoneTest) {
-                    setSelectedDay({ day: d.date, examResult: d });
+                    setExamResult(d);
                     setHistoryDialogOpen(true);
                   } else if (isToday) {
                     setAlertOpen(true);
@@ -142,7 +139,7 @@ export function WeekdayCarousel({
           {/* <CarouselItem className="sm:basis-1/4 basis-1/3 my-3  md:basis-1/5 lg:basis-[14.25%]">
             <Card
               onClick={() => {
-                setSelectedDay(null);
+                setExamResult(null);
                 setHistoryDialogOpen(true);
               }}
               className="bg-lime-200 cursor-pointer"
@@ -215,7 +212,7 @@ export function WeekdayCarousel({
         open={historyDialogOpen}
         onOpenChange={setHistoryDialogOpen}
         rankPoint={rankPoint}
-        {...selectedDay}
+        examResult={examResult}
       />
 
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>

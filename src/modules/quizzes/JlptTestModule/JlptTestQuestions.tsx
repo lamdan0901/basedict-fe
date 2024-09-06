@@ -16,6 +16,8 @@ import {
 } from "@/modules/quizzes/JlptTestModule/StateSwitcher";
 import useSWRMutation from "swr/mutation";
 import { postRequest } from "@/service/data";
+import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
+import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
 
 export function JlptTestQuestions({
   data,
@@ -28,9 +30,11 @@ export function JlptTestQuestions({
   const [resetKey, setResetKey] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [alertOpen, setAlertOpen] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [testState, setTestState] = useState(
     data?.isDone ? TestState.Done : TestState.Ready
   );
+  const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
 
   const { trigger: submitAnswers } = useSWRMutation(
     `/v1/exams/${data?.id}/exam-execute`,
@@ -93,12 +97,14 @@ export function JlptTestQuestions({
     }));
   }
 
-  function handleSubmitAnswers() {
+  async function handleSubmitAnswers() {
     const answers = Array.from(
       { length: questions.length + readings.length },
-      (_, i) => userAnswers[i] || ""
+      (_, i) => userAnswers[i]?.split("|")?.[0] || ""
     );
-    submitAnswers({ answers });
+    const res = await submitAnswers({ answers });
+    setExamResult({ ...res, createdAt: new Date() });
+    setHistoryDialogOpen(true);
   }
 
   useEffect(() => {
@@ -128,6 +134,7 @@ export function JlptTestQuestions({
               radioGroupKey={`${index}-${resetKey}`}
               question={question}
               value={userAnswers[index]}
+              index={`|${index}`} // answers can be duplicated, so we need to add index to make it unique
               onValueChange={(ans) => {
                 handleAnswerChange(index, ans);
               }}
@@ -149,7 +156,7 @@ export function JlptTestQuestions({
 
               return (
                 <ReadingAnswer
-                  key={j}
+                  key={readingQuesIndex + j}
                   selectionDisabled={selectionDisabled}
                   shouldShowAns={shouldShowAns && !isDailyTest}
                   questionText={`${readingQuesIndex + 1}. ${question.question}`}
@@ -160,6 +167,7 @@ export function JlptTestQuestions({
                     handleAnswerChange(readingQuesIndex, ans);
                   }}
                   testState={testState}
+                  index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
                 />
               );
             })}
@@ -207,6 +215,13 @@ export function JlptTestQuestions({
           </div>
         </div>
       )}
+
+      <HistoryDialog
+        open={historyDialogOpen}
+        onOpenChange={setHistoryDialogOpen}
+        rankPoint={examResult?.rankPoint ?? 0}
+        examResult={examResult}
+      />
 
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
         <AlertDialogContent aria-describedby="end-test">
