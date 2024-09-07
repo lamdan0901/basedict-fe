@@ -18,6 +18,13 @@ import useSWRMutation from "swr/mutation";
 import { postRequest } from "@/service/data";
 import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
 import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
+import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
+import {
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
 
 export function JlptTestQuestions({
   data,
@@ -30,6 +37,7 @@ export function JlptTestQuestions({
   const [resetKey, setResetKey] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [alertOpen, setAlertOpen] = useState(false);
+  const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [testState, setTestState] = useState(
     data?.isDone ? TestState.Done : TestState.Ready
@@ -123,7 +131,17 @@ export function JlptTestQuestions({
 
   return (
     <div>
-      <div className="h-[calc(100vh-310px)] mb-2 overflow-auto">
+      <StateSwitcher
+        ref={stateSwitcherRef}
+        showResultDialog={() => setResultDialogOpen(true)}
+        testState={testState}
+        variant={stateSwitcherVariant[testState]}
+        switchTestState={switchTestState}
+        showAlert={() => setAlertOpen(true)}
+        isDailyTest={isDailyTest}
+      />
+
+      <div className="mt-2 overflow-auto">
         {questions?.map((question, index) => {
           return (
             <ReadingAnswer
@@ -178,21 +196,21 @@ export function JlptTestQuestions({
         })}
       </div>
 
-      <StateSwitcher
-        ref={stateSwitcherRef}
-        testState={testState}
-        variant={stateSwitcherVariant[testState]}
-        switchTestState={switchTestState}
-        showAlert={() => setAlertOpen(true)}
-        isDailyTest={isDailyTest}
+      <HistoryDialog
+        open={historyDialogOpen}
+        onOpenChange={setHistoryDialogOpen}
+        rankPoint={examResult?.rankPoint ?? 0}
+        examResult={examResult}
       />
 
-      {shouldShowAns && !isDailyTest && (
-        <div className="border mt-3 w-full max-w-[400px] mx-auto border-muted-foreground p-2">
-          <h2 className="font-semibold mx-auto mb-4 w-fit text-lg">
-            Kết quả làm đề thi
-          </h2>
-          <div className="w-fit mx-auto">
+      <Dialog open={resultDialogOpen} onOpenChange={setResultDialogOpen}>
+        <DialogContent aria-describedby="show-result" className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-semibold mx-auto w-fit text-lg">
+              Kết quả làm đề thi
+            </DialogTitle>
+          </DialogHeader>
+          <div className="w-fit mx-auto mt-3">
             <div>
               <span className="w-[140px] inline-block">Đề thi:</span>
               <span className="font-semibold">
@@ -216,15 +234,11 @@ export function JlptTestQuestions({
               </span>
             </div>
           </div>
-        </div>
-      )}
-
-      <HistoryDialog
-        open={historyDialogOpen}
-        onOpenChange={setHistoryDialogOpen}
-        rankPoint={examResult?.rankPoint ?? 0}
-        examResult={examResult}
-      />
+          <DialogFooter>
+            <DialogClose>Đóng</DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
         <AlertDialogContent aria-describedby="end-test">
@@ -238,6 +252,7 @@ export function JlptTestQuestions({
               onClick={() => {
                 setTestState(TestState.Done);
                 if (isDailyTest) handleSubmitAnswers();
+                else setResultDialogOpen(true);
               }}
             >
               Đồng ý

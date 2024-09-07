@@ -30,7 +30,15 @@ export function JLPTTest() {
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)
-    return <div>Đã xảy ra lỗi, hãy thử tải lại trang hoặc liên hệ hỗ trợ</div>;
+    return (
+      <div className="text-destructive">
+        Đã xảy ra lỗi, hãy thử tải lại trang hoặc liên hệ hỗ trợ
+      </div>
+    );
+  if (data?.questions.length === 0)
+    return (
+      <div>Đề thi đang được chúng tôi cập nhật, vui lòng quay lại sau</div>
+    );
 
   return (
     <JlptTestModule title={`${data?.title} - ${data?.jlptLevel}`} data={data} />

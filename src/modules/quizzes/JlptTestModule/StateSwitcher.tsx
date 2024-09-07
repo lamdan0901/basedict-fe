@@ -12,6 +12,7 @@ type Props = {
   testState: TestState;
   switchTestState(): void;
   showAlert(): void;
+  showResultDialog(): void;
   isDailyTest: boolean | undefined;
 };
 
@@ -21,7 +22,17 @@ export type TStateSwitcherRef = {
 };
 
 export const StateSwitcher = forwardRef<TStateSwitcherRef, Props>(
-  ({ testState, variant, isDailyTest, switchTestState, showAlert }, ref) => {
+  (
+    {
+      testState,
+      variant,
+      isDailyTest,
+      showResultDialog,
+      switchTestState,
+      showAlert,
+    },
+    ref
+  ) => {
     const [currentTimeInSec, setCurrentTimeInSec] = useState(0);
 
     const canShowResult = [TestState.Paused].includes(testState);
@@ -68,6 +79,9 @@ export const StateSwitcher = forwardRef<TStateSwitcherRef, Props>(
           <Button onClick={showAlert}>
             {isDailyTest ? "Kết thúc thi" : "Xem kết quả"}
           </Button>
+        )}
+        {testState === TestState.Done && (
+          <Button onClick={showResultDialog}>Xem kết quả</Button>
         )}
       </div>
     );

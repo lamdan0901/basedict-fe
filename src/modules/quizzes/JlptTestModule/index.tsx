@@ -1,3 +1,4 @@
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
 import { JlptTestQuestions } from "@/modules/quizzes/JlptTestModule/JlptTestQuestions";
@@ -12,14 +13,16 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
   return (
     <Card>
       <CardContent>
-        <h2
-          dangerouslySetInnerHTML={{ __html: title }}
-          className="font-semibold text-center text-2xl mt-4 mx-auto w-fit"
-        ></h2>
-        <div className="w-fit ml-auto">
+        <div id="top-of-jlpt-test" className="grid mb-3 grid-cols-3">
+          <div></div>
+          <h2
+            dangerouslySetInnerHTML={{ __html: title }}
+            className="font-semibold text-center text-2xl mt-4"
+          ></h2>
           <JLPTTestDescLink />
         </div>
         <JlptTestQuestions isDailyTest={isDailyTest} data={data} />
+        <ScrollToTopButton />
       </CardContent>
     </Card>
   );

@@ -1,4 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { ResolvingMetadata } from "next";
+
+export async function generateMetadata(_: any, parent: ResolvingMetadata) {
+  const previousMeta = await parent;
+  return {
+    ...previousMeta,
+    title: "BaseDict | Cấu Trúc Đề Thi JLPT",
+    description: `Hướng dẫn chi tiết cấu trúc đề thi JLPT N1, N2, N3 chính xác. Cung cấp bài thi thử JLPT miễn phí giúp bạn chuẩn bị tốt nhất cho kỳ thi. Cấu trúc bao gồm 4 phần chính, phần từ vựng, ngữ pháp, phần đọc hiểu, phần nghe hiểu ...`,
+    keywords: `JLPT N1, JLPT N2, JLPT N3, thi thử JLPT, luyện thi JLPT, cấu trúc đề thi JLPT,đề thi JLPT, bộ đề thi JLPT, ôn tập JLPT, thi thử miễn phí, thi tiếng Nhật online`,
+  };
+}
 
 export default function JlptQuestionTypesPage() {
   return (
