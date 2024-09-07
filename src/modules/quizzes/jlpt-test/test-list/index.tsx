@@ -1,7 +1,7 @@
-import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
-import { JLPTTestDescModal } from "@/modules/quizzes/JLPTTestDescModal";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
+import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
 import Link from "next/link";
 
 type Props = {
@@ -16,8 +16,7 @@ export function JLPTTests({ jlptLevel, jlptTests }: Props) {
         <h2 className="font-semibold text-2xl mx-auto w-fit">Làm đề JLPT</h2>
 
         <div className="flex items-end w-full justify-between">
-          <LevelSelector jlptLevel={jlptLevel} />
-          <JLPTTestDescModal />
+          <LevelSelector jlptLevel={jlptLevel} /> <JLPTTestDescLink />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

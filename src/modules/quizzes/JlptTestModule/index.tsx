@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { JLPTTestDescModal } from "@/modules/quizzes/JLPTTestDescModal";
+import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
 import { JlptTestQuestions } from "@/modules/quizzes/JlptTestModule/JlptTestQuestions";
 
 type Props = {
@@ -17,7 +17,7 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
           className="font-semibold text-center text-2xl mt-4 mx-auto w-fit"
         ></h2>
         <div className="w-fit ml-auto">
-          <JLPTTestDescModal />
+          <JLPTTestDescLink />
         </div>
         <JlptTestQuestions isDailyTest={isDailyTest} data={data} />
       </CardContent>
