@@ -101,7 +101,12 @@ export function ReadingDetail() {
               </div>
 
               <div className="relative mb-6 ">
-                <p className="whitespace-pre-line">{readingItem?.japanese}</p>
+                <p
+                  className="whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: readingItem?.japanese ?? "",
+                  }}
+                ></p>
                 <Button
                   onClick={() => setShowVietnamese(!showVietnamese)}
                   variant={"link"}

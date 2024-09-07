@@ -1,5 +1,5 @@
 import React from "react";
 
 export function QuizRanking() {
-  return <div>QuizRanking</div>;
+  return <div>Tính năng sẽ sớm được phát hành</div>;
 }

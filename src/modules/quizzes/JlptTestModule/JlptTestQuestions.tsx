@@ -143,36 +143,39 @@ export function JlptTestQuestions({
           );
         })}
 
-        {readings.map((reading, i) => (
-          <div key={i}>
-            <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
-              {reading.japanese}
+        {readings.map((reading, i) => {
+          const prevReadingQuestionsLength = (readings[i - 1]?.questions ?? [])
+            .length;
+          return (
+            <div key={i}>
+              <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
+                {reading.japanese}
+              </div>
+              {reading.questions?.map((question, j) => {
+                const readingQuesIndex =
+                  initialReadingQuesIndex + prevReadingQuestionsLength + j;
+                return (
+                  <ReadingAnswer
+                    key={readingQuesIndex + j}
+                    selectionDisabled={selectionDisabled}
+                    shouldShowAns={shouldShowAns && !isDailyTest}
+                    questionText={`${readingQuesIndex + 1}. ${
+                      question.question
+                    }`}
+                    radioGroupKey={`${readingQuesIndex}-${resetKey}`}
+                    question={question}
+                    value={userAnswers[readingQuesIndex]}
+                    onValueChange={(ans) => {
+                      handleAnswerChange(readingQuesIndex, ans);
+                    }}
+                    testState={testState}
+                    index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
+                  />
+                );
+              })}
             </div>
-            {reading.questions?.map((question, j) => {
-              const readingQuesIndex =
-                initialReadingQuesIndex +
-                (readings[i - 1]?.questions ?? []).length +
-                j;
-
-              return (
-                <ReadingAnswer
-                  key={readingQuesIndex + j}
-                  selectionDisabled={selectionDisabled}
-                  shouldShowAns={shouldShowAns && !isDailyTest}
-                  questionText={`${readingQuesIndex + 1}. ${question.question}`}
-                  radioGroupKey={`${readingQuesIndex}-${resetKey}`}
-                  question={question}
-                  value={userAnswers[readingQuesIndex]}
-                  onValueChange={(ans) => {
-                    handleAnswerChange(readingQuesIndex, ans);
-                  }}
-                  testState={testState}
-                  index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
-                />
-              );
-            })}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <StateSwitcher

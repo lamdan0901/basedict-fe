@@ -16,7 +16,6 @@ export function QuizGeneralInfo() {
   const { profile, setSeasonRank } = useAppStore();
   const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
 
-  // TODO: find a way to cache this data, refetch on every new day
   const { isLoading: loadingSeasonList } = useSWR<TSeason[]>(
     profile ? "/v1/exams/season-list" : null,
     getRequest,
