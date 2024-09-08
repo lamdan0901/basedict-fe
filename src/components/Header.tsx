@@ -84,6 +84,18 @@ const Header = () => {
 
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
+      <Link
+        className="mr-auto hover:bg-slate-200/60 transition rounded-sm p-1"
+        href={"/"}
+      >
+        <Image
+          src={"/images/app-logo.png"}
+          width={45}
+          height={45}
+          alt="app-logo"
+        />
+      </Link>
+
       {!user && !isLoading && (
         <form action={login}>
           <Button type="submit" variant={"secondary"} className="text-lg">
@@ -91,6 +103,7 @@ const Header = () => {
           </Button>
         </form>
       )}
+
       {user && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -118,6 +131,7 @@ const Header = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button

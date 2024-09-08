@@ -1,13 +1,4 @@
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
-import { useMemo, useState } from "react";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -16,15 +7,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
-import dayjs from "dayjs";
-import { DAYS_PER_WEEK, MAX_POINT, weekdayMap } from "@/modules/quizzes/const";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { DAYS_PER_WEEK, MAX_POINT } from "@/modules/quizzes/const";
+import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
 import {
   generateDateRange,
   mergeDateRangeWithHistory,
   TDateWithExamRes,
 } from "@/modules/quizzes/general/utils";
 import { WeekdayCarouselItem } from "@/modules/quizzes/general/WeekdayCarouselItem";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 type Props = {
   currentSeason: TSeason | undefined;
@@ -70,7 +69,7 @@ export function WeekdayCarousel({
       <Carousel
         opts={{
           align: "start",
-          slidesToScroll: DAYS_PER_WEEK,
+          slidesToScroll: DAYS_PER_WEEK, // if on mobile device, this will be undefined, or 1 only (based on the screen size)
           startIndex,
         }}
         className="w-full border-y-[1px] max-w-2xl"
@@ -104,7 +103,7 @@ export function WeekdayCarousel({
       />
 
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent aria-describedby={undefined}>
           <AlertDialogHeader>
             <AlertDialogTitle>
               Bạn có muốn thực hiện bài thi daily không?
