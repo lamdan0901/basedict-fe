@@ -167,7 +167,12 @@ export function JlptTestQuestions({
           return (
             <div key={i}>
               <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
-                {reading.japanese}
+                <p
+                  className="whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: reading?.japanese ?? "",
+                  }}
+                ></p>
               </div>
               {reading.questions?.map((question, j) => {
                 const readingQuesIndex =
