@@ -36,7 +36,7 @@ export function WeekdayCarouselItem({
           onShowAlert();
         }
       }}
-      className="my-3 basis-[14.25%]"
+      className="md:my-3 mx-2 md:mx-0 basis-[14.25%]"
     >
       <Card
         className={cn(
@@ -45,22 +45,22 @@ export function WeekdayCarouselItem({
           isDoneTest && "bg-lime-200"
         )}
       >
-        <CardContent className="flex flex-col relative aspect-[3/4] items-center justify-center p-2">
+        <CardContent className="flex md:flex-col relative md:aspect-[3/4] gap-2 items-center justify-center p-2">
           {isDoneTest ? (
-            <BadgeCheck className="size-10 text-lime-700  mb-2 bg-white rounded-full p-1" />
+            <BadgeCheck className="size-10 text-lime-700  bg-white rounded-full p-1" />
           ) : isSun ? (
             <Star
               className={cn(
-                "size-10 mb-2 rounded-full p-1",
+                "size-10 rounded-full p-1",
                 canJoinWeekendTest && isSunOfThisWeek
                   ? "bg-lime-700 text-white "
                   : "bg-muted text-black"
               )}
             />
           ) : isDayPassed ? (
-            <X className="size-10  mb-2 bg-muted rounded-full p-1" />
+            <X className="size-10  bg-muted rounded-full p-1" />
           ) : (
-            <Check className="size-10  mb-2 bg-muted rounded-full p-1" />
+            <Check className="size-10  bg-muted rounded-full p-1" />
           )}
           <div className=" text-sm font-semibold">{weekdayMap[d.weekday]}</div>
           <div className=" text-sm">{d.day}</div>

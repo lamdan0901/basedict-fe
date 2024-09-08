@@ -3,8 +3,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SquareMenu } from "lucide-react";
 
@@ -32,34 +36,34 @@ const menu = [
 ];
 
 export function QuizNavbar() {
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const isSmScreen = useMediaQuery("(min-width: 640px)");
+  const isSmScreen = useMediaQuery("(min-width: 1024px)");
 
   if (isSmScreen) return <InnerQuizNavbar />;
 
   return (
-    <>
-      <Button
-        onClick={() => setSheetOpen(!sheetOpen)}
-        variant={"outline"}
-        className="p-2 gap-2 mt-1 -ml-2 text-primary sm:hidden"
-      >
-        <SquareMenu className="size-6" /> <span className="text-lg">Menu</span>
-      </Button>
-      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetTitle></SheetTitle>
-        <SheetContent aria-describedby={undefined} side="left">
-          <InnerQuizNavbar />
-        </SheetContent>
-      </Sheet>
-    </>
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          variant={"outline"}
+          className="p-2 gap-2 sm:absolute top-[194px] left-[12px] static lg:order-1 order-2 mt-1 text-primary"
+        >
+          <SquareMenu className="size-6" />{" "}
+          <span className="text-lg">Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetTitle></SheetTitle>
+      <SheetContent aria-describedby={undefined} side="left">
+        <InnerQuizNavbar />
+      </SheetContent>
+    </Sheet>
   );
 }
 
 function InnerQuizNavbar() {
   const pathname = usePathname();
+
   return (
-    <Card className="flex-1 mt-8 sm:mt-0">
+    <Card className="flex-1 mt-8 lg:mt-0">
       <CardContent>
         <div className="">
           {menu.map((item, i) => (

@@ -106,7 +106,7 @@ export function QuizGeneralInfo() {
             </div>
           </div>
 
-          <p className="text-gray-800 my-3 text-sm">
+          <p className="text-gray-800 my-3 lg:pb-0 pb-10 text-sm">
             {currentSeason?.name}:{" "}
             {new Date(currentSeason?.startDate ?? "").toLocaleDateString()} ~{" "}
             {new Date(currentSeason?.endDate ?? "").toLocaleDateString()}
@@ -118,7 +118,7 @@ export function QuizGeneralInfo() {
             seasonHistory={formattedSeasonHistory}
           />
 
-          <p className="text-gray-800 w-fit mx-auto my-3 text-sm">
+          <p className="text-gray-800 w-fit mx-auto my-3 lg:pt-0 pt-10 text-sm">
             Bạn đã hoàn thành {seasonHistory?.length}/{passedDays} bài thi daily
           </p>
 

@@ -13,6 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { DAYS_PER_WEEK, MAX_POINT } from "@/modules/quizzes/const";
 import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
 import {
@@ -40,6 +41,7 @@ export function WeekdayCarousel({
   rankPoint = 0,
 }: Props) {
   const router = useRouter();
+  const isMdScreen = useMediaQuery("(min-width: 768px)");
   const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -69,12 +71,13 @@ export function WeekdayCarousel({
       <Carousel
         opts={{
           align: "start",
-          slidesToScroll: DAYS_PER_WEEK, // if on mobile device, this will be undefined, or 1 only (based on the screen size)
+          slidesToScroll: DAYS_PER_WEEK,
           startIndex,
         }}
+        orientation={isMdScreen ? "horizontal" : "vertical"}
         className="w-full border-y-[1px] max-w-2xl"
       >
-        <CarouselContent>
+        <CarouselContent className="h-[600px] md:h-auto">
           {dateRangeWithExamRes.map((d, index) => (
             <WeekdayCarouselItem
               onShowHistory={() => {

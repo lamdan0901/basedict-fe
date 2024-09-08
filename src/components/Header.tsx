@@ -85,14 +85,14 @@ const Header = () => {
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
       <Link
-        className="mr-auto hover:bg-slate-200/60 transition rounded-sm p-1"
+        className="mr-auto hover:bg-slate-300/40 transition rounded-sm p-1"
         href={"/"}
       >
         <Image
-          src={"/images/app-logo.png"}
-          width={45}
-          height={45}
-          alt="app-logo"
+          src={"/images/header_icon.png"}
+          width={75}
+          height={75}
+          alt="basedict-header"
         />
       </Link>
 
@@ -108,13 +108,13 @@ const Header = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
+              className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
               variant="ghost"
             >
               <Image
                 src={user.avatar || DEFAULT_AVATAR_URL}
-                width={50}
-                height={50}
+                width={40}
+                height={40}
                 className="rounded-full"
                 alt="avatar"
               />
@@ -135,10 +135,10 @@ const Header = () => {
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
-            className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
+            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
             variant="ghost"
           >
-            <Image src="/apps.svg" width={50} height={50} alt="apps" />{" "}
+            <Image src="/apps.svg" width={45} height={45} alt="apps" />{" "}
             <span> Ứng dụng</span>
           </Button>
         </PopoverTrigger>
