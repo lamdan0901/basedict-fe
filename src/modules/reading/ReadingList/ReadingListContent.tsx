@@ -48,7 +48,7 @@ export function ReadingListContent({
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
     jlptTestLevel: jlptLevel,
-    readingType: ReadingType.GrammarReading,
+    readingType: ReadingType.All,
     examId: "1",
   });
 
@@ -92,7 +92,7 @@ export function ReadingListContent({
             </p>
             {isBaseDictTab ? (
               <Select
-                value={readingParams.readingType.toString()}
+                value={readingParams.readingType}
                 onValueChange={(value) =>
                   setReadingParams({ readingType: value as ReadingType })
                 }

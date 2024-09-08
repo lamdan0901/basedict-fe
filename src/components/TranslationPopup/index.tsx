@@ -2,13 +2,17 @@
 
 import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
 import { isJapanese, isNotEndingWithForbiddenForms } from "@/lib";
+import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const isSelectionValid = (text: string) =>
   isJapanese(text) && isNotEndingWithForbiddenForms(text);
 
+const noTranslationPages = ["/quizzes/daily-test"];
+
 export function TranslationPopup({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const popupTriggerRef = useRef<HTMLButtonElement>(null);
@@ -124,6 +128,8 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
   }, [showPopup]);
 
   const triggerBtn = useMemo(() => {
+    if (noTranslationPages.includes(pathname)) return null;
+
     if (showTriggerButton)
       return createPortal(
         <button
@@ -141,7 +147,12 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
         document.body,
         "popup-trigger"
       );
-  }, [popupTriggerPosition.left, popupTriggerPosition.top, showTriggerButton]);
+  }, [
+    pathname,
+    popupTriggerPosition.left,
+    popupTriggerPosition.top,
+    showTriggerButton,
+  ]);
 
   return (
     <div ref={containerRef}>

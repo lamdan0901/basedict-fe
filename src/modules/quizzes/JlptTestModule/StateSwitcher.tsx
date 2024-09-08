@@ -12,6 +12,8 @@ type Props = {
   testState: TestState;
   switchTestState(): void;
   showAlert(): void;
+  showResultDialog(): void;
+  isDailyTest: boolean | undefined;
 };
 
 export type TStateSwitcherRef = {
@@ -20,7 +22,17 @@ export type TStateSwitcherRef = {
 };
 
 export const StateSwitcher = forwardRef<TStateSwitcherRef, Props>(
-  ({ testState, variant, switchTestState, showAlert }, ref) => {
+  (
+    {
+      testState,
+      variant,
+      isDailyTest,
+      showResultDialog,
+      switchTestState,
+      showAlert,
+    },
+    ref
+  ) => {
     const [currentTimeInSec, setCurrentTimeInSec] = useState(0);
 
     const canShowResult = [TestState.Paused].includes(testState);
@@ -50,13 +62,27 @@ export const StateSwitcher = forwardRef<TStateSwitcherRef, Props>(
       [currentTimeInMin]
     );
 
+    if (isDailyTest && testState === TestState.Done)
+      return (
+        <div className="w-fit mx-auto">
+          Bạn đã hoàn thành xong bài thi daily
+        </div>
+      );
+
     return (
       <div className="flex gap-4 justify-center items-center">
         <Button variant={variant} className="gap-2" onClick={switchTestState}>
           {stateSwitcherTitle[testState]}
           {shouldShowTimer && <span>{currentTimeInMin}</span>}
         </Button>
-        {canShowResult && <Button onClick={showAlert}>Xem kết quả</Button>}
+        {canShowResult && (
+          <Button onClick={showAlert}>
+            {isDailyTest ? "Kết thúc thi" : "Xem kết quả"}
+          </Button>
+        )}
+        {testState === TestState.Done && (
+          <Button onClick={showResultDialog}>Xem kết quả</Button>
+        )}
       </div>
     );
   }

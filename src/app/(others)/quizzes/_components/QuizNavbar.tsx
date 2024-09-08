@@ -20,6 +20,10 @@ const menu = [
     title: "Bảng xếp hạng",
     href: "/quizzes/ranking",
   },
+  {
+    title: "Các dạng bài đề thi JLPT",
+    href: "/quizzes/jlpt-question-types",
+  },
 ];
 
 export function QuizNavbar() {

@@ -18,3 +18,16 @@ export const stateSwitcherVariant = {
   [TestState.Paused]: "outline",
   [TestState.Done]: "secondary",
 } as const;
+
+export const weekdayMap = {
+  Mon: "Thứ hai",
+  Tue: "Thứ ba",
+  Wed: "Thứ tư",
+  Thu: "Thứ năm",
+  Fri: "Thứ sáu",
+  Sat: "Thứ bảy",
+  Sun: "Chủ nhật",
+} as const;
+
+export const DAYS_PER_WEEK = 7;
+export const MAX_POINT = 180;

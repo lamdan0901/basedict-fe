@@ -146,16 +146,21 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
 
         <div
           ref={titleRef}
-          className={cn(
-            "flex gap-1 flex-nowrap w-fit",
-            meaningSize > 1 && " pr-12"
-          )}
+          className={cn("w-fit", meaningSize > 1 && " pr-12")}
         >
-          <span>{lexemeSearch?.hiragana}</span>
-          {lexemeSearch?.hanviet && <span>({lexemeSearch?.hanviet})</span>}
-          {lexemeSearch?.approved && (
-            <CircleCheckBig className="text-green-500 shrink-0 w-4 h-4" />
-          )}
+          <div>
+            {lexemeSearch?.standard}{" "}
+            {lexemeSearch?.standard !== lexemeSearch?.lexeme
+              ? `(${lexemeSearch?.lexeme})`
+              : ""}{" "}
+            {lexemeSearch?.approved && (
+              <CircleCheckBig className="text-green-500 shrink-0 w-4 h-4" />
+            )}
+          </div>
+          <div className="flex gap-1 flex-nowrap">
+            <span>{lexemeSearch?.hiragana}</span>
+            {lexemeSearch?.hanviet && <span>({lexemeSearch?.hanviet})</span>}
+          </div>
         </div>
 
         <h2 className="text-lg font-semibold my-2">

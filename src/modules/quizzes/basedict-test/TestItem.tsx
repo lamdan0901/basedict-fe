@@ -7,19 +7,18 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
 
-export function JLPTTest() {
+export function BasedictTest() {
   const profile = useAppStore((state) => state.profile);
-  const { id } = useParams();
+  const { level } = useParams();
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    id && profile ? `/v1/exams/${id}` : null,
+    level && profile ? `/v1/exams/basedict-exam?jlptLevel=${level}` : null,
     getRequest
   );
 
   useEffect(() => {
-    if (data?.title)
-      document.title = `${data?.title} - ${data?.jlptLevel} | BaseDict`;
-  }, [data?.jlptLevel, data?.title]);
+    document.title = `${level} - BaseDict | Đề thi JLPT biên soạn`;
+  }, [level]);
 
   if (!profile)
     return (
@@ -30,17 +29,12 @@ export function JLPTTest() {
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)
-    return (
-      <div className="text-destructive">
-        Đã xảy ra lỗi, hãy thử tải lại trang hoặc liên hệ hỗ trợ
-      </div>
-    );
-  if (data?.questions.length === 0)
-    return (
-      <div>Đề thi đang được chúng tôi cập nhật, vui lòng quay lại sau</div>
-    );
+    return <div>Đã xảy ra lỗi, hãy thử tải lại trang hoặc liên hệ hỗ trợ</div>;
 
   return (
-    <JlptTestModule title={`${data?.title} - ${data?.jlptLevel}`} data={data} />
+    <JlptTestModule
+      title={`Đề thi JLPT - ${level} <br/>(BaseDict biên soạn)`}
+      data={data}
+    />
   );
 }

@@ -1,62 +1,65 @@
 export enum ReadingType {
+  All = "all",
   GrammarReading = "GrammarReading",
   SumaryReading = "SumaryReading",
   MediumReading = "MediumReading",
   LongReading = "LongReading",
   CompareReading = "CompareReading",
-  NoticeReading = "NoticeReading",
+  NoticeReaing = "NoticeReaing",
 }
 
 export const readingTypeMap: Record<ReadingType, string> = {
+  [ReadingType.All]: "Tất cả",
   [ReadingType.GrammarReading]: "Bài đọc ngữ pháp",
   [ReadingType.SumaryReading]: "Bài đọc ngắn",
   [ReadingType.MediumReading]: "Bài đọc trung bình",
   [ReadingType.LongReading]: "Bài đọc dài",
   [ReadingType.CompareReading]: "Bài đọc so sánh",
-  [ReadingType.NoticeReading]: "Bài đọc bảng biểu",
+  [ReadingType.NoticeReaing]: "Bài đọc bảng biểu",
 };
 
 export const jlptDescriptions = [
   {
-    title: "1. Bài đọc ngắn (短文読解 ）",
-    length: "Thường là một đoạn văn ngắn, từ 50 đến 200 từ.",
-    purpose: "Kiểm tra khả năng nắm bắt ý chính và các chi tiết cụ thể.",
-    level: "N5 đến N3.",
+    title: "1. Grammar Reading (Bài đọc ngữ pháp)",
+    length: "Thường là một đoạn văn trung bình, từ 200 đến 500 từ.",
+    purpose:
+      "Bài đọc tập trung vào cấu trúc ngữ pháp, giúp kiểm tra khả năng hiểu và áp dụng ngữ pháp trong văn bản.",
+    level: "N3, N2, N1",
   },
   {
-    title: "2. Bài đọc trung bình (中文読解)",
+    title: "2. Summary Reading (Bài đọc ngắn)",
+    length: "Thường là một đoạn văn ngắn, từ 150 đến 200 từ.",
+    purpose:
+      "Bài đọc yêu cầu thí sinh nắm bắt ý chính và nội dung bài viết, đánh giá khả năng tóm tắt thông tin.",
+    level: "N3, N2, N1",
+  },
+  {
+    title: "3. Medium Reading (Bài đọc trung bình)",
     length: "Khoảng 200 đến 500 từ.",
     purpose:
-      "Kiểm tra khả năng hiểu và phân tích các thông tin trong đoạn văn.",
-    level: "N4, N3 và N2.",
+      "Đoạn văn có độ dài trung bình với nội dung phức tạp, kiểm tra khả năng hiểu ngữ pháp và từ vựng trong văn bản dài hơn.",
+    level: "N3, N2, N1",
   },
   {
-    title: "3. Bài đọc dài (長文読解)",
+    title: "4. Long Reading (Bài đọc dài)",
     length: "Trên 500 từ.",
     purpose:
       "Đánh giá khả năng đọc hiểu toàn diện, bao gồm việc nắm bắt các ý chính, chi tiết, và suy luận từ ngữ cảnh.",
-    level: "N2 và N1.",
+    level: "N3, N2, N1",
   },
   {
-    title: "4. Bài đọc thực tế (実用的読解)",
-    length: "Thường ngắn hoặc trung bình.",
+    title: "5. Compare Reading (Bài đọc so sánh)",
+    length: "Thường tương đương bài đọc ngắn.",
     purpose:
-      "Kiểm tra khả năng hiểu văn bản trong các tình huống thực tế, thường gặp trong cuộc sống hàng ngày hoặc công việc ( thông báo, email, bảng chỉ dẫn, hoặc tin nhắn)",
-    level: "N5 đến N1.",
+      "Bài đọc so sánh nội dung giữa các văn bản, giúp đánh giá khả năng phân tích và đối chiếu thông tin.",
+    level: "N2, N1",
   },
   {
-    title: "5. Bài đọc suy luận (推論問題)",
+    title: "6. Notice Reading (Bài đọc thông báo, bảng biểu)",
     length: "Trung bình hoặc dài.",
     purpose:
-      "Kiểm tra khả năng phân tích, suy luận và đưa ra kết luận từ thông tin gián tiếp.",
-    level: "N2 và N1.",
-  },
-  {
-    title: "6. Bài đọc tóm tắt (要約問題）",
-    length: "Thường là đoạn văn trung bình hoặc dài.",
-    purpose:
-      "Đánh giá khả năng tóm tắt thông tin và hiểu được ý chính của đoạn văn.",
-    level: "N3, N2, và N1.",
+      "Đọc hiểu các thông báo hoặc bảng biểu ngắn, mang tính chất thông báo, kiểm tra khả năng tiếp nhận thông tin mà văn bản truyền đạt một cách nhanh chóng.",
+    level: "N3, N2, N1",
   },
 ];
 

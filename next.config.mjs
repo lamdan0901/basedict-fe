@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
-    if (process.env.NODE_ENV !== "development") {
+    if (process.env.NEXT_ENV !== "development") {
       return [
         {
           source: "/:all*(svg|jpg|png|gif|js|webp)",

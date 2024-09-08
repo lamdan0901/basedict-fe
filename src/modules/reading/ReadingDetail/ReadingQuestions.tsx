@@ -26,6 +26,7 @@ export function ReadingQuestions({
       {readingQuestions?.map((question, index) => (
         <ReadingAnswer
           key={index}
+          index={""}
           selectionDisabled={shouldShowAns}
           shouldShowAns={shouldShowAns}
           questionText={`${index + 1}. ${question.question}`}

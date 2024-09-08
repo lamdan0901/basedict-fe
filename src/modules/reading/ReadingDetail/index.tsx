@@ -18,7 +18,7 @@ export function ReadingDetail() {
   const [showVietnamese, setShowVietnamese] = useState(false);
   const [readingParams] = useQueryParams({
     jlptLevel: "N1",
-    readingType: ReadingType.GrammarReading,
+    readingType: ReadingType.All,
   });
   const popupRef = useRef<HTMLDivElement>(null);
   const [selection, setSelection] = useState("");
@@ -42,7 +42,9 @@ export function ReadingDetail() {
     postRequest
   );
 
-  const readingTypeTitle = readingTypeMap[readingParams.readingType];
+  const readingTypeTitle = readingItem
+    ? readingTypeMap[readingItem.readingType]
+    : "";
 
   async function handleMarkAsRead() {
     await markAsRead();
@@ -99,7 +101,12 @@ export function ReadingDetail() {
               </div>
 
               <div className="relative mb-6 ">
-                <p className="whitespace-pre-line">{readingItem?.japanese}</p>
+                <p
+                  className="whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: readingItem?.japanese ?? "",
+                  }}
+                ></p>
                 <Button
                   onClick={() => setShowVietnamese(!showVietnamese)}
                   variant={"link"}

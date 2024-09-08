@@ -29,7 +29,7 @@ export function Home({
   const lexemeRef = useRef<{ hideSuggestions: () => void }>(null);
   const [initialLexemeSearch, setInitialLexemeSearch] = useState(_lexemeSearch);
   const [initialLexemeText, setInitialLexemeText] = useState(
-    _lexemeSearch?.standard
+    _lexemeSearch?.standard ?? ""
   );
 
   const isParagraphMode = text.length >= 20;

@@ -6,7 +6,7 @@ type TReadingType =
   | "MediumReading"
   | "LongReading"
   | "CompareReading"
-  | "NoticeReading";
+  | "NoticeReaing";
 
 type TReadingMaterial = {
   id: number;
