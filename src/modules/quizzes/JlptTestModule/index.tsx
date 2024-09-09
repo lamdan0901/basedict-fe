@@ -13,7 +13,10 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
   return (
     <Card>
       <CardContent>
-        <div id="top-of-jlpt-test" className="grid mb-3 grid-cols-3">
+        <div
+          id="top-of-jlpt-test"
+          className="grid mb-3 grid-cols-1 sm:grid-cols-3"
+        >
           <div></div>
           <h2
             dangerouslySetInnerHTML={{ __html: title }}

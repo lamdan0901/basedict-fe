@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ReadingAnswer } from "@/components/ReadingAnswer";
 import {
   AlertDialog,
@@ -25,6 +25,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
+import { useAnswerStore } from "@/store/useAnswerStore";
 
 export function JlptTestQuestions({
   data,
@@ -35,7 +36,6 @@ export function JlptTestQuestions({
 }) {
   const stateSwitcherRef = useRef<TStateSwitcherRef>(null);
   const [resetKey, setResetKey] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const [alertOpen, setAlertOpen] = useState(false);
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
@@ -53,12 +53,15 @@ export function JlptTestQuestions({
   const readings = data?.readings ?? [];
 
   const initialReadingQuesIndex = questions.length;
+  let prevReadingQuestionsLengthAcc = 0;
   const selectionDisabled = testState !== TestState.Doing;
   const shouldShowAns = testState === TestState.Done;
 
   function countCorrectAnswers() {
-    return questions?.reduce((acc, question, index) => {
-      if (question.correctAnswer === userAnswers[index]) {
+    const { userAnswers } = useAnswerStore.getState();
+
+    return questions?.reduce((acc, question, i) => {
+      if (question.correctAnswer === userAnswers[i]?.split("|")?.[0] || "") {
         return acc + 1;
       }
       return acc;
@@ -90,22 +93,24 @@ export function JlptTestQuestions({
       case TestState.Done:
         setTestState(TestState.Doing);
         stateSwitcherRef.current?.resetTimer();
-        setUserAnswers({});
+        useAnswerStore.getState().clearUserAnswers();
         setResetKey((prevKey) => prevKey + 1);
         break;
     }
   }
 
-  function handleAnswerChange(questionIndex: number, answer: string) {
-    if (selectionDisabled) return;
+  const handleAnswerChange = useCallback(
+    (questionIndex: number) => (answer: string) => {
+      if (selectionDisabled) return;
 
-    setUserAnswers((prevUserAnswers) => ({
-      ...prevUserAnswers,
-      [questionIndex]: answer,
-    }));
-  }
+      useAnswerStore.getState().setUserAnswers(questionIndex, answer);
+    },
+    [selectionDisabled]
+  );
 
   async function handleSubmitAnswers() {
+    const { userAnswers } = useAnswerStore.getState();
+
     const answers = Array.from(
       { length: questions.length + readings.length },
       (_, i) => userAnswers[i]?.split("|")?.[0] || ""
@@ -142,7 +147,7 @@ export function JlptTestQuestions({
       />
 
       <div className="mt-2 overflow-auto">
-        {questions?.map((question, index) => {
+        {questions.map((question, index) => {
           return (
             <ReadingAnswer
               key={index}
@@ -151,11 +156,8 @@ export function JlptTestQuestions({
               questionText={`${index + 1}. ${question.question}`}
               radioGroupKey={`${index}-${resetKey}`}
               question={question}
-              value={userAnswers[index]}
               index={`|${index}`} // answers can be duplicated, so we need to add index to make it unique
-              onValueChange={(ans) => {
-                handleAnswerChange(index, ans);
-              }}
+              onValueChange={handleAnswerChange(index)}
               testState={testState}
             />
           );
@@ -164,6 +166,7 @@ export function JlptTestQuestions({
         {readings.map((reading, i) => {
           const prevReadingQuestionsLength = (readings[i - 1]?.questions ?? [])
             .length;
+          prevReadingQuestionsLengthAcc += prevReadingQuestionsLength;
           return (
             <div key={i}>
               <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
@@ -176,7 +179,7 @@ export function JlptTestQuestions({
               </div>
               {reading.questions?.map((question, j) => {
                 const readingQuesIndex =
-                  initialReadingQuesIndex + prevReadingQuestionsLength + j;
+                  initialReadingQuesIndex + prevReadingQuestionsLengthAcc + j;
                 return (
                   <ReadingAnswer
                     key={readingQuesIndex + j}
@@ -187,10 +190,7 @@ export function JlptTestQuestions({
                     }`}
                     radioGroupKey={`${readingQuesIndex}-${resetKey}`}
                     question={question}
-                    value={userAnswers[readingQuesIndex]}
-                    onValueChange={(ans) => {
-                      handleAnswerChange(readingQuesIndex, ans);
-                    }}
+                    onValueChange={handleAnswerChange(readingQuesIndex)}
                     testState={testState}
                     index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
                   />
