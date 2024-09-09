@@ -21,6 +21,8 @@ import useSWRImmutable from "swr/immutable";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Check } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 type TUserForm = {
   name: string;
@@ -29,6 +31,7 @@ type TUserForm = {
 
 export function Profile() {
   const supabase = createClient();
+  const { toast } = useToast();
 
   const {
     register,
@@ -64,10 +67,21 @@ export function Profile() {
   );
 
   async function submitForm(data: TUserForm) {
-    await updateUser(data);
-    if (user) {
-      mutateUser({ ...user, ...data });
-      mutate("get-user", { ...user, ...data });
+    try {
+      await updateUser(data);
+      if (user) {
+        mutateUser({ ...user, ...data });
+        mutate("get-user", { ...user, ...data });
+      }
+      toast({
+        title: "Cập nhật thông tin thành công",
+        action: <Check className="h-5 w-5 text-green-500" />,
+      });
+    } catch {
+      toast({
+        title: "Không thể cập nhật thông tin",
+        variant: "destructive",
+      });
     }
   }
 

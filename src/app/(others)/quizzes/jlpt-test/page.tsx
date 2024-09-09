@@ -1,7 +1,7 @@
 import { JLPTTests } from "@/modules/quizzes/jlpt-test/test-list";
 import { ResolvingMetadata } from "next";
 
-const fetchJlptTests = async (jlptLevel = "N1") => {
+const fetchJlptTests = async (jlptLevel = "N3") => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/exams/jlpt?jlptLevel=${jlptLevel}`
