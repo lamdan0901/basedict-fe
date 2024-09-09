@@ -7,9 +7,9 @@ import { ReadingType, TabVal } from "@/modules/reading/const";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
-import { useAppStore } from "@/store/useAppStore";
+import { fetchUserProfile } from "@/service/user";
 import { useReadingStore } from "@/store/useReadingStore";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import useSWR from "swr";
 
 export function ReadingList() {
@@ -34,6 +34,9 @@ export function ReadingList() {
 function InnerReadingList() {
   const [tab, setTab] = useQueryParam("tab", TabVal.BaseDict);
 
+  const { data: user, isLoading } = useSWR<TUser>("get-user", fetchUserProfile);
+  const jlptLevel = isLoading ? undefined : user?.jlptLevel || "N3";
+
   return (
     <div className=" mb-2">
       <JLPTReadingDescModal />
@@ -43,34 +46,39 @@ function InnerReadingList() {
           <TabsTrigger value={TabVal.JLPT}>Đề JLPT</TabsTrigger>
         </TabsList>
         <TabsContent value={TabVal.BaseDict}>
-          <BaseDictReadingList />
+          <BaseDictReadingList jlptLevel={jlptLevel} />
         </TabsContent>
         <TabsContent value={TabVal.JLPT}>
-          <JPLTTestReadingList />
+          <JPLTTestReadingList jlptLevel={jlptLevel} />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-function BaseDictReadingList() {
+function BaseDictReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
   const hasSetInitialReading = useRef(false);
-  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
   const { hasReadBaseDict, setReadingItemId } = useReadingStore();
-  const [readingParams] = useQueryParams({
+  const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
     readingType: ReadingType.All,
   });
 
+  useEffect(() => {
+    if (jlptLevel) setReadingParams({ jlptLevel });
+  }, [jlptLevel, setReadingParams]);
+
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    `/v1/readings?${stringifyParams({
-      source: "BaseDict",
-      jlptLevel: readingParams.jlptLevel,
-      readingType:
-        readingParams.readingType !== "all"
-          ? readingParams.readingType
-          : undefined,
-    })}`,
+    readingParams.jlptLevel
+      ? `/v1/readings?${stringifyParams({
+          source: "BaseDict",
+          jlptLevel: readingParams.jlptLevel,
+          readingType:
+            readingParams.readingType !== "all"
+              ? readingParams.readingType
+              : undefined,
+        })}`
+      : null,
     getRequest,
     {
       onSuccess(data) {
@@ -95,20 +103,23 @@ function BaseDictReadingList() {
   );
 }
 
-function JPLTTestReadingList() {
+function JPLTTestReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
   const hasSetInitialReading = useRef(false);
-  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
   const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
   const [{ jlptTestLevel, examId }, setReadingParams] = useQueryParams<{
-    jlptTestLevel: TJlptLevel;
+    jlptTestLevel: TJlptLevel | undefined;
     examId: string | undefined;
   }>({
     jlptTestLevel: jlptLevel,
     examId: undefined,
   });
 
+  useEffect(() => {
+    if (jlptLevel) setReadingParams({ jlptTestLevel: jlptLevel });
+  }, [jlptLevel, setReadingParams]);
+
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    examId
+    examId && jlptTestLevel
       ? `/v1/readings?${stringifyParams({
           source: "JLPT",
           examId,
@@ -128,12 +139,16 @@ function JPLTTestReadingList() {
 
   const { data: testPeriods = [], isLoading: isLoadingTestPeriods } = useSWR<
     TTestPeriod[]
-  >(`v1/exams/jlpt?jlptLevel=${jlptTestLevel}`, getRequest, {
-    onSuccess(data) {
-      if (!examId && data.length)
-        setReadingParams({ examId: data[0].id.toString() });
-    },
-  });
+  >(
+    jlptTestLevel ? `v1/exams/jlpt?jlptLevel=${jlptTestLevel}` : null,
+    getRequest,
+    {
+      onSuccess(data) {
+        if (!examId && data.length)
+          setReadingParams({ examId: data[0].id.toString() });
+      },
+    }
+  );
 
   const filteredReadingList = readingList.filter((reading) => {
     return hasReadJLPTTest === reading.isRead;

@@ -13,8 +13,8 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     immer((set) => ({
-      profile: null,
-      seasonRank: "N3",
+      profile: null as TUser | null,
+      seasonRank: "N3" as TJlptLevel,
       setProfile: (profile: TUser) => {
         set((state) => {
           state.profile = profile;

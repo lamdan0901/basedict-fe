@@ -1,19 +1,6 @@
 import { JLPTTests } from "@/modules/quizzes/jlpt-test/test-list";
 import { ResolvingMetadata } from "next";
-
-const fetchJlptTests = async (jlptLevel = "N3") => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/exams/jlpt?jlptLevel=${jlptLevel}`
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data;
-  } catch (err: any) {
-    console.log("err fetchJlptTests: ", err);
-    return [];
-  }
-};
+import { Suspense } from "react";
 
 export async function generateMetadata(_: any, parent: ResolvingMetadata) {
   const previousMeta = await parent;
@@ -25,14 +12,10 @@ export async function generateMetadata(_: any, parent: ResolvingMetadata) {
   };
 }
 
-export default async function JlptTestsPage({ searchParams }: TComponentProps) {
-  const { jlptLevel } = searchParams;
-  const jlptTests = await fetchJlptTests(jlptLevel);
-
+export default async function JlptTestsPage() {
   return (
-    <JLPTTests
-      jlptTests={jlptTests}
-      jlptLevel={jlptLevel as TJlptLevel | undefined}
-    />
+    <Suspense>
+      <JLPTTests />
+    </Suspense>
   );
 }

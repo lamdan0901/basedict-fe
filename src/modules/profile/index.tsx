@@ -98,7 +98,7 @@ export function Profile() {
         />
         <div className="text-center text-xl">{user?.name}</div>
 
-        <form className="space-y-3" onSubmit={handleSubmit(submitForm)}>
+        <form className="space-y-5" onSubmit={handleSubmit(submitForm)}>
           <div className="flex w-full max-w-md items-center gap-1.5">
             <Label className="w-[60px] shrink-0" htmlFor="email">
               Email
@@ -143,7 +143,7 @@ export function Profile() {
             </Select>
           </div>
 
-          <div className="block mx-auto w-fit mt-10 mb-0 pb-0  space-x-4">
+          <div className="block mx-auto w-fit pt-6 mb-0 pb-0  space-x-4">
             <Button type="submit" disabled={isMutating}>
               Lưu
             </Button>
