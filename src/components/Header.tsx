@@ -25,7 +25,6 @@ import useSWR from "swr";
 import { fetchUserProfile } from "@/service/user";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
-import { AuthAlert } from "@/components/AuthAlert";
 import { useAlertStore } from "@/store/useAlertStore";
 
 const menu = [
@@ -57,7 +56,6 @@ const Header = () => {
   const pathname = usePathname();
   const { clearProfile, setProfile, profile } = useAppStore();
   const [openMenu, setOpenMenu] = useState(false);
-  const { loginAlertOpen, setLoginAlertOpen } = useAlertStore();
 
   const {
     data: user,
@@ -170,8 +168,6 @@ const Header = () => {
           </div>
         </PopoverContent>
       </Popover>
-
-      <AuthAlert open={loginAlertOpen} onOpenChange={setLoginAlertOpen} />
     </header>
   );
 };

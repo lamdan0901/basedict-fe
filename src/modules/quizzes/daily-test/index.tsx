@@ -5,22 +5,18 @@ import useSWR from "swr";
 import { useAppStore } from "@/store/useAppStore";
 import { useEffect } from "react";
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
-import { useAuthAlert } from "@/hooks/useAuthAlert";
 
 export function DailyTest() {
   const { seasonRank } = useAppStore();
-  const { user, authContent } = useAuthAlert();
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    user ? `/v1/exams/daily-exam?rank=${seasonRank}` : null,
+    `/v1/exams/daily-exam?rank=${seasonRank}`,
     getRequest
   );
 
   useEffect(() => {
     document.title = `${seasonRank} - Daily exam | BaseDict`;
   }, [seasonRank]);
-
-  if (authContent) return authContent;
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)

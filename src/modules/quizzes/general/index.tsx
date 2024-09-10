@@ -11,15 +11,15 @@ import { useMemo, useState } from "react";
 import useSWR from "swr";
 import dayjs from "dayjs";
 import { MAX_POINT } from "@/modules/quizzes/const";
-import { useAuthAlert } from "@/hooks/useAuthAlert";
+import { fetchUserProfile } from "@/service/user";
 
 export function QuizGeneralInfo() {
   const { setSeasonRank } = useAppStore();
-  const { user, authContent } = useAuthAlert();
   const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
+  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
 
   const { isLoading: loadingSeasonList } = useSWR<TSeason[]>(
-    user ? "/v1/exams/season-list" : null,
+    "/v1/exams/season-list",
     getRequest,
     {
       onSuccess(data) {
@@ -70,8 +70,6 @@ export function QuizGeneralInfo() {
 
   const isLoading =
     loadingSeasonList || loadingSeasonProfile || loadingSeasonHistory;
-
-  if (authContent) return authContent;
 
   if (isLoading) return <div>Đang tải thông tin chung...</div>;
 
