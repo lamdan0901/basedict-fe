@@ -25,11 +25,15 @@ import useSWR from "swr";
 import { fetchUserProfile } from "@/service/user";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
-import { useAlertStore } from "@/store/useAlertStore";
 
 const menu = [
   {
     href: "/",
+    icon: "/translate.svg",
+    title: "Từ điển",
+  },
+  {
+    href: "/vocabulary",
     icon: "/dictionary.svg",
     title: "Từ vựng",
   },
