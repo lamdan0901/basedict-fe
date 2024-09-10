@@ -1,18 +1,18 @@
 "use client";
 
+import { useAuthAlert } from "@/hooks/useAuthAlert";
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
 import { getRequest } from "@/service/data";
-import { useAppStore } from "@/store/useAppStore";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
 
 export function BasedictTest() {
-  const profile = useAppStore((state) => state.profile);
   const { level } = useParams();
+  const { user, authContent } = useAuthAlert();
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    level && profile ? `/v1/exams/basedict-exam?jlptLevel=${level}` : null,
+    level && user ? `/v1/exams/basedict-exam?jlptLevel=${level}` : null,
     getRequest
   );
 
@@ -20,12 +20,7 @@ export function BasedictTest() {
     document.title = `${level} - BaseDict | Đề thi JLPT biên soạn`;
   }, [level]);
 
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
+  if (authContent) return authContent;
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)

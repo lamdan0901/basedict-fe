@@ -1,18 +1,18 @@
 "use client";
 
+import { useAuthAlert } from "@/hooks/useAuthAlert";
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
 import { getRequest } from "@/service/data";
-import { useAppStore } from "@/store/useAppStore";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
 
 export function JLPTTest() {
-  const profile = useAppStore((state) => state.profile);
+  const { user, authContent } = useAuthAlert();
   const { id } = useParams();
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    id && profile ? `/v1/exams/${id}` : null,
+    id && user ? `/v1/exams/${id}` : null,
     getRequest
   );
 
@@ -21,12 +21,7 @@ export function JLPTTest() {
       document.title = `${data?.title} - ${data?.jlptLevel} | BaseDict`;
   }, [data?.jlptLevel, data?.title]);
 
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
+  if (authContent) return authContent;
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)

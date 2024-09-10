@@ -1,18 +1,13 @@
 "use client";
 
+import { useAuthAlert } from "@/hooks/useAuthAlert";
 import { ReadingDetail } from "@/modules/reading/ReadingDetail";
 import { ReadingList } from "@/modules/reading/ReadingList";
-import { useAppStore } from "@/store/useAppStore";
 
 export function Reading() {
-  const profile = useAppStore((state) => state.profile);
+  const { authContent } = useAuthAlert();
 
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
+  if (authContent) return authContent;
 
   return (
     <div className="flex gap-4">

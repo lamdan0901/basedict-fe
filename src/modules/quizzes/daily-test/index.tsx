@@ -5,12 +5,14 @@ import useSWR from "swr";
 import { useAppStore } from "@/store/useAppStore";
 import { useEffect } from "react";
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
+import { useAuthAlert } from "@/hooks/useAuthAlert";
 
 export function DailyTest() {
-  const { profile, seasonRank } = useAppStore();
+  const { seasonRank } = useAppStore();
+  const { user, authContent } = useAuthAlert();
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    profile ? `/v1/exams/daily-exam?rank=${seasonRank}` : null,
+    user ? `/v1/exams/daily-exam?rank=${seasonRank}` : null,
     getRequest
   );
 
@@ -18,12 +20,7 @@ export function DailyTest() {
     document.title = `${seasonRank} - Daily exam | BaseDict`;
   }, [seasonRank]);
 
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
+  if (authContent) return authContent;
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)

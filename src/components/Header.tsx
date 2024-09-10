@@ -25,6 +25,8 @@ import useSWR from "swr";
 import { fetchUserProfile } from "@/service/user";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
+import { AuthAlert } from "@/components/AuthAlert";
+import { useAlertStore } from "@/store/useAlertStore";
 
 const menu = [
   {
@@ -55,6 +57,7 @@ const Header = () => {
   const pathname = usePathname();
   const { clearProfile, setProfile, profile } = useAppStore();
   const [openMenu, setOpenMenu] = useState(false);
+  const { loginAlertOpen, setLoginAlertOpen } = useAlertStore();
 
   const {
     data: user,
@@ -85,13 +88,13 @@ const Header = () => {
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
       <Link
-        className="mr-auto hover:bg-slate-300/40 transition rounded-sm p-1"
+        className="mr-auto sm:block hidden hover:bg-slate-300/40 transition rounded-sm p-1"
         href={"/"}
       >
         <Image
-          src={"/images/header_icon.png"}
-          width={75}
-          height={75}
+          src={"/images/header_logo_pc.png"}
+          width={128}
+          height={41}
           alt="basedict-header"
         />
       </Link>
@@ -139,7 +142,7 @@ const Header = () => {
             variant="ghost"
           >
             <Image src="/apps.svg" width={45} height={45} alt="apps" />{" "}
-            <span> Ứng dụng</span>
+            <span className="sm:inline hidden"> Ứng dụng</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit">
@@ -167,6 +170,8 @@ const Header = () => {
           </div>
         </PopoverContent>
       </Popover>
+
+      <AuthAlert open={loginAlertOpen} onOpenChange={setLoginAlertOpen} />
     </header>
   );
 };

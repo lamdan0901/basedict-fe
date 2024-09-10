@@ -11,13 +11,15 @@ import { useMemo, useState } from "react";
 import useSWR from "swr";
 import dayjs from "dayjs";
 import { MAX_POINT } from "@/modules/quizzes/const";
+import { useAuthAlert } from "@/hooks/useAuthAlert";
 
 export function QuizGeneralInfo() {
-  const { profile, setSeasonRank } = useAppStore();
+  const { setSeasonRank } = useAppStore();
+  const { user, authContent } = useAuthAlert();
   const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
 
   const { isLoading: loadingSeasonList } = useSWR<TSeason[]>(
-    profile ? "/v1/exams/season-list" : null,
+    user ? "/v1/exams/season-list" : null,
     getRequest,
     {
       onSuccess(data) {
@@ -69,12 +71,7 @@ export function QuizGeneralInfo() {
   const isLoading =
     loadingSeasonList || loadingSeasonProfile || loadingSeasonHistory;
 
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
+  if (authContent) return authContent;
 
   if (isLoading) return <div>Đang tải thông tin chung...</div>;
 
@@ -91,11 +88,11 @@ export function QuizGeneralInfo() {
               width={80}
               height={80}
               className="rounded-full"
-              src={profile?.avatar || DEFAULT_AVATAR_URL}
+              src={user?.avatar || DEFAULT_AVATAR_URL}
               alt="avatar"
             />
             <div>
-              <div className="text-xl font-semibold">{profile?.name}</div>
+              <div className="text-xl font-semibold">{user?.name}</div>
               <div className="flex mt-2 gap-2">
                 {seasonProfile?.badge.map((badge) => (
                   <Badge key={badge} variant={"secondary"} className="h-6">
