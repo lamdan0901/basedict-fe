@@ -90,9 +90,6 @@ export const LexemeSearch = forwardRef<
       isVocabMode && !initialText
         ? `/v1/lexemes?${stringifyParams({
             search: trimAllSpaces(lexemeSearchParam),
-            sort: "frequency_ranking",
-            orderDirection: "asc",
-            isMaster: true,
           })}`
         : null,
       getRequest
