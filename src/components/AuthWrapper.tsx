@@ -41,7 +41,7 @@ export function AuthWrapper({ children }: PropsWithChildren) {
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
         <AlertDialogContent aria-describedby={undefined}>
           <AlertDialogHeader>
-            <AlertDialogTitle className="sm:!text-center">
+            <AlertDialogTitle className="sm:!text-center font-medium">
               Tính năng này yêu cầu đăng nhập <br />
               Hãy đăng nhập hoặc đăng kí ở đây
             </AlertDialogTitle>
@@ -50,8 +50,8 @@ export function AuthWrapper({ children }: PropsWithChildren) {
             <button type="submit">
               <Image
                 src="/sign-in-desktop.svg"
-                width={175}
-                height={45}
+                width={305}
+                height={75}
                 alt="sign-in-desktop"
               />
             </button>

@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
 
+// if what we need is to get user profile, we can use getUser()
 export async function fetchUserProfile(): Promise<any> {
   const supabase = createClient();
   const {

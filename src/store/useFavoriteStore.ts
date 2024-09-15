@@ -15,7 +15,7 @@ interface IFavoriteState {
 export const useFavoriteStore = create<IFavoriteState>()(
   persist(
     immer((set, get) => ({
-      favoriteItems: [],
+      favoriteItems: [] as TFavoriteItem[],
       addFavoriteItem: (item) => {
         set((state) => {
           if (state.favoriteItems.length >= MAX_FAVORITE_ITEMS) {

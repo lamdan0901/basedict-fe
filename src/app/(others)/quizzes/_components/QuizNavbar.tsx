@@ -36,9 +36,9 @@ const menu = [
 ];
 
 export function QuizNavbar() {
-  const isSmScreen = useMediaQuery("(min-width: 1024px)");
+  const isLgScreen = useMediaQuery("(min-width: 1024px)");
 
-  if (isSmScreen) return <InnerQuizNavbar />;
+  if (isLgScreen) return <InnerQuizNavbar />;
 
   return (
     <Sheet>

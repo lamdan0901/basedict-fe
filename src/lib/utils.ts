@@ -35,3 +35,8 @@ export function formatSecToMinute(sec: number) {
   const secs = sec % 60 < 10 ? `0${sec % 60}` : sec % 60;
   return `${mins}:${secs}`;
 }
+
+export const scrollToTop = (id: string) => {
+  const topEl = document.querySelector(id);
+  topEl?.scrollIntoView({ behavior: "smooth", block: "end" });
+};

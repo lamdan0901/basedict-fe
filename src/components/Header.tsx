@@ -150,7 +150,14 @@ const Header = () => {
         <PopoverContent className="w-fit">
           <div className="grid grid-cols-2 place-items-center gap-2">
             {menu.map((item) => (
-              <Link href={item.href} key={item.href}>
+              <Link
+                href={
+                  item.href === "/vocabulary"
+                    ? `${item.href}/${user?.jlptLevel ?? "N3"}`
+                    : item.href
+                }
+                key={item.href}
+              >
                 <Button
                   onClick={() => setOpenMenu(false)}
                   className={cn(

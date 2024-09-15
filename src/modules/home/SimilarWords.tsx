@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { GRAMMAR_CHAR } from "@/constants";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
+import { SimilarLexemes } from "@/components/SimilarLexemes";
 
 export function SimilarWords({
   similars,
@@ -36,18 +36,5 @@ export function SimilarWords({
     }
   }
 
-  return (
-    <div className="flex gap-2 px-4 h-fit flex-wrap">
-      <p className="text-base sm:text-lg">Từ tương tự:</p>
-      {similars?.map((word, i) => (
-        <Badge
-          className="cursor-pointer text-sm sm:text-base"
-          onClick={() => handleWordClick(word)}
-          key={i}
-        >
-          {word}
-        </Badge>
-      ))}
-    </div>
-  );
+  return <SimilarLexemes similars={similars} onWordClick={handleWordClick} />;
 }

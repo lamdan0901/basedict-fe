@@ -20,6 +20,7 @@ type TLexeme = {
   old_jlpt_level: number;
   frequency_ranking: number;
   word_origin: string;
+  hiragana2: string;
 };
 
 type TGrammar = {

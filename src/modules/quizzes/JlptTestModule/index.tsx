@@ -25,7 +25,7 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
           <JLPTTestDescLink />
         </div>
         <JlptTestQuestions isDailyTest={isDailyTest} data={data} />
-        <ScrollToTopButton />
+        <ScrollToTopButton id="#top-of-jlpt-test" />
       </CardContent>
     </Card>
   );
