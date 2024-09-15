@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SquareMenu } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib";
 
 const menu = [
   {
@@ -64,20 +66,22 @@ function InnerQuizNavbar() {
 
   return (
     <Card className="flex-1 mt-8 lg:mt-0">
-      <CardContent>
-        <div className="">
-          {menu.map((item, i) => (
-            <a
-              href={item.href}
-              key={i}
-              className={`py-4 inline-block w-full hover:text-blue-500 border-b border-muted-foreground ${
-                pathname === item.href ? "font-semibold" : ""
-              }`}
+      <CardContent className="p-2 flex flex-col items-center gap-y-2">
+        {menu.map((item, i) => (
+          <a className="w-full" href={item.href} key={i}>
+            <Button
+              className={cn(
+                "w-full hover:text-blue-500 ",
+                i !== menu.length - 1 && "mb-2",
+                item.href === pathname && "text-blue-500 font-semibold"
+              )}
+              variant={"ghost"}
             >
               {item.title}
-            </a>
-          ))}
-        </div>
+            </Button>
+            {i !== menu.length - 1 && <Separator />}
+          </a>
+        ))}
       </CardContent>
     </Card>
   );

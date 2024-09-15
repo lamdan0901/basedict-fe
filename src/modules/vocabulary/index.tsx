@@ -52,7 +52,6 @@ export function Vocabulary() {
           onChange={(e) => {
             handleSearch(e.target.value);
           }}
-          id="inputz"
           type="text"
           placeholder="Tìm từ vựng..."
         />

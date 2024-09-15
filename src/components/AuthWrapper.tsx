@@ -7,8 +7,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { login } from "@/service/actions";
-import Image from "next/image";
 import { fetchUserProfile } from "@/service/user";
+import Image from "next/image";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 

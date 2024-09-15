@@ -18,8 +18,10 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib";
 import { useParams } from "next/navigation";
 import { SquareMenu } from "lucide-react";
+import { useState } from "react";
 
 export function VocabNavbar() {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const isLgScreen = useMediaQuery("(min-width: 1024px)");
   const isXsScreen = useMediaQuery("(min-width: 480px)");
 
@@ -28,7 +30,7 @@ export function VocabNavbar() {
   }
 
   return (
-    <Sheet>
+    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
         <Button
           variant={"outline"}
@@ -48,7 +50,11 @@ export function VocabNavbar() {
   );
 }
 
-function InnerVocabNavbar() {
+function InnerVocabNavbar({
+  onMenuItemClick,
+}: {
+  onMenuItemClick?: () => void;
+}) {
   const [tab, setTab] = useQueryParam("tab", TabVal.Levels);
 
   return (
@@ -59,7 +65,7 @@ function InnerVocabNavbar() {
           <TabsTrigger value={TabVal.VocabBooks}>Theo bộ sách</TabsTrigger>
         </TabsList>
         <TabsContent value={TabVal.Levels}>
-          <LevelList />
+          <LevelList onMenuItemClick={onMenuItemClick} />
         </TabsContent>
         <TabsContent value={TabVal.VocabBooks}>
           <VocabBookList />
@@ -69,7 +75,7 @@ function InnerVocabNavbar() {
   );
 }
 
-function LevelList() {
+function LevelList({ onMenuItemClick }: { onMenuItemClick?: () => void }) {
   const jlptLevel = useParams().level?.[0] ?? "N3";
 
   return (
@@ -88,6 +94,7 @@ function LevelList() {
                 level.value === jlptLevel && "text-blue-500 font-semibold"
               )}
               variant={"ghost"}
+              onClick={() => onMenuItemClick?.()}
             >
               Cấp độ {level.title}
             </Button>

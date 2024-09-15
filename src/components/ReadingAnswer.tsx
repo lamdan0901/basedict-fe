@@ -1,10 +1,21 @@
 import { Label } from "@/components/ui/label";
-import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
-import { cn } from "@/lib";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
-import { TestState } from "@/modules/quizzes/const";
-import { memo, useMemo } from "react";
+import { cn } from "@/lib";
+import {
+  questionTypesWithExplanation,
+  TestState,
+} from "@/modules/quizzes/const";
 import { useAnswerStore } from "@/store/useAnswerStore";
+import { CircleHelp } from "lucide-react";
+import { memo, useMemo, useState } from "react";
+import useSWRMutation from "swr/mutation";
+import { postRequest } from "../service/data";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -30,10 +41,25 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
     index,
     onValueChange,
   }) => {
+    const [explanation, setExplanation] = useState("");
     const _value = useMemo(
       () => value ?? useAnswerStore.getState().userAnswers[+index.slice(1)],
       [index, value]
     );
+
+    const { trigger, isMutating } = useSWRMutation(
+      `/v1/question-masters/${question.id}/explanation`,
+      postRequest
+    );
+
+    async function handleGetExplanation() {
+      try {
+        const { data } = await trigger(question);
+        setExplanation(data.explanation);
+      } catch (err) {
+        console.log("err: ", err);
+      }
+    }
 
     return (
       <div className="space-y-3 mb-4">
@@ -52,6 +78,12 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
           {question.answers.map((answer) => {
             const isUserSelectedAns = _value === answer + index;
             const isCorrectAnswer = answer === question.correctAnswer;
+            const shouldShowTooltip =
+              shouldShowAns &&
+              isCorrectAnswer &&
+              question.type &&
+              questionTypesWithExplanation.includes(question.type);
+
             return (
               <div
                 key={answer + index}
@@ -86,6 +118,22 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                   className=" cursor-pointer"
                   htmlFor={answer + index}
                 ></Label>
+                {shouldShowTooltip && (
+                  <Tooltip>
+                    <TooltipTrigger
+                      onPointerEnter={handleGetExplanation}
+                      asChild
+                    >
+                      <CircleHelp className="size-4 text-[#555]" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="whitespace-pre-line">
+                        {isMutating && "Đang tải giải thích..."}{" "}
+                        {question.explanation || explanation}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             );
           })}

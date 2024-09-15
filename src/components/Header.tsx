@@ -38,14 +38,19 @@ const menu = [
     title: "Từ vựng",
   },
   {
-    href: "/reading",
-    icon: "/library.svg",
-    title: "Luyện đọc",
-  },
-  {
     href: "/grammar",
     icon: "/local_library.svg",
     title: "Ngữ pháp",
+  },
+  {
+    href: "/flashcard",
+    icon: "/collections_bookmark.svg",
+    title: "Flashcard",
+  },
+  {
+    href: "/reading",
+    icon: "/library.svg",
+    title: "Luyện đọc",
   },
   {
     href: "/quizzes/general-info",
@@ -65,7 +70,7 @@ const Header = () => {
     data: user,
     mutate,
     isLoading,
-  } = useSWR<TUser>("get-user", fetchUserProfile);
+  } = useSWR<TUser>("get-user-profile", fetchUserProfile);
 
   async function signOut() {
     const client = createClient();
