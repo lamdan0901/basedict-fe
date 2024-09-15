@@ -153,13 +153,16 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
             {lexemeSearch?.standard !== lexemeSearch?.lexeme
               ? `(${lexemeSearch?.lexeme})`
               : ""}{" "}
+            {lexemeSearch?.hanviet && <span>({lexemeSearch?.hanviet})</span>}
             {lexemeSearch?.approved && (
               <CircleCheckBig className="text-green-500 shrink-0 w-4 h-4" />
             )}
           </div>
           <div className="flex gap-1 flex-nowrap">
             <span>{lexemeSearch?.hiragana}</span>
-            {lexemeSearch?.hanviet && <span>({lexemeSearch?.hanviet})</span>}
+            {lexemeSearch?.hiragana2 && (
+              <span>/ {lexemeSearch?.hiragana2}</span>
+            )}
           </div>
         </div>
 
