@@ -1,50 +1,56 @@
-import { useParams } from "next/navigation";
-import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useDebounceFn } from "@/hooks/useDebounce";
-import { useQueryParams } from "@/hooks/useQueryParam";
-import { scrollToTop, stringifyParams } from "@/lib";
-import { flashcardSortMap } from "@/modules/flashcard/const";
-import { FlashcardItem } from "@/modules/flashcard/FlashcardItem";
-import { Searchbar } from "@/modules/flashcard/Searchbar";
+import { DEFAULT_AVATAR_URL } from "@/constants";
+import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { getRequest } from "@/service/data";
-import { useState } from "react";
+import { BookCopy, CheckCheck, GraduationCap } from "lucide-react";
+import Image from "next/image";
+import { useParams } from "next/navigation";
 import useSWR from "swr";
 
 export function UserFlashcard() {
   const { userId } = useParams();
-  const [searchParams, setSearchParams] = useQueryParams({
-    search: "",
-    sort: "popular",
-    offset: 1,
-    limit: 20,
-  });
-  const [searchText, setSearchText] = useState(searchParams.search);
 
-  const { data: flashcardSearch, isLoading: isSearching } = useSWR<{
-    data: TFlashCard[];
-    total: number;
-  }>(
-    `/v1/flash-card-sets/discover?${stringifyParams(searchParams)}`,
+  const { data: owner, isLoading } = useSWR<TFlashcardSetOwner>(
+    `/v1/flash-card-sets/user/${userId}`,
     getRequest
   );
-  const flashcards = flashcardSearch?.data ?? [];
-  const total = flashcardSearch?.total ?? 0;
+  const flashcards = owner?.flashCardSets ?? [];
+  const total = flashcards?.length ?? 0;
 
-  const debouncedSearch = useDebounceFn((value: string) => {
-    setSearchParams({ search: value });
-  });
+  return (
+    <div className="space-y-4">
+      <div className="flex pb-4 border-b border-muted-foreground items-center gap-4">
+        <Image
+          src={owner?.avatar || DEFAULT_AVATAR_URL}
+          width={80}
+          height={80}
+          className="rounded-full size-20 object-cover shrink-0"
+          alt="owner-avatar"
+        />
+        <div className="space-y-4">
+          <span className="text-lg font-semibold">{owner?.name}</span>
+          <div className="flex gap-2">
+            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+              <BookCopy className="size-5" /> {total} bộ flashcard
+            </div>
+            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+              <GraduationCap className="size-5" />
+              <span>{owner?.totalLearnedNumber ?? 0} người</span>
+            </div>
+            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+              <CheckCheck className="size-5" />
+              <span>{owner?.totalLearningNumber ?? 0} lượt</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  function handleSearch(text: string) {
-    setSearchText(text);
-    debouncedSearch(text);
-  }
+      {isLoading && <span>Đang tải...</span>}
 
-  return <div>{userId};</div>;
+      <div className="grid gap-4 xl:grid-cols-2">
+        {flashcards.map((card) => (
+          <FlashcardItem key={card.id} card={card} />
+        ))}
+      </div>
+    </div>
+  );
 }

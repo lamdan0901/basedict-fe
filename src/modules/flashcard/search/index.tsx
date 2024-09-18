@@ -11,8 +11,8 @@ import { useDebounceFn } from "@/hooks/useDebounce";
 import { useQueryParams } from "@/hooks/useQueryParam";
 import { scrollToTop, stringifyParams } from "@/lib";
 import { flashcardSortMap } from "@/modules/flashcard/const";
-import { FlashcardItem } from "@/modules/flashcard/FlashcardItem";
-import { Searchbar } from "@/modules/flashcard/Searchbar";
+import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
+import { Searchbar } from "@/modules/flashcard/components/Searchbar";
 import { getRequest } from "@/service/data";
 import { useState } from "react";
 import useSWR from "swr";
@@ -29,7 +29,7 @@ export function FlashcardSearch() {
   const [searchText, setSearchText] = useState(searchParams.search);
 
   const { data: flashcardSearch, isLoading: isSearching } = useSWR<{
-    data: TFlashCard[];
+    data: TFlashcardSet[];
     total: number;
   }>(
     `/v1/flash-card-sets/discover?${stringifyParams(searchParams)}`,

@@ -11,10 +11,12 @@ import {
 } from "@/components/ui/sheet";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib";
+import { getRequest } from "@/service/data";
 import { SquareMenu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import useSWR from "swr";
 
 const menu = [
   {
@@ -28,6 +30,12 @@ const menu = [
   {
     title: "Flashcard của tôi",
     href: "/flashcard/my-flashcard",
+    withSubItems: true,
+  },
+  {
+    title: "Flashcard đang học",
+    href: "/flashcard/my-flashcard",
+    withSubItems: true,
   },
 ];
 
@@ -67,26 +75,59 @@ function InnerFlashcardNavbar({
   onMenuItemClick?: () => void;
 }) {
   const pathname = usePathname();
+  const { data: myFlashcardSet } = useSWR<TMyFlashcard>(
+    `/v1/flash-card-sets/my-flash-card`,
+    getRequest
+  );
+
+  const myFlashCards = myFlashcardSet?.myFlashCards ?? [];
+  const learningFlashCards = myFlashcardSet?.learningFlashCards ?? [];
+
+  const cardsMap: Record<string, TFlashcardSet[]> = {
+    "Flashcard của tôi": myFlashCards,
+    "Flashcard đang học": learningFlashCards,
+  };
 
   return (
     <div className="mt-8 lg:mt-0 mb-2">
       <Card>
         <CardContent className="p-2 flex flex-col items-center gap-y-2">
           {menu.map((item, i) => (
-            <Link className="w-full" href={item.href} key={item.href}>
-              <Button
-                className={cn(
-                  "w-full hover:text-blue-500 ",
-                  i !== menu.length - 1 && "mb-2",
-                  item.href === pathname && "text-blue-500 font-semibold"
-                )}
-                variant={"ghost"}
-                onClick={() => onMenuItemClick?.()}
-              >
-                {item.title}
-              </Button>
+            <Fragment key={item.href + i}>
+              <Link className="w-full" href={item.href}>
+                <Button
+                  className={cn(
+                    "w-full hover:text-blue-500 ",
+                    item.href === pathname && "text-blue-500 font-semibold",
+                    item.withSubItems && "font-semibold"
+                  )}
+                  variant={"ghost"}
+                  onClick={onMenuItemClick}
+                >
+                  {item.title}
+                </Button>
+              </Link>
+              {item.withSubItems &&
+                cardsMap[item.title].map((item) => (
+                  <Link
+                    className="w-full"
+                    key={item.id}
+                    href={`/flashcard/${item.id}`}
+                  >
+                    <Button
+                      className={cn(
+                        "w-full font-normal hover:text-blue-500 ",
+                        `/flashcard/${item.id}` === pathname && "text-blue-500"
+                      )}
+                      variant={"ghost"}
+                      onClick={onMenuItemClick}
+                    >
+                      {item.title}
+                    </Button>
+                  </Link>
+                ))}
               {i !== menu.length - 1 && <Separator />}
-            </Link>
+            </Fragment>
           ))}
         </CardContent>
       </Card>

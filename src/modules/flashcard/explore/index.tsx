@@ -1,13 +1,13 @@
 import { Input } from "@/components/ui/input";
-import { FlashcardCreator } from "@/modules/flashcard/FlashcardCreator";
-import { FlashcardItem } from "@/modules/flashcard/FlashcardItem";
+import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreator";
+import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { getRequest } from "@/service/data";
 import Link from "next/link";
 import useSWR from "swr";
 
 export function FlashcardExploring() {
   const { data: flashcardDiscover, isLoading: isLoadingDiscover } = useSWR<{
-    data: TFlashCard[];
+    data: TFlashcardSet[];
     total: number;
   }>("/v1/flash-card-sets/discover", getRequest);
 
