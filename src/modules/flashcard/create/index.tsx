@@ -14,9 +14,9 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 export function FlashcardCreation() {
   const { toast } = useToast();
@@ -58,7 +58,11 @@ export function FlashcardCreation() {
   const { trigger: addFlashcardSet, isMutating: isAddingFlashcardSet } =
     useSWRMutation("/v1/flash-card-sets", postRequest);
   const { trigger: updateFlashcardSet, isMutating: isUpdatingFlashcardSet } =
-    useSWRMutation(`/v1/flash-card-sets/${flashcardId}`, patchRequest);
+    useSWRMutation(
+      `flash-card-sets/${flashcardId}/delete`,
+      (_, { arg }: { arg: TFlashCardSetForm }) =>
+        patchRequest(`/v1/flash-card-sets/${flashcardId}`, { arg })
+    );
 
   const isLoading = isLoadingFlashcardSet || isLoadingUser;
   const isMutating = isAddingFlashcardSet || isUpdatingFlashcardSet;
@@ -103,7 +107,7 @@ export function FlashcardCreation() {
       </div>
       <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="description">Mô tả</Label>
-        <Input
+        <Textarea
           id="description"
           {...register("description")}
           error={errors.description?.message}

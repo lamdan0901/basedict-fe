@@ -17,7 +17,7 @@ import { Check, CheckCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
 export function FlashcardDetail() {
@@ -33,7 +33,7 @@ export function FlashcardDetail() {
   const {
     data: flashcardSet,
     isLoading: isLoadingFlashcardSet,
-    mutate,
+    mutate: mutateFlashcardSet,
   } = useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
 
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
@@ -61,7 +61,10 @@ export function FlashcardDetail() {
   async function toggleLearningStatus() {
     try {
       await (flashcardSet?.isLearning ? stopLearning() : startLearning());
-      await mutate();
+      await Promise.all([
+        mutateFlashcardSet(),
+        mutate("/v1/flash-card-sets/my-flash-card"),
+      ]);
       toast({
         title: `${learningStatusTitle} thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -100,7 +103,9 @@ export function FlashcardDetail() {
       <FlashcardItem card={flashcardSet} asHeading />
 
       <div className="flex gap-2 pt-4 border-t border-muted-foreground justify-center">
-        <Button>Bắt đầu học</Button>
+        <Link href={`/flashcard/${flashcardId}/learn`}>
+          <Button>Bắt đầu học</Button>
+        </Link>
         {!isMyFlashcard && (
           <Button
             disabled={isTogglingLearning}
@@ -133,13 +138,13 @@ export function FlashcardDetail() {
               <Card key={card.id}>
                 <CardContent className="sm:p-4 p-2 items-center relative flex flex-col sm:flex-row gap-2">
                   <div className="sm:flex-[3] pr-7 w-full sm:pr-0 space-y-2">
-                    <div>{card.frontSide}</div>
-                    <div className="text-sm">{card.frontSide}</div>
+                    <div className="font-semibold">{card.frontSide}</div>
+                    <div className="text-sm">{card.frontSideComment}</div>
                   </div>
                   <ChevronRight className="size-10 sm:rotate-0 rotate-90 text-muted-foreground w-10 shrink-0" />
-                  <div className="sm:flex-[7] sm:pr-6 w-full space-y-2">
-                    <div>{card.frontSide}</div>
-                    <div className="text-sm">{card.frontSide}</div>
+                  <div className="sm:flex-[7] w-full space-y-2">
+                    <div className="font-semibold">{card.backSide}</div>
+                    <div className="text-sm">{card.backSideComment}</div>
                   </div>
                 </CardContent>
               </Card>
