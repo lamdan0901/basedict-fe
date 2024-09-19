@@ -12,8 +12,10 @@ import { AddNewFlashcardModal } from "@/modules/home/MeaningSection/AddNewFlashc
 import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
 import { postRequest } from "@/service/data";
 import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Album,
   Check,
@@ -48,8 +50,10 @@ export function MeaningSection({
   wordIdToReport,
   retryLexemeSearch,
 }: MeaningSectionProps) {
+  const { canShowTips, hideTips } = useAppStore();
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
+  const [shouldShowTips, toggleTips] = useState(false);
   const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
   const [addFlashcardModalOpen, setAddFlashcardModalOpen] = useState(false);
   const { vocabMeaningErrMsg } = useLexemeStore();
@@ -97,6 +101,12 @@ export function MeaningSection({
     );
   }, [reportedWords, wordIdToReport]);
 
+  useEffect(() => {
+    if (canShowTips && lexemeSearch && lexemeSearch?.meaning.length >= 2) {
+      toggleTips(true);
+    }
+  }, [canShowTips, lexemeSearch]);
+
   return (
     <Card
       className={cn(
@@ -142,6 +152,29 @@ export function MeaningSection({
                     </Command>
                   </PopoverContent>
                 </Popover>
+                {canShowTips && (
+                  <Popover open={shouldShowTips} onOpenChange={toggleTips}>
+                    <PopoverTrigger asChild>
+                      <button className="h-6"></button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div>
+                        Tips: bấm vào nghĩa của từ để xem các nghĩa khác
+                      </div>
+                      <div className="flex items-center mt-1 space-x-2">
+                        <Checkbox
+                          onCheckedChange={() =>
+                            setTimeout(() => hideTips(), 800)
+                          }
+                          id="terms"
+                        />
+                        <label htmlFor="terms" className="text-sm font-sm">
+                          Không hiện tips này nữa
+                        </label>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )}
                 {lexemeSearch.approved && (
                   <CircleCheckBig className="text-green-500 w-4 h-4 mb-1" />
                 )}

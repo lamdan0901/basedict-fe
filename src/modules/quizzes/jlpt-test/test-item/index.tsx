@@ -38,6 +38,9 @@ export function JLPTTest() {
     );
 
   return (
-    <JlptTestModule title={`${data?.title} - ${data?.jlptLevel}`} data={data} />
+    <JlptTestModule
+      title={`${data?.title ?? "Đề trộn"} - ${data?.jlptLevel}`}
+      data={data}
+    />
   );
 }
