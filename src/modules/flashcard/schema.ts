@@ -6,7 +6,7 @@ const flashCardItemSchema = z.object({
   frontSideComment: z.string().optional(),
   backSideComment: z.string().optional(),
   uid: z.string().optional(),
-  id: z.number().optional(),
+  id: z.any().optional(),
 });
 
 export const flashCardSetSchema = z.object({

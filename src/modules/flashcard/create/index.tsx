@@ -1,6 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { defaultFlashcardSet } from "@/modules/flashcard/const";
+import {
+  defaultFlashcardSet,
+  FLASHCARD_SETS_LIMIT,
+} from "@/modules/flashcard/const";
 import { FlashcardItemRegistration } from "@/modules/flashcard/create/FlashcardItemRegistration";
 import {
   flashCardSetSchema,
@@ -10,13 +13,14 @@ import { getRequest, patchRequest, postRequest } from "@/service/data";
 import { fetchUserProfile } from "@/service/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useEffect } from "react";
 
 export function FlashcardCreation() {
   const { toast } = useToast();
@@ -34,6 +38,7 @@ export function FlashcardCreation() {
     handleSubmit,
     formState: { errors },
   } = form;
+  console.log("errors: ", errors);
 
   const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
     flashcardId ? "get-user" : null,
@@ -41,19 +46,8 @@ export function FlashcardCreation() {
   );
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(
-      flashcardId ? `/v1/flash-card-sets/${flashcardId}` : null,
-      getRequest,
-      {
-        onSuccess(data) {
-          reset({
-            ...data,
-            flashCards: data.flashCards?.map((item) => ({
-              ...item,
-              uid: uuid(),
-            })),
-          });
-        },
-      }
+      flashcardId ? `flash-card-sets/${flashcardId}/get-one` : null,
+      () => getRequest(`/v1/flash-card-sets/${flashcardId}`)
     );
   const { trigger: addFlashcardSet, isMutating: isAddingFlashcardSet } =
     useSWRMutation("/v1/flash-card-sets", postRequest);
@@ -72,25 +66,46 @@ export function FlashcardCreation() {
     try {
       data.flashCards.forEach((item) => {
         delete item.uid;
+        if (!flashcardId) delete item.id;
       });
-      await (flashcardId ? updateFlashcardSet(data) : addFlashcardSet(data));
+
+      const { id } = await (flashcardId
+        ? updateFlashcardSet(data)
+        : addFlashcardSet(data));
+
+      mutate("/v1/flash-card-sets/my-flash-card");
       toast({
         title: `Lưu thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
       });
-      router.push(`/flashcard/${flashcardId}`);
+      router.push(`/flashcard/${id}`);
     } catch (err) {
       console.log("err", err);
       toast({
-        title: `Lưu không thành công, hãy thử lại!`,
+        title:
+          err === "FORBIDDEN"
+            ? `Bạn chỉ có thể tạo và theo học tối đa ${FLASHCARD_SETS_LIMIT} bộ`
+            : `Lưu không thành công, hãy thử lại!`,
         variant: "destructive",
       });
     }
   }
 
+  useEffect(() => {
+    if (flashcardSet)
+      reset({
+        ...flashcardSet,
+        flashCards: flashcardSet.flashCards?.map((item) => ({
+          ...item,
+          uid: uuid(),
+        })),
+      });
+  }, [flashcardSet, reset]);
+
   if (isLoading) return <div>Đang tải bộ flashcard...</div>;
-  if (!flashcardSet) return <div>Không tìm thấy bộ flashcard</div>;
-  if (!isMyFlashcard)
+  if (flashcardId && !flashcardSet)
+    return <div>Không tìm thấy bộ flashcard</div>;
+  if (flashcardId && !isMyFlashcard)
     return <div>Bạn không có quyền chỉnh sửa bộ flashcard này</div>;
 
   return (

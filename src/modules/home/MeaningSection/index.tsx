@@ -8,13 +8,22 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
+import { AddNewFlashcardModal } from "@/modules/home/MeaningSection/AddNewFlashcardModal";
 import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
 import { postRequest } from "@/service/data";
+import { fetchUserProfile } from "@/service/user";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
+import {
+  Album,
+  Check,
+  CircleCheckBig,
+  Flag,
+  Heart,
+  RotateCcw,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { type KeyedMutator } from "swr";
+import useSWR, { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 
@@ -42,6 +51,7 @@ export function MeaningSection({
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
   const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
+  const [addFlashcardModalOpen, setAddFlashcardModalOpen] = useState(false);
   const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
@@ -52,6 +62,7 @@ export function MeaningSection({
   const isFavorite = isFavoriteItem(lexemeSearch?.id);
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
+  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
   const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
     useSWRMutation(`/v1/lexemes/report-wrong/${wordIdToReport}`, postRequest);
 
@@ -142,11 +153,23 @@ export function MeaningSection({
                     {currentMeaning?.context}
                   </div>
                 )}
+                {user && (
+                  <Button
+                    onClick={() => setAddFlashcardModalOpen(true)}
+                    className="rounded-full p-2"
+                    size="sm"
+                    variant="ghost"
+                    title="Thêm vào bộ flashcard"
+                  >
+                    <Album className={cn(" w-5 h-5")} />
+                  </Button>
+                )}
                 <Button
                   onClick={toggleFavorite}
                   className="rounded-full p-2"
                   size="sm"
                   variant="ghost"
+                  title="Thêm vào danh sách yêu thích"
                 >
                   <Heart
                     className={cn(" w-5 h-5", isFavorite && "text-destructive")}
@@ -159,12 +182,15 @@ export function MeaningSection({
                   className="rounded-full p-2"
                   size="sm"
                   variant="ghost"
+                  title="Báo cáo từ này"
                 >
                   <Flag className=" w-5 h-5" />
                 </Button>
               </div>
             </div>
+
             <p className="pl-1">{currentMeaning?.explaination}</p>
+
             {currentMeaning?.example && (
               <div>
                 <Button
@@ -184,6 +210,7 @@ export function MeaningSection({
                 </p>
               </div>
             )}
+
             <Button
               className="absolute bottom-3 underline hover:font-semibold text-blue-500 right-2"
               variant="link"
@@ -230,6 +257,13 @@ export function MeaningSection({
         open={meaningReportModalOpen}
         onOpenChange={setMeaningReportModalOpen}
         onMeaningReported={reportWrongWord}
+      />
+
+      <AddNewFlashcardModal
+        lexeme={lexemeSearch}
+        currentMeaning={currentMeaning}
+        open={addFlashcardModalOpen}
+        onOpenChange={setAddFlashcardModalOpen}
       />
     </Card>
   );

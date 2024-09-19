@@ -15,7 +15,8 @@ import { useAnswerStore } from "@/store/useAnswerStore";
 import { CircleHelp } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
-import { postRequest } from "../service/data";
+import { getRequest, postRequest } from "../service/data";
+import useSWR from "swr";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -49,13 +50,13 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
 
     const { trigger, isMutating } = useSWRMutation(
       `/v1/question-masters/${question.id}/explanation`,
-      postRequest
+      getRequest
     );
 
     async function handleGetExplanation() {
       try {
-        const { data } = await trigger(question);
-        setExplanation(data.explanation);
+        const { explanation } = await trigger();
+        setExplanation(explanation);
       } catch (err) {
         console.log("err: ", err);
       }
@@ -124,13 +125,17 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                       onPointerEnter={handleGetExplanation}
                       asChild
                     >
-                      <CircleHelp className="size-4 text-[#555]" />
+                      <CircleHelp className={cn("size-4 text-[#555]")} />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="whitespace-pre-line">
-                        {isMutating && "Đang tải giải thích..."}{" "}
-                        {question.explanation || explanation}
-                      </p>
+                      <p
+                        dangerouslySetInnerHTML={{
+                          __html: isMutating
+                            ? "Đang tải giải thích..."
+                            : question.explanation || explanation,
+                        }}
+                        className="whitespace-pre-line max-w-sm sm:max-w-xl lg:max-w-4xl"
+                      ></p>
                     </TooltipContent>
                   </Tooltip>
                 )}

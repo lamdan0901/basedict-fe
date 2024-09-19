@@ -18,17 +18,16 @@ export function FlashcardItem({
 
   return (
     <Card
-      className={asHeading ? "border-2" : "cursor-pointer"}
+      className={
+        asHeading
+          ? "border-2"
+          : "hover:shadow-lg cursor-pointer transition duration-300 "
+      }
       onClick={() => {
         !asHeading && router.push(`/flashcard/${card.id}`);
       }}
     >
-      <CardContent
-        className={cn(
-          "p-2 transition duration-300 sm:p-4",
-          !asHeading && "hover:shadow-lg"
-        )}
-      >
+      <CardContent className={cn("p-2 sm:p-4")}>
         <div className="flex justify-between">
           <h2 className="font-semibold text-lg">{card.title}</h2>
           <div className="bg-slate-50 text-black rounded-full px-6 pt-1 text-sm border">
@@ -36,7 +35,12 @@ export function FlashcardItem({
           </div>
         </div>
 
-        <p className={cn("text-xs mt-2 mb-3", !asHeading && "line-clamp-2")}>
+        <p
+          className={cn(
+            "text-xs mt-2 mb-3 whitespace-pre-line",
+            !asHeading && "line-clamp-2"
+          )}
+        >
           {card.description}
         </p>
 

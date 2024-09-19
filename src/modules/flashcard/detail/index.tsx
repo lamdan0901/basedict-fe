@@ -81,6 +81,7 @@ export function FlashcardDetail() {
   async function handleDeleteFlashcardSet() {
     try {
       await deleteFlashcardSet();
+      mutate("/v1/flash-card-sets/my-flash-card");
       toast({
         title: `Xoá thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -139,12 +140,16 @@ export function FlashcardDetail() {
                 <CardContent className="sm:p-4 p-2 items-center relative flex flex-col sm:flex-row gap-2">
                   <div className="sm:flex-[3] pr-7 w-full sm:pr-0 space-y-2">
                     <div className="font-semibold">{card.frontSide}</div>
-                    <div className="text-sm">{card.frontSideComment}</div>
+                    <div className="text-sm whitespace-pre-line">
+                      {card.frontSideComment}
+                    </div>
                   </div>
                   <ChevronRight className="size-10 sm:rotate-0 rotate-90 text-muted-foreground w-10 shrink-0" />
                   <div className="sm:flex-[7] w-full space-y-2">
                     <div className="font-semibold">{card.backSide}</div>
-                    <div className="text-sm">{card.backSideComment}</div>
+                    <div className="text-sm whitespace-pre-line">
+                      {card.backSideComment}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

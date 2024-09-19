@@ -1,28 +1,35 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useEffect, useState } from "react";
+import { FlashcardItem } from "@/modules/flashcard/learn/FlashcardItem";
+import { getRequest } from "@/service/data";
 import { CircleHelp } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export function FlashcardLearning() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  const [showingMeaning, setShowingMeaning] = useState(false);
+
+  const { flashcardId } = useParams();
+  const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
+    useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
 
   useEffect(() => {
     if (!api) return;
@@ -35,11 +42,34 @@ export function FlashcardLearning() {
     });
   }, [api]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        api?.scrollPrev();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        api?.scrollNext();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [api]);
+
+  if (isLoadingFlashcardSet) return <div>Đang tải bộ flashcard...</div>;
+  if (!flashcardSet) return <div>Không tìm thấy bộ flashcard</div>;
+
   return (
     <div className="max-w-[285px] sm:max-w-lg md:max-w-2xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Switch id="airplane-mode" />
+          <Switch
+            checked={showingMeaning}
+            onCheckedChange={setShowingMeaning}
+            id="airplane-mode"
+          />
           <Label htmlFor="airplane-mode">Hiển thị giải nghĩa</Label>
         </div>
         <TooltipProvider>
@@ -66,25 +96,21 @@ export function FlashcardLearning() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div>
-        <Carousel setApi={setApi} className="w-full">
-          <CarouselContent>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <CarouselItem key={index}>
-                <Card>
-                  <CardContent className="flex aspect-square sm:aspect-video items-center justify-center p-6">
-                    <span className="text-4xl font-semibold">{index + 1}</span>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-        <div className="py-2 text-center text-sm text-muted-foreground">
-          {current} / {count}
-        </div>
+      <Carousel setApi={setApi} className="w-full">
+        <CarouselContent>
+          {flashcardSet.flashCards?.map((item, index) => (
+            <FlashcardItem
+              key={index}
+              item={item}
+              showingMeaning={showingMeaning}
+            />
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+      <div className="py-2 text-center text-sm text-muted-foreground">
+        {current} / {count}
       </div>
     </div>
   );

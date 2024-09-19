@@ -24,7 +24,7 @@ export function MyFlashcard() {
 
   const myFlashCards = myFlashcardSet?.myFlashCards ?? [];
   const learningFlashCards = myFlashcardSet?.learningFlashCards ?? [];
-  const total = myFlashCards?.length ?? 0;
+  const total = (myFlashCards?.length ?? 0) + (learningFlashCards?.length ?? 0);
   const totalLearnedNumber = myFlashcardSet?.totalLearnedNumber ?? 0;
   const totalLearningNumber = myFlashcardSet?.totalLearningNumber ?? 0;
   const limitReached = total === FLASHCARD_SETS_LIMIT;
@@ -75,7 +75,9 @@ export function MyFlashcard() {
         <div className="flex items-center mb-2  justify-between">
           <h2 className="text-lg font-semibold">Flashcard của tôi</h2>
           <div className="flex text-muted-foreground items-center ">
-            <i>Bạn chỉ có thể tạo tối đa {FLASHCARD_SETS_LIMIT} bộ</i>
+            <i>
+              Bạn chỉ có thể tạo và theo học tối đa {FLASHCARD_SETS_LIMIT} bộ
+            </i>
             <CircleHelp className="size-5 ml-2" />
           </div>
         </div>

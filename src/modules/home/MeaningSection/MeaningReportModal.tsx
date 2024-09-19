@@ -1,5 +1,4 @@
 import { postRequest } from "@/service/data";
-import React from "react";
 import useSWRMutation from "swr/mutation";
 import { Button } from "@/components/ui/button";
 import {

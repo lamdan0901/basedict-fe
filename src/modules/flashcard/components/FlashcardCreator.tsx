@@ -8,10 +8,10 @@ export function FlashcardCreator({ creator }: { creator: TFlashcardCreator }) {
   const router = useRouter();
 
   return (
-    <Card>
+    <Card className="cursor-pointer hover:shadow-lg transition duration-300">
       <CardContent
         onClick={() => router.push(`/flashcard/user/${creator.id}`)}
-        className="p-2 cursor-pointer space-y-4 hover:shadow-lg transition duration-300 sm:p-4"
+        className="p-2 space-y-4 sm:p-4"
       >
         <div className="flex flex-wrap items-center gap-2">
           <Image

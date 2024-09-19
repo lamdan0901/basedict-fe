@@ -39,7 +39,9 @@ export function FlashcardItemRegistration({
           return (
             <Card key={item.uid}>
               <CardContent className="sm:p-4 p-2 items-center relative flex flex-col sm:flex-row gap-2">
-                <input type="hidden" {...register(`flashCards.${i}.id`)} />
+                {item.id && (
+                  <input type="hidden" {...register(`flashCards.${i}.id`)} />
+                )}
                 <div className="sm:flex-[3] pr-7 w-full sm:pr-0 space-y-4">
                   <Input
                     variant="outlined"
