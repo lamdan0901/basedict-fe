@@ -155,9 +155,9 @@ export function MeaningSection({
                 {canShowTips && (
                   <Popover open={shouldShowTips} onOpenChange={toggleTips}>
                     <PopoverTrigger asChild>
-                      <button className="h-6"></button>
+                      <button className="h-2"></button>
                     </PopoverTrigger>
-                    <PopoverContent>
+                    <PopoverContent side="top" align="start">
                       <div>
                         Tips: bấm vào nghĩa của từ để xem các nghĩa khác
                       </div>

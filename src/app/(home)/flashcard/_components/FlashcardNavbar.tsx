@@ -116,7 +116,7 @@ function InnerFlashcardNavbar({
                   >
                     <Button
                       className={cn(
-                        "w-full font-normal hover:text-blue-500 ",
+                        "w-full block truncate font-normal hover:text-blue-500 ",
                         `/flashcard/${item.id}` === pathname && "text-blue-500"
                       )}
                       variant={"ghost"}

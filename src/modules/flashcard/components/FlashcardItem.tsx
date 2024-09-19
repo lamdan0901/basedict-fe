@@ -28,9 +28,11 @@ export function FlashcardItem({
       }}
     >
       <CardContent className={cn("p-2 sm:p-4")}>
-        <div className="flex justify-between">
-          <h2 className="font-semibold text-lg">{card.title}</h2>
-          <div className="bg-slate-50 text-black rounded-full px-6 pt-1 text-sm border">
+        <div className="flex justify-between items-start gap-2">
+          <h2 title={card.title} className="font-semibold truncate text-lg">
+            {card.title}
+          </h2>
+          <div className="bg-slate-50 text-black shrink-0 rounded-full px-6 pt-1 text-sm border">
             {card.flashCardNumber} thẻ
           </div>
         </div>
