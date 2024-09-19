@@ -25,6 +25,7 @@ import useSWR from "swr";
 import { fetchUserProfile } from "@/service/user";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
+import { useFormStatus } from "react-dom";
 
 const menu = [
   {
@@ -108,9 +109,7 @@ const Header = () => {
 
       {!user && !isLoading && (
         <form action={login}>
-          <Button type="submit" variant={"secondary"} className="text-lg">
-            Đăng nhập
-          </Button>
+          <LoginButton />
         </form>
       )}
 
@@ -187,5 +186,19 @@ const Header = () => {
     </header>
   );
 };
+
+function LoginButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      variant={"secondary"}
+      disabled={pending}
+      className="text-lg"
+    >
+      {pending ? "Đang đăng nhập..." : "Đăng nhập"}
+    </Button>
+  );
+}
 
 export default Header;

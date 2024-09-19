@@ -11,6 +11,8 @@ import { fetchUserProfile } from "@/service/user";
 import Image from "next/image";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
+import { useFormStatus } from "react-dom";
+import { Button } from "@/components/ui/button";
 
 export function AuthWrapper({ children }: PropsWithChildren) {
   const alertOpenRef = useRef(false);
@@ -47,14 +49,7 @@ export function AuthWrapper({ children }: PropsWithChildren) {
             </AlertDialogTitle>
           </AlertDialogHeader>
           <form className="w-fit mx-auto" action={login}>
-            <button type="submit">
-              <Image
-                src="/sign-in-desktop.svg"
-                width={305}
-                height={75}
-                alt="sign-in-desktop"
-              />
-            </button>
+            <LoginButton />
           </form>
           <AlertDialogFooter className="sm:justify-center">
             <AlertDialogCancel className="w-fit">Đóng</AlertDialogCancel>
@@ -62,5 +57,24 @@ export function AuthWrapper({ children }: PropsWithChildren) {
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+function LoginButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      title="Đăng nhập bằng Google"
+      type="submit"
+      className={pending ? "opacity-50 pointer-events-none" : undefined}
+      disabled={pending}
+    >
+      <Image
+        src="/sign-in-desktop.svg"
+        width={305}
+        height={75}
+        alt="sign-in-desktop"
+      />
+    </button>
   );
 }
