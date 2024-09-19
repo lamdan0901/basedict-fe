@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge";
+import { MouseEvent } from "react";
 
 type Props = {
   similars?: string[];
-  onWordClick?(word: string): void;
+  onWordClick?(lexeme: string, e: MouseEvent<HTMLDivElement>): void;
 };
 
 export function SimilarLexemes({ similars = [], onWordClick }: Props) {
@@ -12,7 +13,7 @@ export function SimilarLexemes({ similars = [], onWordClick }: Props) {
       {similars.map((word, i) => (
         <Badge
           className="cursor-pointer text-sm sm:text-base"
-          onClick={() => onWordClick?.(word)}
+          onClick={(e) => onWordClick?.(word, e)}
           key={i}
         >
           {word}

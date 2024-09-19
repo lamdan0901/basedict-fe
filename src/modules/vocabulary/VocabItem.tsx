@@ -3,12 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib";
 import { ChevronLeft, ChevronRight, CircleCheckBig } from "lucide-react";
-import { memo, useState } from "react";
+import { memo, MouseEvent, useState } from "react";
 
-export const VocabItem = memo<{ lexeme: TLexeme }>(
-  ({ lexeme }) => {
+export const VocabItem = memo<{
+  lexeme: TLexeme;
+  onSimilarWordClick: (lexeme: string, e: MouseEvent<HTMLDivElement>) => void;
+}>(
+  ({ lexeme, onSimilarWordClick }) => {
     const [showExamples, setShowExamples] = useState(false);
     const [meaningIndex, setMeaningIndex] = useState(0);
+
     const currentMeaning = lexeme.meaning?.[meaningIndex];
     const meaningSize = lexeme.meaning?.length ?? 0;
     const canNext = meaningIndex < meaningSize - 1;
@@ -98,7 +102,10 @@ export const VocabItem = memo<{ lexeme: TLexeme }>(
         </Card>
 
         {lexeme.similars.length > 0 && (
-          <SimilarLexemes similars={lexeme.similars} />
+          <SimilarLexemes
+            similars={lexeme.similars}
+            onWordClick={onSimilarWordClick}
+          />
         )}
       </div>
     );

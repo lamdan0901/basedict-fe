@@ -11,14 +11,23 @@ import { AppPagination } from "@/components/AppPagination";
 import { getRequest } from "@/service/data";
 import { Search, X } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import useSWR from "swr";
 import { scrollToTop } from "@/lib";
+import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
 
 const TOP_EL_ID = "top-of-vocabulary";
 
 export function Vocabulary() {
   const jlptLevel = useParams().level?.[0] ?? "N3";
+
+  const meaningPopupRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState("");
+  const [showMeaningPopup, setShowMeaningPopup] = useState(false);
+  const [popupTriggerPosition, setPopupTriggerPosition] = useState({
+    top: 0,
+    left: 0,
+  });
 
   const [searchParams, setSearchParams] = useQueryParams({
     search: "",
@@ -43,6 +52,18 @@ export function Vocabulary() {
     setSearchText(text);
     debouncedSearch(text);
   }
+
+  const handleSimilarWordClick = (
+    lexeme: string,
+    e: MouseEvent<HTMLDivElement>
+  ) => {
+    setShowMeaningPopup(true);
+    setSelection(lexeme);
+    setPopupTriggerPosition({
+      top: e.clientY,
+      left: e.clientX,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -82,7 +103,11 @@ export function Vocabulary() {
       ) : (
         <div className="space-y-6">
           {lexemes?.map((lexeme) => (
-            <VocabItem key={lexeme.id} lexeme={lexeme} />
+            <VocabItem
+              key={lexeme.id}
+              lexeme={lexeme}
+              onSimilarWordClick={handleSimilarWordClick}
+            />
           ))}
         </div>
       )}
@@ -96,6 +121,16 @@ export function Vocabulary() {
           setSearchParams({ offset: offset });
         }}
       />
+
+      {showMeaningPopup && (
+        <MeaningPopup
+          ref={meaningPopupRef}
+          selection={selection}
+          popupTriggerPosition={popupTriggerPosition}
+          showPopup={showMeaningPopup}
+          setShowPopup={setShowMeaningPopup}
+        />
+      )}
 
       <ScrollToTopButton id={`#${TOP_EL_ID}`} />
     </div>

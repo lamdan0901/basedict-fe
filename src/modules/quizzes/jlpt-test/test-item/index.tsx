@@ -2,15 +2,21 @@
 
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
 import { getRequest } from "@/service/data";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
 
 export function JLPTTest() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const isMixedTest = id === "mixed";
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    id ? `/v1/exams/${id}` : null,
+    id
+      ? isMixedTest
+        ? `v1/exams/jlpt/random?jlptLevel=${searchParams.get("jlptLevel")}`
+        : `/v1/exams/${id}`
+      : null,
     getRequest
   );
 

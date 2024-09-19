@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
 import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
@@ -49,6 +50,13 @@ export function JLPTTests() {
                 </Link>
               ))}
         </div>
+
+        <Link
+          href={`/quizzes/jlpt-test/mixed?jlptLevel=${jlptLevel}`}
+          className="mt-4 block w-fit mx-auto"
+        >
+          <Button variant={"secondary"}>Trộn câu hỏi JLPT</Button>
+        </Link>
       </CardContent>
     </Card>
   );
