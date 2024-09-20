@@ -66,7 +66,7 @@ export function FlashcardCreation() {
     try {
       data.flashCards.forEach((item) => {
         delete item.uid;
-        if (!flashcardId) delete item.id;
+        if (item.id === "") delete item.id;
       });
 
       const { id } = await (flashcardId

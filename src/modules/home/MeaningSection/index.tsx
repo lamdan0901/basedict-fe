@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import useSWR, { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
+import { CardIcon } from "@/components/icons";
 
 type MeaningSectionProps = {
   lexemeSearch: TLexeme | null | undefined;
@@ -194,7 +195,7 @@ export function MeaningSection({
                     variant="ghost"
                     title="Thêm vào bộ flashcard"
                   >
-                    <Album className={cn(" w-5 h-5")} />
+                    <CardIcon />
                   </Button>
                 )}
                 <Button

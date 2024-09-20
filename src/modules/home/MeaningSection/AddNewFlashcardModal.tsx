@@ -109,7 +109,7 @@ export function AddNewFlashcardModal({
               const value = String(card.id);
               const isSelected = selectedSet === value;
               return (
-                <div key={value} className={"w-full"}>
+                <div key={value}>
                   <RadioGroupItem
                     className="text-inherit"
                     value={value}
@@ -118,7 +118,7 @@ export function AddNewFlashcardModal({
                   />
                   <Label className={"cursor-pointer"} htmlFor={value}>
                     <Badge
-                      className="w-full h-10 text-base font-normal justify-center"
+                      className="h-10 text-base truncate max-w-[462px] block pt-1.5 font-normal w-full text-center"
                       variant={isSelected ? "default" : "outline"}
                     >
                       {card.title}

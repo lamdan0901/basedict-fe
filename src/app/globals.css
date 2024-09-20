@@ -67,6 +67,40 @@ u {
   font-weight: 600;
 }
 
+.flip-out {
+  -webkit-animation: flip-out 0.4s ease-in-out 1;
+  animation: flip-out 0.4s ease-in-out 1;
+  animation-fill-mode: forwards;
+}
+
+.flip-in {
+  -webkit-animation: flip-in 0.4s ease-in-out 1;
+  animation: flip-in 0.4s ease-in-out 1;
+  animation-fill-mode: forwards;
+}
+
+@keyframes flip-out {
+  0% {
+    -webkit-transform: rotateX(0deg);
+    transform: rotateX(0deg);
+  }
+  100% {
+    -webkit-transform: rotateX(180deg);
+    transform: rotateX(180deg);
+  }
+}
+
+@keyframes flip-in {
+  0% {
+    -webkit-transform: rotateX(180deg);
+    transform: rotateX(180deg);
+  }
+  100% {
+    -webkit-transform: rotateX(1turn);
+    transform: rotateX(1turn);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

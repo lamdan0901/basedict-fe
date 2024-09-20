@@ -4,16 +4,11 @@ import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { getRequest } from "@/service/data";
 import { fetchUserProfile } from "@/service/user";
-import {
-  BookCopy,
-  CheckCheck,
-  CircleHelp,
-  GraduationCap,
-  Plus,
-} from "lucide-react";
+import { CheckCheck, CircleHelp, GraduationCap, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
+import { CardIcon } from "@/components/icons";
 
 export function MyFlashcard() {
   const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
@@ -43,13 +38,19 @@ export function MyFlashcard() {
           <span className="text-lg font-semibold">{user?.name}</span>
           <div className="flex gap-2">
             <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
-              <BookCopy className="size-5" /> {total} bộ flashcard
+              <CardIcon width={20} height={20} /> {total} bộ flashcard
             </div>
-            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+            <div
+              className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border"
+              title="Số người đã học"
+            >
               <GraduationCap className="size-5" />
               <span>{totalLearnedNumber ?? 0} người</span>
             </div>
-            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+            <div
+              className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border"
+              title="Số người đang học"
+            >
               <CheckCheck className="size-5" />
               <span>{totalLearningNumber ?? 0} lượt</span>
             </div>

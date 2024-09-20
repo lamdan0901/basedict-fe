@@ -1,7 +1,8 @@
+import { CardIcon } from "@/components/icons";
 import { DEFAULT_AVATAR_URL } from "@/constants";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { getRequest } from "@/service/data";
-import { BookCopy, CheckCheck, GraduationCap } from "lucide-react";
+import { CheckCheck, GraduationCap } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -30,13 +31,19 @@ export function UserFlashcard() {
           <span className="text-lg font-semibold">{owner?.name}</span>
           <div className="flex gap-2">
             <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
-              <BookCopy className="size-5" /> {total} bộ flashcard
+              <CardIcon width={20} height={20} /> {total} bộ flashcard
             </div>
-            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+            <div
+              className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border"
+              title="Số người đã học"
+            >
               <GraduationCap className="size-5" />
               <span>{owner?.totalLearnedNumber ?? 0} người</span>
             </div>
-            <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
+            <div
+              className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border"
+              title="Số người đang học"
+            >
               <CheckCheck className="size-5" />
               <span>{owner?.totalLearningNumber ?? 0} lượt</span>
             </div>

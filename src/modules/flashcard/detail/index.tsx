@@ -101,7 +101,11 @@ export function FlashcardDetail() {
 
   return (
     <div className="space-y-6">
-      <FlashcardItem card={flashcardSet} asHeading />
+      <FlashcardItem
+        card={flashcardSet}
+        flashCardNumber={flashcardSet.flashCards?.length}
+        asHeading
+      />
 
       <div className="flex gap-2 pt-4 border-t border-muted-foreground justify-center">
         <Link href={`/flashcard/${flashcardId}/learn`}>
@@ -111,7 +115,7 @@ export function FlashcardDetail() {
           <Button
             disabled={isTogglingLearning}
             onClick={toggleLearningStatus}
-            variant="secondary"
+            variant={flashcardSet.isLearning ? "destructive" : "secondary"}
           >
             {flashcardSet.isLearning && <CheckCheck className="size-5 mr-2" />}
             {learningStatusTitle}

@@ -1,5 +1,6 @@
 "use client";
 
+import { ExploreIcon, CardIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -12,7 +13,7 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib";
 import { getRequest } from "@/service/data";
-import { SquareMenu } from "lucide-react";
+import { GraduationCap, Search, SquareMenu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useState } from "react";
@@ -22,19 +23,23 @@ const menu = [
   {
     title: "Khám phá",
     href: "/flashcard",
+    icon: <ExploreIcon />,
   },
   {
     title: "Tìm kiếm Flashcard",
     href: "/flashcard/search",
+    icon: <Search className="size-5" />,
   },
   {
     title: "Flashcard của tôi",
     href: "/flashcard/my-flashcard",
+    icon: <CardIcon />,
     withSubItems: true,
   },
   {
     title: "Flashcard đang học",
     href: "/flashcard/my-flashcard",
+    icon: <GraduationCap className="size-5" />,
     withSubItems: true,
   },
 ];
@@ -97,13 +102,14 @@ function InnerFlashcardNavbar({
               <Link className="w-full" href={item.href}>
                 <Button
                   className={cn(
-                    "w-full hover:text-blue-500 ",
+                    "w-full justify-start gap-2 hover:text-blue-500 ",
                     item.href === pathname && "text-blue-500 font-semibold",
                     item.withSubItems && "font-semibold"
                   )}
                   variant={"ghost"}
                   onClick={onMenuItemClick}
                 >
+                  {item.icon}
                   {item.title}
                 </Button>
               </Link>

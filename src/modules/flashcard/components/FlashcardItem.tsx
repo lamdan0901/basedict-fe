@@ -9,10 +9,12 @@ export function FlashcardItem({
   card,
   hiddenDate,
   asHeading,
+  flashCardNumber = 0,
 }: {
   card: TFlashcardSet;
   hiddenDate?: boolean;
   asHeading?: boolean;
+  flashCardNumber?: number;
 }) {
   const router = useRouter();
 
@@ -21,30 +23,33 @@ export function FlashcardItem({
       className={
         asHeading
           ? "border-2"
-          : "hover:shadow-lg cursor-pointer transition duration-300 "
+          : "cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300 "
       }
       onClick={() => {
         !asHeading && router.push(`/flashcard/${card.id}`);
       }}
     >
-      <CardContent className={cn("p-2 sm:p-4")}>
-        <div className="flex justify-between items-start gap-2">
-          <h2 title={card.title} className="font-semibold truncate text-lg">
-            {card.title}
-          </h2>
-          <div className="bg-slate-50 text-black shrink-0 rounded-full px-6 pt-1 text-sm border">
-            {card.flashCardNumber} thẻ
+      <CardContent
+        className={cn("p-2 flex flex-col justify-between h-full sm:p-4")}
+      >
+        <div>
+          <div className="flex justify-between items-center gap-2">
+            <h2 title={card.title} className="font-semibold truncate text-lg">
+              {card.title}
+            </h2>
+            <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-6 text-sm">
+              {card.flashCardNumber ?? flashCardNumber} thẻ
+            </div>
           </div>
+          <p
+            className={cn(
+              "text-xs mt-2 mb-3 whitespace-pre-line",
+              !asHeading && "line-clamp-2"
+            )}
+          >
+            {card.description}
+          </p>
         </div>
-
-        <p
-          className={cn(
-            "text-xs mt-2 mb-3 whitespace-pre-line",
-            !asHeading && "line-clamp-2"
-          )}
-        >
-          {card.description}
-        </p>
 
         <div className="flex justify-between gap-2 flex-wrap">
           {card.owner && (
@@ -66,11 +71,17 @@ export function FlashcardItem({
             </div>
           )}
           <div className="flex gap-3">
-            <div className="flex gap-1 items-center text-xs">
+            <div
+              className="flex gap-1 items-center text-xs"
+              title="Số người đã học"
+            >
               <GraduationCap className="size-5" />
               <span>{card.learnedNumber} người</span>
             </div>
-            <div className="flex gap-1 items-center text-xs">
+            <div
+              className="flex gap-1 items-center text-xs"
+              title="Số người đang học"
+            >
               <CheckCheck className="size-5" />
               <span>{card.learningNumber} lượt</span>
             </div>

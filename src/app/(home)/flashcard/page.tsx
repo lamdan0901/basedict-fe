@@ -6,7 +6,6 @@ import { FlashcardExploring } from "@/modules/flashcard/explore";
 export default function FlashcardExploringPage() {
   return (
     <AuthWrapper>
-      {" "}
       <FlashcardExploring />
     </AuthWrapper>
   );

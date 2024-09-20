@@ -1,8 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CarouselItem } from "@/components/ui/carousel";
+import { cn } from "@/lib";
 import { useEffect, useState } from "react";
 
-export function FlashcardItem({
+export function FlashcardCarouselItem({
   item,
   showingMeaning,
 }: {
@@ -25,15 +26,23 @@ export function FlashcardItem({
   }, []);
 
   return (
-    <CarouselItem onClick={() => setShowingBackSide(!showingBackSide)}>
-      <Card>
-        <CardContent className="flex aspect-square flex-col gap-3 sm:aspect-video items-center justify-center p-6">
-          <span className="text-xl sm:text-3xl font-semibold">
-            {showingBackSide ? item.backSide : item.frontSide}
+    <CarouselItem>
+      <Card
+        onClick={() => {
+          setShowingBackSide(!showingBackSide);
+        }}
+        className={cn(showingBackSide ? "flip-out" : "flip-in")}
+      >
+        <CardContent className="flex cursor-pointer aspect-square flex-col gap-3 sm:aspect-video items-center justify-center p-6">
+          <span
+            className={cn("text-xl sm:text-3xl font-semibold")}
+            style={{ transform: showingBackSide ? "rotateX(180deg)" : "" }}
+          >
+            {showingBackSide ? item.frontSide : item.backSide}
           </span>
           {showingMeaning && (
             <span className="text-sm whitespace-pre sm:text-base">
-              {showingBackSide ? item.backSideComment : item.frontSideComment}
+              {item.frontSideComment}
             </span>
           )}
         </CardContent>
