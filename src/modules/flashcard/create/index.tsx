@@ -38,7 +38,6 @@ export function FlashcardCreation() {
     handleSubmit,
     formState: { errors },
   } = form;
-  console.log("errors: ", errors);
 
   const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
     flashcardId ? "get-user" : null,

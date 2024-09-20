@@ -52,6 +52,7 @@ export function FlashcardItemRegistration({
                   <Textarea
                     variant="outlined"
                     placeholder="Giải nghĩa (tuỳ chọn)"
+                    error={errors.flashCards?.[i]?.frontSideComment?.message}
                     {...register(`flashCards.${i}.frontSideComment`)}
                   />
                 </div>
@@ -66,6 +67,7 @@ export function FlashcardItemRegistration({
                   <Textarea
                     variant="outlined"
                     placeholder="Giải nghĩa (tuỳ chọn)"
+                    error={errors.flashCards?.[i]?.backSideComment?.message}
                     {...register(`flashCards.${i}.backSideComment`)}
                   />
                 </div>
