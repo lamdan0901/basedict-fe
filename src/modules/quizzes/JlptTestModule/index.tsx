@@ -13,7 +13,10 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
   return (
     <Card>
       <CardContent>
-        <div id="top-of-jlpt-test" className="grid mb-3 grid-cols-3">
+        <div
+          id="top-of-jlpt-test"
+          className="grid mb-3 grid-cols-1 sm:grid-cols-3"
+        >
           <div></div>
           <h2
             dangerouslySetInnerHTML={{ __html: title }}
@@ -22,7 +25,7 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
           <JLPTTestDescLink />
         </div>
         <JlptTestQuestions isDailyTest={isDailyTest} data={data} />
-        <ScrollToTopButton />
+        <ScrollToTopButton id="#top-of-jlpt-test" />
       </CardContent>
     </Card>
   );

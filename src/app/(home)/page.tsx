@@ -40,6 +40,7 @@ export async function generateMetadata(
     title: `${standard}${_lexeme} ${hiragana} nghĩa là gì? dịch nghĩa, giải nghĩa, ví dụ, từ tương tự | Basedict`,
     description: `Định nghĩa của ${standard}${_lexeme} (${hiragana}) ${hanviet} : ${meaning[0].meaning} | và cả các ý nghĩa khác nữa. Tra cứu dịch nghĩa, giải nghĩa, cách sử dụng và các ví dụ thực tế tại BaseDict, từ điển tiếng nhật tốt nhất Việt Nam`,
     keywords: `${standard}, ${_lexeme}, ${hiragana}, ${meaning[0].meaning}, từ điển nhật việt, ý nghĩa, dịch nghĩa, giải nghĩa, ví dụ, basedict`,
+    "google-adsense-account": "ca-pub-9085997021434962",
   };
 }
 

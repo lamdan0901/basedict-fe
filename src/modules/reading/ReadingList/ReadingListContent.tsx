@@ -21,13 +21,19 @@ type Props = {
 } & (
   | {
       tab: TabVal.BaseDict;
+      jlptLevel: TJlptLevel | undefined;
       testPeriods?: undefined;
       isLoadingTestPeriods?: undefined;
+      jlptTestLevel?: undefined;
+      examId?: undefined;
     }
   | {
       tab: TabVal.JLPT;
       testPeriods: TTestPeriod[];
       isLoadingTestPeriods?: boolean;
+      jlptTestLevel: TJlptLevel | undefined;
+      examId: string | undefined;
+      jlptLevel?: undefined;
     }
 );
 
@@ -37,6 +43,9 @@ export function ReadingListContent({
   isLoadingTestPeriods,
   testPeriods,
   tab,
+  jlptTestLevel,
+  jlptLevel,
+  examId,
 }: Props) {
   const {
     hasReadBaseDict,
@@ -44,12 +53,12 @@ export function ReadingListContent({
     hasReadJLPTTest,
     setHasReadJLPTTest,
   } = useReadingStore();
-  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
+
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
-    jlptTestLevel: jlptLevel,
+    jlptTestLevel,
     readingType: ReadingType.All,
-    examId: "1",
+    examId,
   });
 
   const isBaseDictTab = tab === TabVal.BaseDict;

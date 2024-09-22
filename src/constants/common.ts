@@ -19,7 +19,7 @@ export enum HistoryItemType {
   Paragraph,
 }
 
-export const jlptLevels: Record<string, TJlptLevel>[] = [
+export const jlptLevels: { title: TJlptLevel; value: TJlptLevel }[] = [
   {
     title: "N1",
     value: "N1",

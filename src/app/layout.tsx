@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -41,7 +42,30 @@ export default function RootLayout({
     <html lang="vi">
       <body className={inter.className}>
         {children} <Toaster />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9085997021434962"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
 }
+//https://xahidex.com/blog/nextjs-adsense
+
+// 'use client';
+
+// import { Adsense } from '@ctrl/react-adsense';
+
+// export default function ShowAd() {
+//   return (
+//     <Adsense
+//       client="ca-pub-1234567891011"
+//       slot="123456789"
+//       style={{ display: 'block' }}
+//       layout="in-article"
+//       format="fluid"
+//     />
+// );
+// }

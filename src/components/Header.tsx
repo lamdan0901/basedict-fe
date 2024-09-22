@@ -25,22 +25,33 @@ import useSWR from "swr";
 import { fetchUserProfile } from "@/service/user";
 import { useToast } from "@/components/ui/use-toast";
 import { Check } from "lucide-react";
+import { useFormStatus } from "react-dom";
 
 const menu = [
   {
     href: "/",
-    icon: "/dictionary.svg",
-    title: "Từ vựng",
+    icon: "/translate.svg",
+    title: "Từ điển",
   },
   {
-    href: "/reading",
-    icon: "/library.svg",
-    title: "Luyện đọc",
+    href: "/vocabulary",
+    icon: "/dictionary.svg",
+    title: "Từ vựng",
   },
   {
     href: "/grammar",
     icon: "/local_library.svg",
     title: "Ngữ pháp",
+  },
+  {
+    href: "/flashcard",
+    icon: "/collections_bookmark.svg",
+    title: "Flashcard",
+  },
+  {
+    href: "/reading",
+    icon: "/library.svg",
+    title: "Luyện đọc",
   },
   {
     href: "/quizzes/general-info",
@@ -60,7 +71,7 @@ const Header = () => {
     data: user,
     mutate,
     isLoading,
-  } = useSWR<TUser>("get-user", fetchUserProfile);
+  } = useSWR<TUser>("get-user-profile", fetchUserProfile);
 
   async function signOut() {
     const client = createClient();
@@ -84,24 +95,35 @@ const Header = () => {
 
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
+      <Link
+        className="mr-auto sm:block hidden hover:bg-slate-300/40 transition rounded-sm p-1"
+        href={"/"}
+      >
+        <Image
+          src={"/images/header_logo_pc.png"}
+          width={128}
+          height={41}
+          alt="basedict-header"
+        />
+      </Link>
+
       {!user && !isLoading && (
         <form action={login}>
-          <Button type="submit" variant={"secondary"} className="text-lg">
-            Đăng nhập
-          </Button>
+          <LoginButton />
         </form>
       )}
+
       {user && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
+              className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
               variant="ghost"
             >
               <Image
                 src={user.avatar || DEFAULT_AVATAR_URL}
-                width={50}
-                height={50}
+                width={40}
+                height={40}
                 className="rounded-full"
                 alt="avatar"
               />
@@ -118,20 +140,28 @@ const Header = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
-            className="hover:bg-white/30 hover:text-white gap-2 text-xl size-15 px-2 py-0.5"
+            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
             variant="ghost"
           >
-            <Image src="/apps.svg" width={50} height={50} alt="apps" />{" "}
-            <span> Ứng dụng</span>
+            <Image src="/apps.svg" width={45} height={45} alt="apps" />{" "}
+            <span className="sm:inline hidden"> Ứng dụng</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-fit">
           <div className="grid grid-cols-2 place-items-center gap-2">
             {menu.map((item) => (
-              <Link href={item.href} key={item.href}>
+              <Link
+                href={
+                  item.href === "/vocabulary"
+                    ? `${item.href}/${user?.jlptLevel ?? "N3"}`
+                    : item.href
+                }
+                key={item.href}
+              >
                 <Button
                   onClick={() => setOpenMenu(false)}
                   className={cn(
@@ -156,5 +186,19 @@ const Header = () => {
     </header>
   );
 };
+
+function LoginButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      variant={"secondary"}
+      disabled={pending}
+      className="text-lg"
+    >
+      {pending ? "Đang đăng nhập..." : "Đăng nhập"}
+    </Button>
+  );
+}
 
 export default Header;

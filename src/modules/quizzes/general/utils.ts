@@ -17,7 +17,12 @@ export type TDateWithExamRes = TDateInfo & Partial<TSeasonHistory>;
 export const generateDateRange = (start: string): TDateInfo[] => {
   const dateArray: TDateInfo[] = [];
   let currentDate = dayjs(start);
-  const lastDayOfWeek = dayjs().endOf("week").add(1, "day"); // Sunday, not Saturday
+  let lastDayOfWeek = dayjs();
+
+  // Ignore get the last day of the week if it's Sunday
+  if (lastDayOfWeek.get("day") !== 0) {
+    lastDayOfWeek = lastDayOfWeek.endOf("weeks").add(1, "day"); // Add 1 cuz in this lib, week starts from Sunday, not Monday
+  }
 
   while (currentDate.isSameOrBefore(lastDayOfWeek)) {
     dateArray.push({

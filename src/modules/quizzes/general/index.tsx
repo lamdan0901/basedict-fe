@@ -11,13 +11,15 @@ import { useMemo, useState } from "react";
 import useSWR from "swr";
 import dayjs from "dayjs";
 import { MAX_POINT } from "@/modules/quizzes/const";
+import { fetchUserProfile } from "@/service/user";
 
 export function QuizGeneralInfo() {
-  const { profile, setSeasonRank } = useAppStore();
+  const { setSeasonRank } = useAppStore();
   const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
+  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
 
   const { isLoading: loadingSeasonList } = useSWR<TSeason[]>(
-    profile ? "/v1/exams/season-list" : null,
+    "/v1/exams/season-list",
     getRequest,
     {
       onSuccess(data) {
@@ -69,13 +71,6 @@ export function QuizGeneralInfo() {
   const isLoading =
     loadingSeasonList || loadingSeasonProfile || loadingSeasonHistory;
 
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
-
   if (isLoading) return <div>Đang tải thông tin chung...</div>;
 
   return (
@@ -91,11 +86,11 @@ export function QuizGeneralInfo() {
               width={80}
               height={80}
               className="rounded-full"
-              src={profile?.avatar || DEFAULT_AVATAR_URL}
+              src={user?.avatar || DEFAULT_AVATAR_URL}
               alt="avatar"
             />
             <div>
-              <div className="text-xl font-semibold">{profile?.name}</div>
+              <div className="text-xl font-semibold">{user?.name}</div>
               <div className="flex mt-2 gap-2">
                 {seasonProfile?.badge.map((badge) => (
                   <Badge key={badge} variant={"secondary"} className="h-6">
@@ -106,7 +101,7 @@ export function QuizGeneralInfo() {
             </div>
           </div>
 
-          <p className="text-gray-800 my-3 text-sm">
+          <p className="text-gray-800 my-3 lg:pb-0 pb-10 text-sm">
             {currentSeason?.name}:{" "}
             {new Date(currentSeason?.startDate ?? "").toLocaleDateString()} ~{" "}
             {new Date(currentSeason?.endDate ?? "").toLocaleDateString()}
@@ -118,7 +113,7 @@ export function QuizGeneralInfo() {
             seasonHistory={formattedSeasonHistory}
           />
 
-          <p className="text-gray-800 w-fit mx-auto my-3 text-sm">
+          <p className="text-gray-800 w-fit mx-auto my-3 lg:pt-0 pt-10 text-sm">
             Bạn đã hoàn thành {seasonHistory?.length}/{passedDays} bài thi daily
           </p>
 

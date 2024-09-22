@@ -6,12 +6,20 @@ import { Label } from "@/components/ui/label";
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { jlptLevels } from "@/constants";
 import { cn } from "@/lib";
+import { fetchUserProfile } from "@/service/user";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export function LevelSelector() {
   const router = useRouter();
-  const [selectedLevel, setSelectedLevel] = useState("N1");
+  const [selectedLevel, setSelectedLevel] = useState("N3");
+
+  const { data, isLoading } = useSWR<TUser>("get-user", fetchUserProfile);
+
+  useEffect(() => {
+    setSelectedLevel(data?.jlptLevel || "N3");
+  }, [data?.jlptLevel]);
 
   return (
     <div>
@@ -44,11 +52,12 @@ export function LevelSelector() {
         })}
       </RadioGroup>
       <Button
+        disabled={isLoading}
         onClick={() => router.push(`/quizzes/basedict-test/${selectedLevel}`)}
         className="w-fit block mx-auto mt-8 text-base"
         variant={"secondary"}
       >
-        Vào làm bài
+        {isLoading ? "Đang tải..." : "Vào làm bài"}
       </Button>
     </div>
   );

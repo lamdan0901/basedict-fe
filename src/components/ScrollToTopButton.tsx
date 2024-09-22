@@ -1,15 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { scrollToTop } from "@/lib";
 import { ChevronUp } from "lucide-react";
 
-export const ScrollToTopButton = () => {
-  const scrollToTop = () => {
-    const topEl = document.querySelector("#top-of-jlpt-test");
-    topEl?.scrollIntoView({ behavior: "smooth", block: "end" });
-  };
-
+export const ScrollToTopButton = ({ id }: { id: string }) => {
   return (
     <Button
-      onClick={scrollToTop}
+      onClick={() => scrollToTop(id)}
       className="fixed bottom-5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c] right-5 rounded-full size-12 p-2"
       variant="ghost"
     >

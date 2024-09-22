@@ -2,17 +2,21 @@
 
 import { Badge } from "@/components/ui/badge";
 import { getRequest } from "@/service/data";
-import { useAppStore } from "@/store/useAppStore";
+import { fetchUserProfile } from "@/service/user";
 import { useLexemeStore } from "@/store/useLexemeStore";
+import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 
 export function TodaysTopic() {
-  const jlptLevel = useAppStore.getState().profile?.jlptLevel ?? "N3";
   const { setText, setVocabMeaningErrMsg, setSelectedVocab, setWord } =
     useLexemeStore();
+
+  const { data: user, isLoading } = useSWR<TUser>("get-user", fetchUserProfile);
+  const jlptLevel = isLoading ? undefined : user?.jlptLevel || "N3";
+
   const { data: todaysTopic, isLoading: loadingTodaysTopic } =
     useSWRImmutable<TReadingDetail>(
-      `/v1/readings/daily-reading?jlptLevel=${jlptLevel}`,
+      jlptLevel ? `/v1/readings/daily-reading?jlptLevel=${jlptLevel}` : null,
       getRequest
     );
 
@@ -44,18 +48,20 @@ export function TodaysTopic() {
         </div>
       </div>
 
-      <div className="sm:w-2/3 lg:w-3/4 w-full sm:justify-center flex items-center gap-3 mt-3 flex-wrap">
-        <span>Từ vựng ngày: </span>
-        {todaysTopic?.lexemes?.map((word, i) => (
-          <Badge
-            className="cursor-pointer text-sm sm:text-base"
-            onClick={() => handleWordClick(word)}
-            key={i}
-          >
-            {word}
-          </Badge>
-        ))}
-      </div>
+      {(todaysTopic?.lexemes?.length || 0) > 0 && (
+        <div className="sm:w-2/3 lg:w-3/4 w-full sm:justify-center flex items-center gap-3 mt-3 flex-wrap">
+          <span>Từ vựng ngày: </span>
+          {todaysTopic?.lexemes?.map((word, i) => (
+            <Badge
+              className="cursor-pointer text-sm sm:text-base"
+              onClick={() => handleWordClick(word)}
+              key={i}
+            >
+              {word}
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

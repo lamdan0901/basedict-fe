@@ -13,7 +13,7 @@ interface IHistoryState {
 export const useHistoryStore = create<IHistoryState>()(
   persist(
     immer((set) => ({
-      historyItems: [],
+      historyItems: [] as THistoryItem[],
       addHistoryItem: (item) => {
         set((state) => {
           if (state.historyItems.length >= MAX_HISTORY_ITEMS) {

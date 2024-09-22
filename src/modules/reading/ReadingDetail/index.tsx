@@ -52,7 +52,7 @@ export function ReadingDetail() {
     mutate(`/v1/readings?${stringifyParams(readingParams)}`);
   }
 
-  const handleLexemeClick =
+  const handleSimilarWordClick =
     (lexeme: string) => (e: MouseEvent<HTMLDivElement>) => {
       setShowPopup(true);
       setSelection(lexeme);
@@ -115,9 +115,12 @@ export function ReadingDetail() {
                   {showVietnamese ? "Ẩn bản dịch" : "  Xem bản dịch"}
                 </Button>
                 {showVietnamese && (
-                  <p className="mb-2 whitespace-pre-line">
-                    {readingItem?.vietnamese}
-                  </p>
+                  <p
+                    className="mb-2 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: readingItem?.vietnamese ?? "",
+                    }}
+                  ></p>
                 )}
               </div>
 
@@ -128,7 +131,7 @@ export function ReadingDetail() {
                 {readingItem?.lexemes?.map((lexeme, i) => (
                   <Badge
                     className="cursor-pointer text-sm sm:text-base"
-                    onClick={handleLexemeClick(lexeme)}
+                    onClick={handleSimilarWordClick(lexeme)}
                     key={i}
                   >
                     {lexeme}

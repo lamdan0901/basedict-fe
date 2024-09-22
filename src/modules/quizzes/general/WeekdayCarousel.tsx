@@ -1,13 +1,4 @@
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
-import { useMemo, useState } from "react";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -16,15 +7,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
-import dayjs from "dayjs";
-import { DAYS_PER_WEEK, MAX_POINT, weekdayMap } from "@/modules/quizzes/const";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { DAYS_PER_WEEK, MAX_POINT } from "@/modules/quizzes/const";
+import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
 import {
   generateDateRange,
   mergeDateRangeWithHistory,
   TDateWithExamRes,
 } from "@/modules/quizzes/general/utils";
 import { WeekdayCarouselItem } from "@/modules/quizzes/general/WeekdayCarouselItem";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 type Props = {
   currentSeason: TSeason | undefined;
@@ -41,6 +41,7 @@ export function WeekdayCarousel({
   rankPoint = 0,
 }: Props) {
   const router = useRouter();
+  const isMdScreen = useMediaQuery("(min-width: 768px)");
   const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -73,9 +74,10 @@ export function WeekdayCarousel({
           slidesToScroll: DAYS_PER_WEEK,
           startIndex,
         }}
+        orientation={isMdScreen ? "horizontal" : "vertical"}
         className="w-full border-y-[1px] max-w-2xl"
       >
-        <CarouselContent>
+        <CarouselContent className="h-[600px] md:h-auto">
           {dateRangeWithExamRes.map((d, index) => (
             <WeekdayCarouselItem
               onShowHistory={() => {
@@ -104,7 +106,7 @@ export function WeekdayCarousel({
       />
 
       <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent aria-describedby={undefined}>
           <AlertDialogHeader>
             <AlertDialogTitle>
               Bạn có muốn thực hiện bài thi daily không?

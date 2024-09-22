@@ -1,5 +1,7 @@
 type TJlptLevel = "N1" | "N2" | "N3" | "N4" | "N5";
 
+type TQuestionType = "ContextLexeme" | "Grammar" | "Lexeme" | "GrammarAlign";
+
 type TReadingType =
   | "GrammarReading"
   | "SumaryReading"
@@ -18,9 +20,12 @@ type TReadingMaterial = {
 };
 
 type TReadingQuestion = {
+  id: number;
   question: string;
   answers: string[];
   correctAnswer: string;
+  type?: TQuestionType;
+  explanation?: string;
 };
 
 type TReadingDetail = TReadingMaterial & {

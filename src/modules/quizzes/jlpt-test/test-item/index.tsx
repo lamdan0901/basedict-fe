@@ -2,17 +2,21 @@
 
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
 import { getRequest } from "@/service/data";
-import { useAppStore } from "@/store/useAppStore";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";
 
 export function JLPTTest() {
-  const profile = useAppStore((state) => state.profile);
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const isMixedTest = id === "mixed";
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    id && profile ? `/v1/exams/${id}` : null,
+    id
+      ? isMixedTest
+        ? `v1/exams/jlpt/random?jlptLevel=${searchParams.get("jlptLevel")}`
+        : `/v1/exams/${id}`
+      : null,
     getRequest
   );
 
@@ -20,13 +24,6 @@ export function JLPTTest() {
     if (data?.title)
       document.title = `${data?.title} - ${data?.jlptLevel} | BaseDict`;
   }, [data?.jlptLevel, data?.title]);
-
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)
@@ -41,6 +38,9 @@ export function JLPTTest() {
     );
 
   return (
-    <JlptTestModule title={`${data?.title} - ${data?.jlptLevel}`} data={data} />
+    <JlptTestModule
+      title={`${data?.title ?? "Đề trộn"} - ${data?.jlptLevel}`}
+      data={data}
+    />
   );
 }

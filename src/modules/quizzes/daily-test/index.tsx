@@ -7,23 +7,16 @@ import { useEffect } from "react";
 import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
 
 export function DailyTest() {
-  const { profile, seasonRank } = useAppStore();
+  const { seasonRank } = useAppStore();
 
   const { data, isLoading, error } = useSWR<TJlptTestItem>(
-    profile ? `/v1/exams/daily-exam?rank=${seasonRank}` : null,
+    `/v1/exams/daily-exam?rank=${seasonRank}`,
     getRequest
   );
 
   useEffect(() => {
     document.title = `${seasonRank} - Daily exam | BaseDict`;
   }, [seasonRank]);
-
-  if (!profile)
-    return (
-      <div className="text-xl text-destructive">
-        Vui lòng đăng nhập để tiếp tục
-      </div>
-    );
 
   if (isLoading) return <div>Đang tải bài thi...</div>;
   if (!data && error)

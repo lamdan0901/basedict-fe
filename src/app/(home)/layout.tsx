@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import Header from "@/components/Header";
-import Image from "next/image";
 import { Footer } from "@/components/Footer";
 import { ContentWrapper } from "@/components/ContentWrapper";
+import Image from "next/image";
 
 const Layout = async ({ children }: PropsWithChildren) => {
   return (

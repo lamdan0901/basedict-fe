@@ -8,15 +8,20 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
+import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
 import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
 import { postRequest } from "@/service/data";
+import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { type KeyedMutator } from "swr";
+import useSWR, { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
+import { CardIcon } from "@/components/icons";
 
 type MeaningSectionProps = {
   lexemeSearch: TLexeme | null | undefined;
@@ -39,9 +44,18 @@ export function MeaningSection({
   wordIdToReport,
   retryLexemeSearch,
 }: MeaningSectionProps) {
+  const {
+    canShowFlashcardTips,
+    canShowMeaningTips,
+    hideFlashcardTips,
+    hideMeaningTips,
+  } = useAppStore();
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
+  const [shouldShowMeaningTips, toggleMeaningTips] = useState(false);
+  const [shouldShowFlashcardTips, toggleFlashcardTips] = useState(false);
   const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
+  const [addFlashcardModalOpen, setAddFlashcardModalOpen] = useState(false);
   const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
@@ -52,6 +66,7 @@ export function MeaningSection({
   const isFavorite = isFavoriteItem(lexemeSearch?.id);
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
+  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
   const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
     useSWRMutation(`/v1/lexemes/report-wrong/${wordIdToReport}`, postRequest);
 
@@ -85,6 +100,20 @@ export function MeaningSection({
         !isDifferenceGreaterSpecifiedDay(reportedWords[wordIdToReport])
     );
   }, [reportedWords, wordIdToReport]);
+
+  useEffect(() => {
+    if (
+      canShowMeaningTips &&
+      lexemeSearch &&
+      lexemeSearch?.meaning.length >= 2
+    ) {
+      toggleMeaningTips(true);
+      return;
+    }
+    if (canShowFlashcardTips && lexemeSearch) {
+      toggleFlashcardTips(true);
+    }
+  }, [canShowFlashcardTips, canShowMeaningTips, lexemeSearch]);
 
   return (
     <Card
@@ -131,22 +160,101 @@ export function MeaningSection({
                     </Command>
                   </PopoverContent>
                 </Popover>
+                {canShowMeaningTips && (
+                  <Popover
+                    open={shouldShowMeaningTips}
+                    onOpenChange={(open) => {
+                      toggleMeaningTips(open);
+                      if (!open) {
+                        if (canShowFlashcardTips && lexemeSearch) {
+                          toggleFlashcardTips(true);
+                        }
+                      }
+                    }}
+                  >
+                    <PopoverTrigger asChild>
+                      <button className="h-2"></button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="p-1.5 bg-red-100 w-[195px]"
+                      side="top"
+                      align="start"
+                    >
+                      <div className="text-sm">
+                        Tips: Bấm vào nghĩa của từ để xem các nghĩa khác
+                      </div>
+                      <div className="flex items-center mt-1 space-x-2">
+                        <Checkbox
+                          onCheckedChange={() =>
+                            setTimeout(() => hideMeaningTips(), 800)
+                          }
+                          id="meaning-tips"
+                        />
+                        <label htmlFor="meaning-tips" className="text-xs">
+                          Không hiện tips này nữa
+                        </label>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )}
                 {lexemeSearch.approved && (
                   <CircleCheckBig className="text-green-500 w-4 h-4 mb-1" />
                 )}
               </div>
 
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 relative items-center">
                 {currentMeaning?.context && (
                   <div className="bg-slate-50 text-black rounded-full px-6 text-sm border">
                     {currentMeaning?.context}
                   </div>
+                )}
+                {user && (
+                  <Button
+                    onClick={() => setAddFlashcardModalOpen(true)}
+                    className="rounded-full p-2"
+                    size="sm"
+                    variant="ghost"
+                    title="Thêm vào bộ flashcard"
+                  >
+                    <CardIcon />
+                  </Button>
+                )}
+                {user && canShowFlashcardTips && (
+                  <Popover
+                    open={shouldShowFlashcardTips}
+                    onOpenChange={toggleFlashcardTips}
+                  >
+                    <PopoverTrigger asChild>
+                      <button className="size-1 absolute top-2"></button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="p-1.5 bg-red-100 w-[210px]"
+                      side="top"
+                      align="center"
+                    >
+                      <div className="text-sm">
+                        Tips: Bạn có thể thêm từ này vào bộ flash card của bạn
+                      </div>
+                      <div className="flex items-center mt-1 space-x-2">
+                        <Checkbox
+                          onCheckedChange={() =>
+                            setTimeout(() => hideFlashcardTips(), 800)
+                          }
+                          id="flashcard-tips"
+                        />
+                        <label htmlFor="flashcard-tips" className="text-xs">
+                          Không hiện tips này nữa
+                        </label>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 )}
                 <Button
                   onClick={toggleFavorite}
                   className="rounded-full p-2"
                   size="sm"
                   variant="ghost"
+                  title="Thêm vào danh sách yêu thích"
                 >
                   <Heart
                     className={cn(" w-5 h-5", isFavorite && "text-destructive")}
@@ -159,12 +267,15 @@ export function MeaningSection({
                   className="rounded-full p-2"
                   size="sm"
                   variant="ghost"
+                  title="Báo cáo từ này"
                 >
                   <Flag className=" w-5 h-5" />
                 </Button>
               </div>
             </div>
+
             <p className="pl-1">{currentMeaning?.explaination}</p>
+
             {currentMeaning?.example && (
               <div>
                 <Button
@@ -184,6 +295,7 @@ export function MeaningSection({
                 </p>
               </div>
             )}
+
             <Button
               className="absolute bottom-3 underline hover:font-semibold text-blue-500 right-2"
               variant="link"
@@ -230,6 +342,13 @@ export function MeaningSection({
         open={meaningReportModalOpen}
         onOpenChange={setMeaningReportModalOpen}
         onMeaningReported={reportWrongWord}
+      />
+
+      <AddNewFlashcardModal
+        lexeme={lexemeSearch}
+        currentMeaning={currentMeaning}
+        open={addFlashcardModalOpen}
+        onOpenChange={setAddFlashcardModalOpen}
       />
     </Card>
   );

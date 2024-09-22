@@ -31,3 +31,10 @@ export const weekdayMap = {
 
 export const DAYS_PER_WEEK = 7;
 export const MAX_POINT = 180;
+
+export const questionTypesWithExplanation: TQuestionType[] = [
+  "ContextLexeme",
+  "Grammar",
+  "Lexeme",
+  "GrammarAlign",
+];

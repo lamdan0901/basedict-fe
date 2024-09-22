@@ -114,9 +114,16 @@ export const LexemeSearch = forwardRef<
       ? "(" + lexemeToShowHanviet.hanviet + ")"
       : "";
     const lexemeHanViet = lexemeToShowHanviet
-      ? lexemeToShowHanviet.standard === lexemeToShowHanviet.lexeme
-        ? `${lexemeToShowHanviet.hiragana} ${hanviet}`
-        : `${lexemeToShowHanviet.hiragana} ${lexemeToShowHanviet.lexeme} ${hanviet}`
+      ? `${
+          text !== lexemeToShowHanviet.lexeme ? lexemeToShowHanviet.lexeme : ""
+        } ${hanviet}`
+      : "";
+    const hiragana = lexemeToShowHanviet
+      ? `${lexemeToShowHanviet.hiragana} ${
+          lexemeToShowHanviet.hiragana2
+            ? "/ " + lexemeToShowHanviet.hiragana2
+            : ""
+        }`
       : "";
 
     function handleSearchTextChange(value: string) {
@@ -303,6 +310,7 @@ export const LexemeSearch = forwardRef<
           </Button>
 
           <div> {lexemeHanViet}</div>
+          <div> {hiragana}</div>
 
           {isDisplayingSuggestions && (
             <div className="w-full h-px bg-muted-foreground"></div>
@@ -311,7 +319,11 @@ export const LexemeSearch = forwardRef<
           <div
             className={cn(
               "flex flex-col gap-6 overflow-auto items-start mt-3",
-              isParagraphMode ? "h-auto" : "sm:h-[220px] h-[137px] ",
+              isParagraphMode
+                ? "h-auto"
+                : lexemeHanViet && hiragana
+                ? "sm:h-[195px] h-[137px]"
+                : "sm:h-[220px] h-[137px]",
               !isParagraphMode && !isDisplayingSuggestions && "h-0",
               loadingLexemeVocab && " min-h-[137px]"
             )}
@@ -323,6 +335,12 @@ export const LexemeSearch = forwardRef<
                     lexeme.standard === lexeme.lexeme
                       ? lexeme.standard
                       : `${lexeme.standard} ${lexeme.lexeme}`;
+                  const hiragana = lexeme.hiragana
+                    ? `(${lexeme.hiragana} ${
+                        lexeme.hiragana2 ? "/ " + lexeme.hiragana2 : ""
+                      })`
+                    : "";
+
                   return (
                     <Button
                       key={lexeme.id}
@@ -331,8 +349,7 @@ export const LexemeSearch = forwardRef<
                       variant="ghost"
                     >
                       <span>
-                        {lexemeStandard}{" "}
-                        {lexeme.hiragana ? `(${lexeme.hiragana})` : ""}
+                        {lexemeStandard} {hiragana}
                       </span>
                       <span>{lexeme.hanviet}</span>
                       <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
@@ -380,7 +397,8 @@ export const LexemeSearch = forwardRef<
             - Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
             chữ hán, hiragana hoặc katakana <br />
             {/* 2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br /> */}- Bạn có
-            thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
+            thể dịch 1 đoạn văn bản. Khi bạn nhập quá 20 từ sẽ được coi là đoạn
+            văn. Tối đa dài 500 kí tự
           </p>
         </CardContent>
       </Card>
