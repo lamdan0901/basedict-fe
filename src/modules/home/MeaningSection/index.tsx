@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
-import { AddNewFlashcardModal } from "@/modules/home/MeaningSection/AddNewFlashcardModal";
+import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
 import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
 import { postRequest } from "@/service/data";
 import { fetchUserProfile } from "@/service/user";
@@ -16,14 +16,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Album,
-  Check,
-  CircleCheckBig,
-  Flag,
-  Heart,
-  RotateCcw,
-} from "lucide-react";
+import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import useSWR, { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
@@ -51,10 +44,16 @@ export function MeaningSection({
   wordIdToReport,
   retryLexemeSearch,
 }: MeaningSectionProps) {
-  const { canShowTips, hideTips } = useAppStore();
+  const {
+    canShowFlashcardTips,
+    canShowMeaningTips,
+    hideFlashcardTips,
+    hideMeaningTips,
+  } = useAppStore();
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
-  const [shouldShowTips, toggleTips] = useState(false);
+  const [shouldShowMeaningTips, toggleMeaningTips] = useState(false);
+  const [shouldShowFlashcardTips, toggleFlashcardTips] = useState(false);
   const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
   const [addFlashcardModalOpen, setAddFlashcardModalOpen] = useState(false);
   const { vocabMeaningErrMsg } = useLexemeStore();
@@ -103,10 +102,18 @@ export function MeaningSection({
   }, [reportedWords, wordIdToReport]);
 
   useEffect(() => {
-    if (canShowTips && lexemeSearch && lexemeSearch?.meaning.length >= 2) {
-      toggleTips(true);
+    if (
+      canShowMeaningTips &&
+      lexemeSearch &&
+      lexemeSearch?.meaning.length >= 2
+    ) {
+      toggleMeaningTips(true);
+      return;
     }
-  }, [canShowTips, lexemeSearch]);
+    if (canShowFlashcardTips && lexemeSearch) {
+      toggleFlashcardTips(true);
+    }
+  }, [canShowFlashcardTips, canShowMeaningTips, lexemeSearch]);
 
   return (
     <Card
@@ -153,23 +160,37 @@ export function MeaningSection({
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {canShowTips && (
-                  <Popover open={shouldShowTips} onOpenChange={toggleTips}>
+                {canShowMeaningTips && (
+                  <Popover
+                    open={shouldShowMeaningTips}
+                    onOpenChange={(open) => {
+                      toggleMeaningTips(open);
+                      if (!open) {
+                        if (canShowFlashcardTips && lexemeSearch) {
+                          toggleFlashcardTips(true);
+                        }
+                      }
+                    }}
+                  >
                     <PopoverTrigger asChild>
                       <button className="h-2"></button>
                     </PopoverTrigger>
-                    <PopoverContent side="top" align="start">
-                      <div>
-                        Tips: bấm vào nghĩa của từ để xem các nghĩa khác
+                    <PopoverContent
+                      className="p-1.5 bg-red-100 w-[195px]"
+                      side="top"
+                      align="start"
+                    >
+                      <div className="text-sm">
+                        Tips: Bấm vào nghĩa của từ để xem các nghĩa khác
                       </div>
                       <div className="flex items-center mt-1 space-x-2">
                         <Checkbox
                           onCheckedChange={() =>
-                            setTimeout(() => hideTips(), 800)
+                            setTimeout(() => hideMeaningTips(), 800)
                           }
-                          id="terms"
+                          id="meaning-tips"
                         />
-                        <label htmlFor="terms" className="text-sm font-sm">
+                        <label htmlFor="meaning-tips" className="text-xs">
                           Không hiện tips này nữa
                         </label>
                       </div>
@@ -181,7 +202,7 @@ export function MeaningSection({
                 )}
               </div>
 
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 relative items-center">
                 {currentMeaning?.context && (
                   <div className="bg-slate-50 text-black rounded-full px-6 text-sm border">
                     {currentMeaning?.context}
@@ -197,6 +218,36 @@ export function MeaningSection({
                   >
                     <CardIcon />
                   </Button>
+                )}
+                {user && canShowFlashcardTips && (
+                  <Popover
+                    open={shouldShowFlashcardTips}
+                    onOpenChange={toggleFlashcardTips}
+                  >
+                    <PopoverTrigger asChild>
+                      <button className="size-1 absolute top-2"></button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="p-1.5 bg-red-100 w-[210px]"
+                      side="top"
+                      align="center"
+                    >
+                      <div className="text-sm">
+                        Tips: Bạn có thể thêm từ này vào bộ flash card của bạn
+                      </div>
+                      <div className="flex items-center mt-1 space-x-2">
+                        <Checkbox
+                          onCheckedChange={() =>
+                            setTimeout(() => hideFlashcardTips(), 800)
+                          }
+                          id="flashcard-tips"
+                        />
+                        <label htmlFor="flashcard-tips" className="text-xs">
+                          Không hiện tips này nữa
+                        </label>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 )}
                 <Button
                   onClick={toggleFavorite}

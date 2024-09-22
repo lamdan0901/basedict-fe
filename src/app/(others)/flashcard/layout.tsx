@@ -1,5 +1,5 @@
-import { FlashcardNavbar } from "@/app/(home)/flashcard/_components/FlashcardNavbar";
-import { FlashcardPageTitle } from "@/app/(home)/flashcard/_components/FlashcardPageTitle";
+import { FlashcardNavbar } from "@/app/(others)/flashcard/_components/FlashcardNavbar";
+import { FlashcardPageTitle } from "@/app/(others)/flashcard/_components/FlashcardPageTitle";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {

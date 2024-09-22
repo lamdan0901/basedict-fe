@@ -40,17 +40,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <head>
+      <body className={inter.className}>
+        {children} <Toaster />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9085997021434962"
           crossOrigin="anonymous"
           strategy="lazyOnload"
         />
-      </head>
-      <body className={inter.className}>
-        {children} <Toaster />
       </body>
     </html>
   );
 }
+//https://xahidex.com/blog/nextjs-adsense
+
+// 'use client';
+
+// import { Adsense } from '@ctrl/react-adsense';
+
+// export default function ShowAd() {
+//   return (
+//     <Adsense
+//       client="ca-pub-1234567891011"
+//       slot="123456789"
+//       style={{ display: 'block' }}
+//       layout="in-article"
+//       format="fluid"
+//     />
+// );
+// }

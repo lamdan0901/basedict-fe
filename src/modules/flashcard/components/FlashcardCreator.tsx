@@ -9,7 +9,7 @@ export function FlashcardCreator({ creator }: { creator: TFlashcardCreator }) {
   const router = useRouter();
 
   return (
-    <Card className="cursor-pointer hover:shadow-lg transition duration-300">
+    <Card className="cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300">
       <CardContent
         onClick={() => router.push(`/flashcard/user/${creator.id}`)}
         className="p-2 space-y-4 sm:p-4"

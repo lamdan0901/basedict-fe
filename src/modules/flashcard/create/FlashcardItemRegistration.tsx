@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/use-toast";
 import {
   defaultFlashcardItem,
   FLASHCARD_LIMIT,
@@ -100,8 +101,17 @@ export function FlashcardItemRegistration({
         <Button
           size={"sm"}
           type="button"
-          disabled={limitReached || isMutating}
-          onClick={() => append(defaultFlashcardItem(uuid()))}
+          disabled={isMutating}
+          onClick={() => {
+            if (limitReached) {
+              toast({
+                title: `Bạn chỉ có thể tạo tối đa ${FLASHCARD_LIMIT} thẻ flashcard`,
+                variant: "destructive",
+              });
+              return;
+            }
+            append(defaultFlashcardItem(uuid()));
+          }}
         >
           <Plus className="size-5 mr-2" /> Thêm thẻ mới
         </Button>

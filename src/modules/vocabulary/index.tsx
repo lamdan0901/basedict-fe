@@ -15,11 +15,21 @@ import { MouseEvent, useRef, useState } from "react";
 import useSWR from "swr";
 import { scrollToTop } from "@/lib";
 import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
+import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
+import { HistoryItemType } from "@/constants";
+import { v4 as uuid } from "uuid";
 
 const TOP_EL_ID = "top-of-vocabulary";
 
 export function Vocabulary() {
   const jlptLevel = useParams().level?.[0] ?? "N3";
+  const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
+    useFavoriteStore();
+  const [selectedLexeme, setSelectedLexeme] = useState<{
+    lexeme: TLexeme;
+    currentMeaning: TMeaning;
+  } | null>(null);
 
   const meaningPopupRef = useRef<HTMLDivElement>(null);
   const [selection, setSelection] = useState("");
@@ -65,6 +75,18 @@ export function Vocabulary() {
     });
   };
 
+  function toggleFavorite(lexeme: TLexeme, isFavorite: boolean) {
+    if (isFavorite) {
+      removeFavoriteItem(lexeme.id);
+    } else {
+      addFavoriteItem({
+        ...lexeme,
+        uid: uuid(),
+        type: HistoryItemType.Lexeme,
+      });
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div id={TOP_EL_ID} className="relative">
@@ -105,7 +127,12 @@ export function Vocabulary() {
           {lexemes?.map((lexeme) => (
             <VocabItem
               key={lexeme.id}
+              onAddFlashcard={setSelectedLexeme}
               lexeme={lexeme}
+              isFavorite={isFavoriteItem(lexeme?.id)}
+              onToggleFavorite={(isFavorite) => {
+                toggleFavorite(lexeme, isFavorite);
+              }}
               onSimilarWordClick={handleSimilarWordClick}
             />
           ))}
@@ -131,6 +158,12 @@ export function Vocabulary() {
           setShowPopup={setShowMeaningPopup}
         />
       )}
+
+      <AddNewFlashcardModal
+        {...selectedLexeme}
+        open={!!selectedLexeme}
+        onOpenChange={() => setSelectedLexeme(null)}
+      />
 
       <ScrollToTopButton id={`#${TOP_EL_ID}`} />
     </div>

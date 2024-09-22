@@ -26,7 +26,6 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { useAnswerStore } from "@/store/useAnswerStore";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 export function JlptTestQuestions({
   data,
@@ -147,63 +146,60 @@ export function JlptTestQuestions({
         isDailyTest={isDailyTest}
       />
 
-      <TooltipProvider>
-        <div className="mt-2 overflow-auto">
-          {questions.map((question, index) => {
-            return (
-              <ReadingAnswer
-                key={index}
-                selectionDisabled={selectionDisabled}
-                shouldShowAns={shouldShowAns && !isDailyTest}
-                questionText={`${index + 1}. ${question.question}`}
-                radioGroupKey={`${index}-${resetKey}`}
-                question={question}
-                index={`|${index}`} // answers can be duplicated, so we need to add index to make it unique
-                onValueChange={handleAnswerChange(index)}
-                testState={testState}
-              />
-            );
-          })}
+      <div className="mt-2 overflow-auto">
+        {questions.map((question, index) => {
+          return (
+            <ReadingAnswer
+              key={index}
+              selectionDisabled={selectionDisabled}
+              shouldShowAns={shouldShowAns && !isDailyTest}
+              questionText={`${index + 1}. ${question.question}`}
+              radioGroupKey={`${index}-${resetKey}`}
+              question={question}
+              index={`|${index}`} // answers can be duplicated, so we need to add index to make it unique
+              onValueChange={handleAnswerChange(index)}
+              testState={testState}
+            />
+          );
+        })}
 
-          {readings.map((reading, i) => {
-            const prevReadingQuestionsLength = (
-              readings[i - 1]?.questions ?? []
-            ).length;
-            prevReadingQuestionsLengthAcc += prevReadingQuestionsLength;
-            return (
-              <div key={i}>
-                <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
-                  <p
-                    className="whitespace-pre-line"
-                    dangerouslySetInnerHTML={{
-                      __html: reading?.japanese ?? "",
-                    }}
-                  ></p>
-                </div>
-                {reading.questions?.map((question, j) => {
-                  const readingQuesIndex =
-                    initialReadingQuesIndex + prevReadingQuestionsLengthAcc + j;
-                  return (
-                    <ReadingAnswer
-                      key={readingQuesIndex + j}
-                      selectionDisabled={selectionDisabled}
-                      shouldShowAns={shouldShowAns && !isDailyTest}
-                      questionText={`${readingQuesIndex + 1}. ${
-                        question.question
-                      }`}
-                      radioGroupKey={`${readingQuesIndex}-${resetKey}`}
-                      question={question}
-                      onValueChange={handleAnswerChange(readingQuesIndex)}
-                      testState={testState}
-                      index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
-                    />
-                  );
-                })}
+        {readings.map((reading, i) => {
+          const prevReadingQuestionsLength = (readings[i - 1]?.questions ?? [])
+            .length;
+          prevReadingQuestionsLengthAcc += prevReadingQuestionsLength;
+          return (
+            <div key={i}>
+              <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
+                <p
+                  className="whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: reading?.japanese ?? "",
+                  }}
+                ></p>
               </div>
-            );
-          })}
-        </div>
-      </TooltipProvider>
+              {reading.questions?.map((question, j) => {
+                const readingQuesIndex =
+                  initialReadingQuesIndex + prevReadingQuestionsLengthAcc + j;
+                return (
+                  <ReadingAnswer
+                    key={readingQuesIndex + j}
+                    selectionDisabled={selectionDisabled}
+                    shouldShowAns={shouldShowAns && !isDailyTest}
+                    questionText={`${readingQuesIndex + 1}. ${
+                      question.question
+                    }`}
+                    radioGroupKey={`${readingQuesIndex}-${resetKey}`}
+                    question={question}
+                    onValueChange={handleAnswerChange(readingQuesIndex)}
+                    testState={testState}
+                    index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
 
       <HistoryDialog
         open={historyDialogOpen}

@@ -28,7 +28,7 @@ export function LevelSelector({
         }
         value={jlptLevel}
       >
-        <SelectTrigger className="w-28">
+        <SelectTrigger className="w-40">
           <SelectValue placeholder="Select a level" />
         </SelectTrigger>
         <SelectContent>

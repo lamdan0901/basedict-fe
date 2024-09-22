@@ -15,8 +15,12 @@ import { useAnswerStore } from "@/store/useAnswerStore";
 import { CircleHelp } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
-import { getRequest, postRequest } from "../service/data";
-import useSWR from "swr";
+import { getRequest } from "../service/data";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -120,24 +124,32 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                   htmlFor={answer + index}
                 ></Label>
                 {shouldShowTooltip && (
-                  <Tooltip>
-                    <TooltipTrigger
-                      onPointerEnter={handleGetExplanation}
+                  <Popover>
+                    <PopoverTrigger
+                      onClick={() => handleGetExplanation()}
                       asChild
                     >
-                      <CircleHelp className={cn("size-4 text-[#555]")} />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                      <div className="flex items-center cursor-pointer hover:underline text-muted-foreground gap-1">
+                        <CircleHelp className={"size-4 "} />
+                        <span className="text-xs italic">xem giải thích</span>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className={cn(
+                        "p-1",
+                        !isMutating && "w-80 sm:w-[480px] lg:w-[768px]"
+                      )}
+                    >
                       <p
                         dangerouslySetInnerHTML={{
                           __html: isMutating
                             ? "Đang tải giải thích..."
                             : question.explanation || explanation,
                         }}
-                        className="whitespace-pre-line max-w-sm sm:max-w-xl lg:max-w-4xl"
+                        className="whitespace-pre-line text-sm"
                       ></p>
-                    </TooltipContent>
-                  </Tooltip>
+                    </PopoverContent>
+                  </Popover>
                 )}
               </div>
             );

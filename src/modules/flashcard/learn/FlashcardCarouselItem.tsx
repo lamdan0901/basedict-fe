@@ -11,12 +11,19 @@ export function FlashcardCarouselItem({
   showingMeaning: boolean;
 }) {
   const [showingBackSide, setShowingBackSide] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
         event.preventDefault();
-        setShowingBackSide((prev) => !prev);
+        setIsFlipped((prev) => !prev);
+        setIsFlipping(true);
+        setTimeout(() => {
+          setShowingBackSide((prev) => !prev);
+          setIsFlipping(false);
+        }, 350);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -29,20 +36,39 @@ export function FlashcardCarouselItem({
     <CarouselItem>
       <Card
         onClick={() => {
-          setShowingBackSide(!showingBackSide);
+          setIsFlipped((prev) => !prev);
+          setIsFlipping(true);
+          setTimeout(() => {
+            setShowingBackSide((prev) => !prev);
+            setIsFlipping(false);
+          }, 350);
         }}
-        className={cn(showingBackSide ? "flip-out" : "flip-in")}
+        className={cn(isFlipped ? "flip-out" : "flip-in")}
       >
         <CardContent className="flex cursor-pointer aspect-square flex-col gap-3 sm:aspect-video items-center justify-center p-6">
           <span
-            className={cn("text-xl sm:text-3xl font-semibold")}
-            style={{ transform: showingBackSide ? "rotateX(180deg)" : "" }}
+            className={cn(
+              "text-xl sm:text-3xl font-semibold",
+              isFlipped ? "order-2" : "",
+              isFlipping ? "opacity-0" : "opacity-1"
+            )}
+            style={{ transform: isFlipped ? "rotateX(180deg)" : "" }}
           >
-            {showingBackSide ? item.frontSide : item.backSide}
+            {isFlipping ? "" : showingBackSide ? item.frontSide : item.backSide}
           </span>
           {showingMeaning && (
-            <span className="text-sm whitespace-pre sm:text-base">
-              {item.frontSideComment}
+            <span
+              className={cn(
+                "text-sm whitespace-pre sm:text-base",
+                isFlipped ? "order-1" : ""
+              )}
+              style={{ transform: isFlipped ? "rotateX(180deg)" : "" }}
+            >
+              {isFlipping
+                ? ""
+                : showingBackSide
+                ? item.frontSideComment
+                : item.backSideComment}
             </span>
           )}
         </CardContent>

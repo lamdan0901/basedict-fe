@@ -5,8 +5,10 @@ import { immer } from "zustand/middleware/immer";
 interface AppState {
   profile: TUser | null;
   seasonRank: TJlptLevel;
-  canShowTips: boolean;
-  hideTips: () => void;
+  canShowMeaningTips: boolean;
+  canShowFlashcardTips: boolean;
+  hideMeaningTips: () => void;
+  hideFlashcardTips: () => void;
   setProfile: (profile: TUser) => void;
   clearProfile: () => void;
   setSeasonRank: (rank: TJlptLevel) => void;
@@ -17,10 +19,16 @@ export const useAppStore = create<AppState>()(
     immer((set) => ({
       profile: null as TUser | null,
       seasonRank: "N3" as TJlptLevel,
-      canShowTips: true as boolean,
-      hideTips() {
+      canShowMeaningTips: true as boolean,
+      canShowFlashcardTips: true as boolean,
+      hideMeaningTips() {
         set((state) => {
-          state.canShowTips = false;
+          state.canShowMeaningTips = false;
+        });
+      },
+      hideFlashcardTips() {
+        set((state) => {
+          state.canShowFlashcardTips = false;
         });
       },
       setProfile: (profile: TUser) => {

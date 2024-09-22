@@ -10,19 +10,19 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { getRequest, postRequest } from "@/service/data";
-import { useToast } from "@/components/ui/use-toast";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
 import { useState } from "react";
+import { FLASHCARD_LIMIT } from "@/modules/flashcard/const";
 
 type Props = {
   open: boolean;
   onOpenChange(open: boolean): void;
-  lexeme: TLexeme | null | undefined;
-  currentMeaning: TMeaning | undefined;
+  lexeme?: TLexeme | null | undefined;
+  currentMeaning?: TMeaning | undefined;
 };
 
 export function AddNewFlashcardModal({
@@ -31,9 +31,9 @@ export function AddNewFlashcardModal({
   open,
   onOpenChange,
 }: Props) {
-  const { toast } = useToast();
   const router = useRouter();
   const [selectedSet, setSelectedSet] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
     `/v1/flash-card-sets/my-flash-card`,
@@ -65,16 +65,15 @@ export function AddNewFlashcardModal({
         backSide: currentMeaning?.meaning,
         backSideComment: currentMeaning?.explaination,
       });
-      toast({
-        title: "Đã thêm thành công",
-        action: <Check className="h-5 w-5 text-green-500" />,
-      });
       onOpenChange(false);
     } catch (err) {
-      toast({
-        title: "Có lỗi xảy ra, vui lòng thử lại",
-        variant: "destructive",
-      });
+      if (err === "FORBIDDEN") {
+        setErrorMsg(
+          `Bạn chỉ có thể thêm tối đa ${FLASHCARD_LIMIT} thẻ flashcard vào bộ này`
+        );
+        return;
+      }
+      setErrorMsg("Có lỗi xảy ra, vui lòng thử lại");
       console.log("err: ", err);
     }
   }
@@ -85,7 +84,11 @@ export function AddNewFlashcardModal({
         <DialogHeader>
           <DialogTitle>Thêm vào bộ flashcard của bạn</DialogTitle>
           <DialogDescription>
-            Hãy chọn một bộ flashcard bạn muốn thêm vào
+            {hasFlashcardSet
+              ? "Hãy chọn một bộ flashcard bạn muốn thêm vào"
+              : ""}
+            <br />
+            {errorMsg && <div className="text-destructive">{errorMsg}</div>}
           </DialogDescription>
         </DialogHeader>
 

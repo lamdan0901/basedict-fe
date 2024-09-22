@@ -26,7 +26,6 @@ export function FlashcardLearning() {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [showingMeaning, setShowingMeaning] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const { flashcardId } = useParams();
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
@@ -74,14 +73,9 @@ export function FlashcardLearning() {
           <Label htmlFor="airplane-mode">Hiển thị giải nghĩa</Label>
         </div>
         <TooltipProvider>
-          <Tooltip open={showTooltip} onOpenChange={setShowTooltip}>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button
-                onClick={() => setShowTooltip(true)}
-                size={"sm"}
-                className="rounded-full"
-                variant="ghost"
-              >
+              <Button size={"sm"} className="rounded-full" variant="ghost">
                 <CircleHelp className="size-5 text-muted-foreground" />
               </Button>
             </TooltipTrigger>
