@@ -69,28 +69,59 @@ export const VocabItem = memo<Props>(
                         <CircleCheckBig className="text-green-500 shrink-0 w-4 h-4" />
                       )}
                     </span>
-                    {meaningSize > 1 && (
-                      <div className="flex gap-1">
-                        <Button
-                          size={"sm"}
-                          disabled={!canPrev}
-                          variant={"ghost"}
-                          onClick={() => setMeaningIndex(meaningIndex - 1)}
-                          className="p-1 text-muted-foreground h-fit rounded-full"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </Button>
-                        <Button
-                          size={"sm"}
-                          disabled={!canNext}
-                          variant={"ghost"}
-                          onClick={() => setMeaningIndex(meaningIndex + 1)}
-                          className="p-1 text-muted-foreground h-fit rounded-full"
-                        >
-                          <ChevronRight className="w-5 h-5" />
-                        </Button>
-                      </div>
-                    )}
+                    <div className="flex items-start gap-1">
+                      {currentMeaning && (
+                        <>
+                          <Button
+                            onClick={() =>
+                              onAddFlashcard({ lexeme, currentMeaning })
+                            }
+                            className="rounded-full -mt-1 p-2"
+                            size="sm"
+                            variant="ghost"
+                            title="Thêm vào bộ flashcard"
+                          >
+                            <CardIcon />
+                          </Button>
+                          <Button
+                            onClick={() => onToggleFavorite(isFavorite)}
+                            className="rounded-full -mt-1 p-2"
+                            size="sm"
+                            variant="ghost"
+                            title="Thêm vào danh sách yêu thích"
+                          >
+                            <Heart
+                              className={cn(
+                                " w-5 h-5",
+                                isFavorite && "text-destructive"
+                              )}
+                            />
+                          </Button>
+                        </>
+                      )}
+                      {meaningSize > 1 && (
+                        <>
+                          <Button
+                            size={"sm"}
+                            disabled={!canPrev}
+                            variant={"ghost"}
+                            onClick={() => setMeaningIndex(meaningIndex - 1)}
+                            className="p-1 text-muted-foreground h-fit rounded-full"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </Button>
+                          <Button
+                            size={"sm"}
+                            disabled={!canNext}
+                            variant={"ghost"}
+                            onClick={() => setMeaningIndex(meaningIndex + 1)}
+                            className="p-1 text-muted-foreground h-fit rounded-full"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   <p className="text-sm">{currentMeaning?.explaination}</p>
@@ -119,31 +150,6 @@ export const VocabItem = memo<Props>(
             </div>
           </CardContent>
         </Card>
-
-        {currentMeaning && (
-          <div className="absolute top-0 right-3 flex gap-2">
-            <Button
-              onClick={() => onAddFlashcard({ lexeme, currentMeaning })}
-              className="rounded-full p-2"
-              size="sm"
-              variant="ghost"
-              title="Thêm vào bộ flashcard"
-            >
-              <CardIcon />
-            </Button>
-            <Button
-              onClick={() => onToggleFavorite(isFavorite)}
-              className="rounded-full p-2"
-              size="sm"
-              variant="ghost"
-              title="Thêm vào danh sách yêu thích"
-            >
-              <Heart
-                className={cn(" w-5 h-5", isFavorite && "text-destructive")}
-              />
-            </Button>
-          </div>
-        )}
 
         {lexeme.similars.length > 0 && (
           <SimilarLexemes

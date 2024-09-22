@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,7 +14,6 @@ import Image from "next/image";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
 
 export function AuthWrapper({ children }: PropsWithChildren) {
   const alertOpenRef = useRef(false);
