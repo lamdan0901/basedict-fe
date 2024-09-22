@@ -64,10 +64,6 @@ function BaseDictReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
     readingType: ReadingType.All,
   });
 
-  useEffect(() => {
-    if (jlptLevel) setReadingParams({ jlptLevel });
-  }, [jlptLevel, setReadingParams]);
-
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     readingParams.jlptLevel
       ? `/v1/readings?${stringifyParams({
@@ -99,6 +95,7 @@ function BaseDictReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
       readingList={filteredReadingList}
       isLoading={isLoading}
       tab={TabVal.BaseDict}
+      {...readingParams}
     />
   );
 }
@@ -113,10 +110,6 @@ function JPLTTestReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
     jlptTestLevel: jlptLevel,
     examId: undefined,
   });
-
-  useEffect(() => {
-    if (jlptLevel) setReadingParams({ jlptTestLevel: jlptLevel });
-  }, [jlptLevel, setReadingParams]);
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     examId && jlptTestLevel
@@ -160,6 +153,8 @@ function JPLTTestReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
       isLoading={isLoading}
       isLoadingTestPeriods={isLoadingTestPeriods}
       testPeriods={testPeriods}
+      jlptTestLevel={jlptTestLevel}
+      examId={examId}
       tab={TabVal.JLPT}
     />
   );

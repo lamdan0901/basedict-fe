@@ -59,7 +59,7 @@ export function FlashcardCarouselItem({
           {showingMeaning && (
             <span
               className={cn(
-                "text-sm whitespace-pre sm:text-base",
+                "text-sm whitespace-pre-line sm:text-base",
                 isFlipped ? "order-1" : ""
               )}
               style={{ transform: isFlipped ? "rotateX(180deg)" : "" }}

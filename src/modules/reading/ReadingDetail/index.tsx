@@ -115,9 +115,12 @@ export function ReadingDetail() {
                   {showVietnamese ? "Ẩn bản dịch" : "  Xem bản dịch"}
                 </Button>
                 {showVietnamese && (
-                  <p className="mb-2 whitespace-pre-line">
-                    {readingItem?.vietnamese}
-                  </p>
+                  <p
+                    className="mb-2 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: readingItem?.vietnamese ?? "",
+                    }}
+                  ></p>
                 )}
               </div>
 

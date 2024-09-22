@@ -82,19 +82,19 @@ export function FlashcardItem({
                 <TooltipTrigger asChild>
                   <div className="flex gap-1 items-center text-xs">
                     <GraduationCap className="size-5" />
-                    <span>{card.learnedNumber} người</span>
+                    <span>{card.learningNumber} người</span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>Số người đã học</TooltipContent>
+                <TooltipContent>Số người đang học</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex gap-1 items-center text-xs">
                     <CheckCheck className="size-5" />
-                    <span>{card.learningNumber} lượt</span>
+                    <span>{card.learnedNumber} lượt</span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent>Số người đang học</TooltipContent>
+                <TooltipContent>Số người đã học</TooltipContent>
               </Tooltip>
               {!hiddenDate && (
                 <div className="flex gap-1 items-center text-xs">

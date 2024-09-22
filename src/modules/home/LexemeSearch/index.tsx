@@ -397,7 +397,8 @@ export const LexemeSearch = forwardRef<
             - Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
             chữ hán, hiragana hoặc katakana <br />
             {/* 2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br /> */}- Bạn có
-            thể dịch 1 đoạn văn bản. Tối đa dài 500 kí tự
+            thể dịch 1 đoạn văn bản. Khi bạn nhập quá 20 từ sẽ được coi là đoạn
+            văn. Tối đa dài 500 kí tự
           </p>
         </CardContent>
       </Card>
