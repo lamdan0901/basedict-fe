@@ -1,5 +1,3 @@
-"use client";
-
 import { AuthWrapper } from "@/components/AuthWrapper";
 import { QuizGeneralInfo } from "@/modules/quizzes/general";
 
