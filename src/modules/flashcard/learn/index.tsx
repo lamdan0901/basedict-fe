@@ -7,6 +7,13 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
@@ -14,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { DefaultFace } from "@/modules/flashcard/const";
 import { FlashcardCarouselItem } from "@/modules/flashcard/learn/FlashcardCarouselItem";
 import { getRequest } from "@/service/data";
 import { CircleHelp } from "lucide-react";
@@ -26,6 +34,7 @@ export function FlashcardLearning() {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [showingMeaning, setShowingMeaning] = useState(false);
+  const [defaultCardFace, setDefaultCardFace] = useState(DefaultFace.Front);
 
   const { flashcardId } = useParams();
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
@@ -63,7 +72,7 @@ export function FlashcardLearning() {
 
   return (
     <div className="max-w-[285px] sm:max-w-lg md:max-w-xl xl:max-w-3xl ml-9 sm:ml-12 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex relative items-center justify-between">
         <div className="flex items-center space-x-2">
           <Switch
             checked={showingMeaning}
@@ -71,6 +80,9 @@ export function FlashcardLearning() {
             id="airplane-mode"
           />
           <Label htmlFor="airplane-mode">Hiển thị giải nghĩa</Label>
+        </div>
+        <div className="text-sm absolute left-1/2 -translate-x-1/2 text-muted-foreground">
+          {current} / {count}
         </div>
         <TooltipProvider>
           <Tooltip delayDuration={0}>
@@ -96,12 +108,14 @@ export function FlashcardLearning() {
           </Tooltip>
         </TooltipProvider>
       </div>
+
       <Carousel setApi={setApi} className="w-full">
         <CarouselContent>
           {flashcardSet.flashCards?.map((item, index) => (
             <FlashcardCarouselItem
               key={index}
               item={item}
+              defaultCardFace={defaultCardFace}
               showingMeaning={showingMeaning}
             />
           ))}
@@ -115,8 +129,23 @@ export function FlashcardLearning() {
           iconClassName="sm:size-8"
         />
       </Carousel>
-      <div className="py-2 text-center text-sm text-muted-foreground">
-        {current} / {count}
+
+      <div className="flex gap-2 justify-center items-center">
+        <span>Mặc định hiển thị: </span>
+        <Select
+          value={defaultCardFace}
+          onValueChange={(val) => setDefaultCardFace(val as DefaultFace)}
+        >
+          <SelectTrigger className="w-28">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={DefaultFace.Front}>
+              {DefaultFace.Front}
+            </SelectItem>
+            <SelectItem value={DefaultFace.Back}>{DefaultFace.Back}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

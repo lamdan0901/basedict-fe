@@ -1,29 +1,37 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib";
+import { DefaultFace } from "@/modules/flashcard/const";
 import { useEffect, useState } from "react";
+
+type Props = {
+  item: TFlashCardItem;
+  showingMeaning: boolean;
+  defaultCardFace: DefaultFace;
+};
 
 export function FlashcardCarouselItem({
   item,
   showingMeaning,
-}: {
-  item: TFlashCardItem;
-  showingMeaning: boolean;
-}) {
+  defaultCardFace,
+}: Props) {
   const [showingBackSide, setShowingBackSide] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
 
+  function handleCardFlip(isBackFace?: boolean) {
+    setIsFlipped(isBackFace ?? ((prev) => !prev));
+    setIsFlipping(true);
+    setTimeout(() => {
+      setShowingBackSide(isBackFace ?? ((prev) => !prev));
+      setIsFlipping(false);
+    }, 350);
+  }
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
-        event.preventDefault();
-        setIsFlipped((prev) => !prev);
-        setIsFlipping(true);
-        setTimeout(() => {
-          setShowingBackSide((prev) => !prev);
-          setIsFlipping(false);
-        }, 350);
+        handleCardFlip();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -32,17 +40,14 @@ export function FlashcardCarouselItem({
     };
   }, []);
 
+  useEffect(() => {
+    handleCardFlip(defaultCardFace === DefaultFace.Back);
+  }, [defaultCardFace]);
+
   return (
     <CarouselItem>
       <Card
-        onClick={() => {
-          setIsFlipped((prev) => !prev);
-          setIsFlipping(true);
-          setTimeout(() => {
-            setShowingBackSide((prev) => !prev);
-            setIsFlipping(false);
-          }, 350);
-        }}
+        onClick={() => handleCardFlip()}
         className={cn(isFlipped ? "flip-out" : "flip-in")}
       >
         <CardContent className="flex cursor-pointer aspect-square flex-col gap-3 sm:aspect-video items-center justify-center p-6">
@@ -54,7 +59,7 @@ export function FlashcardCarouselItem({
             )}
             style={{ transform: isFlipped ? "rotateX(180deg)" : "" }}
           >
-            {isFlipping ? "" : showingBackSide ? item.frontSide : item.backSide}
+            {isFlipping ? "" : showingBackSide ? item.backSide : item.frontSide}
           </span>
           {showingMeaning && (
             <span
@@ -67,8 +72,8 @@ export function FlashcardCarouselItem({
               {isFlipping
                 ? ""
                 : showingBackSide
-                ? item.frontSideComment
-                : item.backSideComment}
+                ? item.backSideComment
+                : item.frontSideComment}
             </span>
           )}
         </CardContent>

@@ -18,3 +18,8 @@ export const defaultFlashcardSet = {
   description: "",
   flashCards: [defaultFlashcardItem(uuid())],
 };
+
+export enum DefaultFace {
+  Front = "Mặt trước",
+  Back = "Mặt sau",
+}
