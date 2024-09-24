@@ -26,6 +26,7 @@ import { TriggerWithOptionsArgs } from "swr/mutation";
 import { X } from "lucide-react";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { v4 as uuid } from "uuid";
+import { useDebounceFn } from "@/hooks/useDebounce";
 
 type LexemeSearchProps = {
   initialText: string | undefined;
@@ -126,6 +127,11 @@ export const LexemeSearch = forwardRef<
         }`
       : "";
 
+    const debouncedSearch = useDebounceFn((value: string) => {
+      setSearchParam({ search: value });
+      setLexemeSearchParam(value);
+    });
+
     function handleSearchTextChange(value: string) {
       if (value.length >= PARAGRAPH_MIN_LENGTH) {
         handleParagraphInputChange(value);
@@ -133,8 +139,7 @@ export const LexemeSearch = forwardRef<
       }
 
       setText(value);
-      setSearchParam({ search: value });
-      setLexemeSearchParam(value);
+      debouncedSearch(value);
 
       if (value.trim().length === 0) {
         mutateLexemeVocab({ data: [] });
@@ -174,7 +179,7 @@ export const LexemeSearch = forwardRef<
     }
 
     function handleSearchLexeme(e: KeyboardEvent<HTMLInputElement>) {
-      if (!(e.ctrlKey && e.key === "Enter" && text)) return;
+      if (!(e.key === "Enter" && text)) return;
 
       // when user press Enter, we need to cancel the request to get vocab list
       setLexemeSearchParam("");

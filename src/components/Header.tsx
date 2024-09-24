@@ -71,7 +71,9 @@ const Header = () => {
     data: user,
     mutate,
     isLoading,
-  } = useSWR<TUser>("get-user-profile", fetchUserProfile);
+  } = useSWR<TUser>("get-user-profile", fetchUserProfile, {
+    revalidateOnFocus: false,
+  });
 
   async function signOut() {
     const client = createClient();
