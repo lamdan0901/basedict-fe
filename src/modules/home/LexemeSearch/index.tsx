@@ -137,8 +137,6 @@ export const LexemeSearch = forwardRef<
       setLexemeSearchParam(value);
 
       if (value.trim().length === 0) {
-        // setSearchParam({ search: "" });
-        // setLexemeSearchParam("");
         mutateLexemeVocab({ data: [] });
         setWord("");
         setSelectedGrammar(null);
@@ -176,10 +174,9 @@ export const LexemeSearch = forwardRef<
     }
 
     function handleSearchLexeme(e: KeyboardEvent<HTMLInputElement>) {
-      if (!(e.key === "Enter" && text)) return;
+      if (!(e.ctrlKey && e.key === "Enter" && text)) return;
 
       // when user press Enter, we need to cancel the request to get vocab list
-      // setSearchParam({ search: "" });
       setLexemeSearchParam("");
 
       if (isVocabMode) {
@@ -188,7 +185,6 @@ export const LexemeSearch = forwardRef<
         mutateLexemeVocab({ data: [] });
       } else if (lexemeGrammars.length > 0) {
         setSelectedGrammar(lexemeGrammars[0]);
-        // setGrammarMeaningErrMsg("");
       }
     }
 
