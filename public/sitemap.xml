@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <!-- Trang chủ -->
+   <url>
+      <loc>https://basedict.com/</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>1.0</priority>
+   </url>
+
+   <!-- Danh sách từ vựng -->
+   <url>
+      <loc>https://basedict.com/vocabulary</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.8</priority>
+   </url>
+
+   <!-- Danh sách từ vựng theo từng cấp độ -->
+   <url>
+      <loc>https://basedict.com/vocabulary/N1</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/vocabulary/N2</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/vocabulary/N3</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/vocabulary/N4</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/vocabulary/N5</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+
+   <!-- Danh sách đề thi JLPT -->
+   <url>
+      <loc>https://basedict.com/quizzes/jlpt-test?jlptLevel=N1</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/quizzes/jlpt-test?jlptLevel=N2</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/quizzes/jlpt-test?jlptLevel=N3</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/quizzes/jlpt-test?jlptLevel=N4</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+   <url>
+      <loc>https://basedict.com/quizzes/jlpt-test?jlptLevel=N5</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.7</priority>
+   </url>
+
+   <!-- Mô tả các dạng đề thi JLPT -->
+   <url>
+      <loc>https://basedict.com/quizzes/jlpt-question-types</loc>
+      <lastmod>2024-09-24</lastmod>
+      <priority>0.6</priority>
+   </url>
+</urlset>
