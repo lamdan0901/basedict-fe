@@ -1,4 +1,3 @@
-import { CardIcon } from "@/components/icons";
 import { Card, CardContent } from "@/components/ui/card";
 import { DEFAULT_AVATAR_URL } from "@/constants";
 import { CheckCheck, GraduationCap } from "lucide-react";
@@ -21,7 +20,7 @@ export function FlashcardCreator({ creator }: { creator: TFlashcardCreator }) {
           onClick={() => router.push(`/flashcard/user/${creator.id}`)}
           className="p-2 space-y-4 sm:p-4"
         >
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <Image
               src={creator.avatar || DEFAULT_AVATAR_URL}
               width={40}
@@ -29,7 +28,7 @@ export function FlashcardCreator({ creator }: { creator: TFlashcardCreator }) {
               className="rounded-full size-10 object-cover shrink-0"
               alt="owner-avatar"
             />
-            <span className="font-semibold">{creator.name}</span>
+            <span className="truncate font-semibold">{creator.name}</span>
           </div>
 
           <div className="flex gap-3 flex-wrap">

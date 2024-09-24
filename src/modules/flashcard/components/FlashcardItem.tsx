@@ -60,7 +60,7 @@ export function FlashcardItem({
           <div className="flex justify-between gap-2 flex-wrap">
             {card.owner && (
               <Button
-                className=" hover:text-[#8b0000] gap-2 px-2 py-1 -ml-2 items-center"
+                className="overflow-hidden hover:text-[#8b0000] gap-2 px-2 py-1 -ml-2 items-center"
                 variant={"ghost"}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -74,7 +74,7 @@ export function FlashcardItem({
                   className="rounded-full size-10 object-cover shrink-0"
                   alt="owner-avatar"
                 />
-                <span>{card.owner.name}</span>
+                <span className="truncate">{card.owner.name}</span>
               </Button>
             )}
             <div className="flex gap-3">
