@@ -21,12 +21,12 @@ const fetchLexemeSearch = cache(
 );
 
 export async function generateMetadata(
-  { searchParams }: TComponentProps,
+  { params }: TComponentProps,
   parent: ResolvingMetadata
 ) {
-  const { search } = searchParams;
+  const { lexeme: lexemeSlug } = params;
   const [lexemeSearch, previousMeta] = await Promise.all([
-    fetchLexemeSearch(search),
+    fetchLexemeSearch(lexemeSlug),
     parent,
   ]);
 
@@ -40,13 +40,12 @@ export async function generateMetadata(
     title: `${standard}${_lexeme} ${hiragana} nghĩa là gì? dịch nghĩa, giải nghĩa, ví dụ, từ tương tự | Basedict`,
     description: `Định nghĩa của ${standard}${_lexeme} (${hiragana}) ${hanviet} : ${meaning[0].meaning} | và cả các ý nghĩa khác nữa. Tra cứu dịch nghĩa, giải nghĩa, cách sử dụng và các ví dụ thực tế tại BaseDict, từ điển tiếng nhật tốt nhất Việt Nam`,
     keywords: `${standard}, ${_lexeme}, ${hiragana}, ${meaning[0].meaning}, từ điển nhật việt, ý nghĩa, dịch nghĩa, giải nghĩa, ví dụ, basedict`,
-    "google-adsense-account": "ca-pub-9085997021434962",
   };
 }
 
-export default async function HomePage({ searchParams }: TComponentProps) {
-  const { search } = searchParams;
-  const lexemeSearch = await fetchLexemeSearch(search);
+export default async function HomePage({ params }: TComponentProps) {
+  const lexeme = params.lexeme;
+  const lexemeSearch = await fetchLexemeSearch(lexeme);
 
   return <Home _lexemeSearch={lexemeSearch} />;
 }
