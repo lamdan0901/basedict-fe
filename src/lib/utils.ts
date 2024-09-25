@@ -40,3 +40,14 @@ export const scrollToTop = (id: string) => {
   const topEl = document.querySelector(id);
   topEl?.scrollIntoView({ behavior: "smooth", block: "end" });
 };
+
+export function shuffleArray<T>(arr: T[]): T[] {
+  const shuffledArr = structuredClone(arr);
+
+  for (let i = shuffledArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArr[i], shuffledArr[j]] = [shuffledArr[j], shuffledArr[i]];
+  }
+
+  return shuffledArr;
+}

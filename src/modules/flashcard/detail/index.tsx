@@ -1,3 +1,6 @@
+"use client";
+
+import { AdSense } from "@/components/Ad/Ad";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +23,11 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
-export function FlashcardDetail() {
+export function FlashcardDetail({
+  flashcardSet,
+}: {
+  flashcardSet: TFlashcardSet | null | undefined;
+}) {
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
@@ -30,12 +37,6 @@ export function FlashcardDetail() {
     "get-user",
     fetchUserProfile
   );
-  const {
-    data: flashcardSet,
-    isLoading: isLoadingFlashcardSet,
-    mutate: mutateFlashcardSet,
-  } = useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
-
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
     useSWRMutation(
       `/v1/flash-card-sets/${flashcardId}/start-learning`,
@@ -53,7 +54,7 @@ export function FlashcardDetail() {
 
   const isMyFlashcard = user?.id === flashcardSet?.owner?.id;
   const isTogglingLearning = isMutatingStartLearning || isMutatingStopLearning;
-  const isLoading = isLoadingFlashcardSet || isLoadingUser;
+  const isLoading = isLoadingUser;
   const learningStatusTitle = flashcardSet?.isLearning
     ? "Huỷ đăng kí"
     : "Đăng kí học";
@@ -62,7 +63,7 @@ export function FlashcardDetail() {
     try {
       await (flashcardSet?.isLearning ? stopLearning() : startLearning());
       await Promise.all([
-        mutateFlashcardSet(),
+        router.refresh(),
         mutate("/v1/flash-card-sets/my-flash-card"),
       ]);
       toast({
@@ -183,7 +184,10 @@ export function FlashcardDetail() {
         </AlertDialog>
       </div>
 
-      <div className="min-w-[250px] md:block hidden border">Ads</div>
+      <div className="min-w-[250px] md:block hidden">
+        {" "}
+        <AdSense />
+      </div>
     </div>
   );
 }

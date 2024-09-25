@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreator";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";

@@ -1,3 +1,5 @@
+"use client";
+
 import { AppPagination } from "@/components/AppPagination";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import {

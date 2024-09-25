@@ -13,7 +13,7 @@ import {
   useImperativeHandle,
 } from "react";
 import useSWRImmutable from "swr/immutable";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import {
   GRAMMAR_CHAR,
@@ -71,6 +71,7 @@ export const LexemeSearch = forwardRef<
     const setSearchParam = useUrlSearchParams();
     const searchParams = useSearchParams();
     const search = searchParams.get("search") ?? "";
+    const seoSearch = searchParams.get("word") ?? "";
     const [readyToSearch, setReadyToSearch] = useState(false);
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
@@ -78,8 +79,6 @@ export const LexemeSearch = forwardRef<
       !isParagraphMode &&
       lexemeSearchParam &&
       !lexemeSearchParam.startsWith(GRAMMAR_CHAR);
-    const isGrammarMode = false; // temporarily disabled feature
-    // !isParagraphMode && search.length > 1 && search.startsWith(GRAMMAR_CHAR);
 
     const {
       data: lexemeVocabRes,
@@ -95,20 +94,9 @@ export const LexemeSearch = forwardRef<
         : null,
       getRequest
     );
-    const { data: lexemeGrammarRes, isLoading: loadingLexemeGrammar } =
-      useSWRImmutable<{
-        data: TGrammar[];
-      }>(
-        isGrammarMode
-          ? `v1/grammars/?search=?${trimAllSpaces(search.slice(1))}`
-          : null,
-        getRequest
-      );
 
     const lexemeVocabs = lexemeVocabRes?.data ?? [];
-    const lexemeGrammars = lexemeGrammarRes?.data ?? [];
-    const isDisplayingSuggestions =
-      lexemeVocabs.length > 0 || lexemeGrammars.length > 0;
+    const isDisplayingSuggestions = lexemeVocabs.length > 0;
 
     const lexemeToShowHanviet = selectedVocab ?? lexemeSearch;
     const hanviet = lexemeToShowHanviet?.hanviet
@@ -188,8 +176,6 @@ export const LexemeSearch = forwardRef<
         setWord(text);
         setVocabMeaningErrMsg("");
         mutateLexemeVocab({ data: [] });
-      } else if (lexemeGrammars.length > 0) {
-        setSelectedGrammar(lexemeGrammars[0]);
       }
     }
 
@@ -202,33 +188,22 @@ export const LexemeSearch = forwardRef<
       setWord(lexeme.lexeme);
     }
 
-    function handleGrammarClick(grammar: TGrammar) {
-      setSelectedGrammar(grammar);
-      setSearchParam({ search: grammar });
-      setLexemeSearchParam("");
-      setText(grammar.grammar);
-      addHistoryItem({
-        ...grammar,
-        uid: uuid(),
-        type: HistoryItemType.Grammar,
-      });
-    }
-
     // After user select a lexeme from the list, user can click on that word again to search for similar ones
     useEffect(() => {
       if (readyToSearch) {
-        setSearchParam({ search: text });
+        setSearchParam({ search: text, word: null });
         setLexemeSearchParam(text);
         setReadyToSearch(false);
       }
     }, [setSearchParam, text, readyToSearch]);
 
+    // Initially fill input text with search param
     useEffect(() => {
-      if (search && !text && !initTextSet.current) {
-        setText(search);
+      if ((search || seoSearch) && !text && !initTextSet.current) {
+        setText(search || seoSearch);
       }
       initTextSet.current = true;
-    }, [search, setText, text]);
+    }, [search, seoSearch, setText, text]);
 
     useEffect(() => {
       if (isParagraphMode) {
@@ -269,7 +244,7 @@ export const LexemeSearch = forwardRef<
           <Input
             id="lexeme-search"
             value={text || initialText}
-            autoFocus
+            autoFocus={!initialText}
             onChange={(e) => handleSearchTextChange(e.target.value)}
             onClick={() => {
               if (initialText) {
@@ -357,29 +332,6 @@ export const LexemeSearch = forwardRef<
                     </Button>
                   );
                 })}
-
-            {loadingLexemeGrammar
-              ? "Searching..."
-              : lexemeGrammars.map((grammar) => {
-                  return (
-                    <Button
-                      key={grammar.id}
-                      onClick={() => handleGrammarClick(grammar)}
-                      className="items-center text-xl py-7 font-normal relative px-1 w-full flex-col"
-                      variant="ghost"
-                    >
-                      <span>{grammar.grammar}</span>
-                      <span>{grammar.meaning}</span>
-                      <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
-                    </Button>
-                  );
-                })}
-
-            {isGrammarMode &&
-              !loadingLexemeGrammar &&
-              lexemeGrammars.length === 0 && (
-                <div className="text-lg">Không tìm thấy ngữ pháp</div>
-              )}
           </div>
 
           {isParagraphMode && (
@@ -396,10 +348,9 @@ export const LexemeSearch = forwardRef<
           >
             Tips: <br />
             - Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao gồm
-            chữ hán, hiragana hoặc katakana <br />
-            {/* 2. Hãy nhập thêm dấu 〜 để tìm kiếm ngữ pháp <br /> */}- Bạn có
-            thể dịch 1 đoạn văn bản. Khi bạn nhập quá 20 từ sẽ được coi là đoạn
-            văn. Tối đa dài 500 kí tự
+            chữ hán, hiragana hoặc katakana <br /> - Bạn có thể dịch 1 đoạn văn
+            bản. Khi bạn nhập quá 20 từ sẽ được coi là đoạn văn. Tối đa dài 500
+            kí tự
           </p>
         </CardContent>
       </Card>

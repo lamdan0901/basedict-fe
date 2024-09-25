@@ -1,3 +1,4 @@
+import { ShuffleIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -21,24 +22,44 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
+import { shuffleArray } from "@/lib";
 import { DefaultFace } from "@/modules/flashcard/const";
 import { FlashcardCarouselItem } from "@/modules/flashcard/learn/FlashcardCarouselItem";
 import { getRequest } from "@/service/data";
-import { CircleHelp } from "lucide-react";
+import { Check, CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
 export function FlashcardLearning() {
+  const { toast } = useToast();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [showingMeaning, setShowingMeaning] = useState(false);
   const [defaultCardFace, setDefaultCardFace] = useState(DefaultFace.Front);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   const { flashcardId } = useParams();
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
+
+  const flashCards = useMemo(() => {
+    const _flashcardSet = flashcardSet?.flashCards ?? [];
+    return isShuffling ? shuffleArray(_flashcardSet) : _flashcardSet;
+  }, [flashcardSet?.flashCards, isShuffling]);
+
+  function handleShuffleCards() {
+    setIsShuffling((prev) => !prev);
+
+    if (!isShuffling) {
+      toast({
+        title: "Trộn flashcard thành công",
+        action: <Check className="h-5 w-5 text-green-500" />,
+      });
+    }
+  }
 
   useEffect(() => {
     if (!api) return;
@@ -111,7 +132,7 @@ export function FlashcardLearning() {
 
       <Carousel setApi={setApi} className="w-full">
         <CarouselContent>
-          {flashcardSet.flashCards?.map((item, index) => (
+          {flashCards.map((item, index) => (
             <FlashcardCarouselItem
               key={index}
               item={item}
@@ -130,8 +151,7 @@ export function FlashcardLearning() {
         />
       </Carousel>
 
-      <div className="flex gap-2 justify-center items-center">
-        <span>Mặc định hiển thị: </span>
+      <div className="flex gap-2 justify-between items-center">
         <Select
           value={defaultCardFace}
           onValueChange={(val) => setDefaultCardFace(val as DefaultFace)}
@@ -146,6 +166,13 @@ export function FlashcardLearning() {
             <SelectItem value={DefaultFace.Back}>{DefaultFace.Back}</SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          size={"icon"}
+          onClick={handleShuffleCards}
+          variant={isShuffling ? "default" : "outline"}
+        >
+          <ShuffleIcon />
+        </Button>
       </div>
     </div>
   );

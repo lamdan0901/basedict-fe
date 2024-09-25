@@ -47,7 +47,7 @@ export function QuizNavbar() {
       <SheetTrigger asChild>
         <Button
           variant={"outline"}
-          className="p-2 gap-2 sm:absolute top-[194px] left-[12px] static lg:order-1 order-2 mt-1 text-primary"
+          className="p-2 gap-2 sm:absolute top-[234px] left-[12px] static lg:order-1 order-2 mt-1 text-primary"
         >
           <SquareMenu className="size-6" />{" "}
           <span className="text-lg">Menu</span>

@@ -17,6 +17,7 @@ import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
 import { useState } from "react";
 import { FLASHCARD_LIMIT } from "@/modules/flashcard/const";
+import { useToast } from "@/components/ui/use-toast";
 
 type Props = {
   open: boolean;
@@ -31,6 +32,7 @@ export function AddNewFlashcardModal({
   open,
   onOpenChange,
 }: Props) {
+  const { toast } = useToast();
   const router = useRouter();
   const [selectedSet, setSelectedSet] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -64,6 +66,11 @@ export function AddNewFlashcardModal({
         frontSideComment: `${lexeme?.lexeme} ${hanviet}\n${lexeme?.hiragana} ${hiragana2}`,
         backSide: currentMeaning?.meaning,
         backSideComment: currentMeaning?.explaination,
+      });
+
+      toast({
+        title: "Thêm flashcard thành công",
+        action: <Check className="h-5 w-5 text-green-500" />,
       });
       onOpenChange(false);
     } catch (err) {
@@ -147,7 +154,9 @@ export function AddNewFlashcardModal({
           </Button>
           <Button
             disabled={isAddingToFlashcardSet}
-            onClick={() => onOpenChange(false)}
+            onClick={() => {
+              onOpenChange(false);
+            }}
             type="button"
             variant={"outline"}
           >
