@@ -1,9 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { FlashcardDetail } from "@/modules/flashcard/detail";
 import { ResolvingMetadata } from "next";
-import { cache } from "react";
 
-const fetchFlashcardSet = cache(async (flashcardId?: string) => {
+const fetchFlashcardSet = async (flashcardId?: string) => {
   if (!flashcardId) return null;
 
   const supabase = createClient();
@@ -12,16 +11,15 @@ const fetchFlashcardSet = cache(async (flashcardId?: string) => {
   } = await supabase.auth.getSession();
   const token = session?.access_token;
 
-  if (!token) return undefined;
-
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/flash-card-sets/${flashcardId}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        next: { revalidate: 5 }, // caching for 5 secs
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : undefined,
       }
     );
     if (!res.ok) return;
@@ -30,7 +28,7 @@ const fetchFlashcardSet = cache(async (flashcardId?: string) => {
   } catch (err: any) {
     console.log("err fetchFlashcardSet: ", err);
   }
-});
+};
 
 export async function generateMetadata(
   { params }: TComponentProps,

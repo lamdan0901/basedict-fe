@@ -1,6 +1,7 @@
 "use client";
 
 import { AdSense } from "@/components/Ad/Ad";
+import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { deleteRequest, getRequest, postRequest } from "@/service/data";
+import { FlashcardSetRegisterPrompt } from "@/modules/flashcard/components/FlashcardSetRegisterPrompt";
+import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
+import { deleteRequest, postRequest } from "@/service/data";
 import { fetchUserProfile } from "@/service/user";
 import { Check, CheckCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -32,6 +35,10 @@ export function FlashcardDetail({
   const router = useRouter();
   const { flashcardId } = useParams();
   const [alertOpen, setAlertOpen] = useState(false);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+  const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
+    useState(false);
+  const [isForbidden, setIsForbidden] = useState(false);
 
   const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
     "get-user",
@@ -60,22 +67,29 @@ export function FlashcardDetail({
     : "Đăng kí học";
 
   async function toggleLearningStatus() {
+    if (!user?.id) {
+      setLoginPromptOpen(true);
+      return;
+    }
+
     try {
       await (flashcardSet?.isLearning ? stopLearning() : startLearning());
-      await Promise.all([
-        router.refresh(),
-        mutate("/v1/flash-card-sets/my-flash-card"),
-      ]);
+
+      await mutate("/v1/flash-card-sets/my-flash-card");
+      router.refresh();
       toast({
         title: `${learningStatusTitle} thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
       });
     } catch (err) {
-      console.log("err");
       toast({
-        title: `${learningStatusTitle} không thành công, hãy thử lại!`,
+        title:
+          err === "FORBIDDEN"
+            ? FLASHCARD_SETS_LIMIT_MSG
+            : `${learningStatusTitle} không thành công, hãy thử lại!`,
         variant: "destructive",
       });
+      console.log("err", err);
     }
   }
 
@@ -97,6 +111,44 @@ export function FlashcardDetail({
     }
   }
 
+  function handleStartLearning() {
+    if (!user?.id) {
+      setLoginPromptOpen(true);
+      return;
+    }
+    if (!isMyFlashcard && !flashcardSet?.isLearning) {
+      setFlashcardRegisterPromptOpen(true);
+      return;
+    }
+
+    router.push(`/flashcard/${flashcardId}/learn`);
+  }
+
+  async function handleRegisterFlashcardSet() {
+    try {
+      await startLearning();
+
+      setFlashcardRegisterPromptOpen(false);
+      mutate("/v1/flash-card-sets/my-flash-card");
+      router.push(`/flashcard/${flashcardId}/learn`);
+
+      toast({
+        title: `Đăng kí học thành công`,
+        action: <Check className="h-5 w-5 text-green-500" />,
+      });
+    } catch (err) {
+      if (err === "FORBIDDEN") {
+        setIsForbidden(true);
+        return;
+      }
+      toast({
+        title: `Đăng kí học không thành công, hãy thử lại!`,
+        variant: "destructive",
+      });
+      console.log("err", err);
+    }
+  }
+
   if (isLoading) return <div>Đang tải bộ flashcard...</div>;
   if (!flashcardSet) return <div>Không tìm thấy bộ flashcard</div>;
 
@@ -110,9 +162,7 @@ export function FlashcardDetail({
         />
 
         <div className="flex gap-2 pt-4 border-t border-muted-foreground justify-center">
-          <Link href={`/flashcard/${flashcardId}/learn`}>
-            <Button>Bắt đầu học</Button>
-          </Link>
+          <Button onClick={handleStartLearning}>Bắt đầu học</Button>
           {!isMyFlashcard && (
             <Button
               disabled={isTogglingLearning}
@@ -166,6 +216,10 @@ export function FlashcardDetail({
           </div>
         </div>
 
+        <div className="min-w-[250px] md:block hidden">
+          <AdSense />
+        </div>
+
         <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
           <AlertDialogContent aria-describedby="end-test">
             <AlertDialogHeader>
@@ -184,10 +238,17 @@ export function FlashcardDetail({
         </AlertDialog>
       </div>
 
-      <div className="min-w-[250px] md:block hidden">
-        {" "}
-        <AdSense />
-      </div>
+      <LoginPrompt
+        alertOpen={loginPromptOpen}
+        onOpenChange={setLoginPromptOpen}
+      />
+      <FlashcardSetRegisterPrompt
+        isForbidden={isForbidden}
+        alertOpen={flashcardRegisterPromptOpen}
+        onOpenChange={setFlashcardRegisterPromptOpen}
+        onRegister={handleRegisterFlashcardSet}
+        disabled={isMutatingStartLearning}
+      />
     </div>
   );
 }

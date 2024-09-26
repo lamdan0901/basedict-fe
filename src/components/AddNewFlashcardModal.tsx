@@ -16,7 +16,10 @@ import { useRouter } from "next/navigation";
 import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
 import { useState } from "react";
-import { FLASHCARD_LIMIT } from "@/modules/flashcard/const";
+import {
+  FLASHCARD_LIMIT,
+  FLASHCARD_LIMIT_MSG,
+} from "@/modules/flashcard/const";
 import { useToast } from "@/components/ui/use-toast";
 
 type Props = {
@@ -75,9 +78,7 @@ export function AddNewFlashcardModal({
       onOpenChange(false);
     } catch (err) {
       if (err === "FORBIDDEN") {
-        setErrorMsg(
-          `Bạn chỉ có thể thêm tối đa ${FLASHCARD_LIMIT} thẻ flashcard vào bộ này`
-        );
+        setErrorMsg(FLASHCARD_LIMIT_MSG);
         return;
       }
       setErrorMsg("Có lỗi xảy ra, vui lòng thử lại");

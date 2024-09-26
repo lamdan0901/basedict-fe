@@ -154,7 +154,7 @@ export function ReadingDetail() {
               />
 
               {readingItem?.isRead ? (
-                <div className="flex items-center absolute bottom-3 right-3 text-sm text-muted-foreground">
+                <div className="flex items-center justify-end text-sm text-muted-foreground">
                   Đã đọc <Check className="w-4 h-4 ml-2" />
                 </div>
               ) : (
@@ -162,7 +162,7 @@ export function ReadingDetail() {
                   disabled={markingAsRead}
                   onClick={handleMarkAsRead}
                   variant={"link"}
-                  className="text-blue-500 absolute bottom-0 right-5 p-0"
+                  className="text-blue-500 block ml-auto z-10 p-0"
                 >
                   Đã đọc xong
                 </Button>
@@ -170,9 +170,7 @@ export function ReadingDetail() {
             </>
           )}
 
-          <div className="mt-4 w-full">
-            <AdSense />
-          </div>
+          <AdSense />
         </CardContent>
       </Card>
     </div>

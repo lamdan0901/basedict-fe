@@ -16,6 +16,7 @@ import useSWRImmutable from "swr/immutable";
 type MeaningPopupProps = {
   selection: string;
   showPopup: boolean;
+  isTriggeredByActionButton?: boolean;
   popupTriggerPosition: { top: number; left: number };
   setShowPopup: (show: boolean) => void;
 };
@@ -26,7 +27,16 @@ const bottomPadding = 160;
 const topPadding = 20;
 
 export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
-  ({ selection, showPopup, popupTriggerPosition, setShowPopup }, _) => {
+  (
+    {
+      selection,
+      showPopup,
+      popupTriggerPosition,
+      isTriggeredByActionButton,
+      setShowPopup,
+    },
+    _
+  ) => {
     const [coords, setCoords] = useState({
       top: popupTriggerPosition.top,
       left: popupTriggerPosition.left,
@@ -90,13 +100,15 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
       // Prevent tooltip from overflowing the bottom side of the viewport
       if (top + height > viewportHeight - bottomPadding) {
         top -= height + topPadding;
+      } else if (!isTriggeredByActionButton) {
+        top += topPadding;
       }
 
       setCoords({
         top,
         left,
       });
-    }, [popupTriggerPosition, containerWidth]);
+    }, [popupTriggerPosition, isTriggeredByActionButton, containerWidth]);
 
     useEffect(() => {
       calculatePosition();
