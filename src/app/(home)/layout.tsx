@@ -11,7 +11,7 @@ const Layout = async ({ children }: PropsWithChildren) => {
         <Header />
         <Image
           className="mt-16 mx-auto object-contain max-h-[150px] w-[417px]"
-          src="/images/logo.png"
+          src="/images/logo2.png"
           priority
           alt="basedict | học tiếng nhật"
           width={500}

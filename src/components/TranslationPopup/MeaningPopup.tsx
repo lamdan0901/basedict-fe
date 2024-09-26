@@ -1,17 +1,22 @@
+import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
+import { CardIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { MEANING_ERR_MSG } from "@/constants";
+import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { cn, trimAllSpaces } from "@/lib";
 import { getRequest } from "@/service/data";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
 import {
   ChevronLeft,
   ChevronRight,
   CircleCheckBig,
+  Heart,
   RotateCcw,
 } from "lucide-react";
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import useSWRImmutable from "swr/immutable";
+import { v4 as uuid } from "uuid";
 
 type MeaningPopupProps = {
   selection: string;
@@ -37,12 +42,18 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
     },
     _
   ) => {
+    const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
+      useFavoriteStore();
     const [coords, setCoords] = useState({
       top: popupTriggerPosition.top,
       left: popupTriggerPosition.left,
     });
     const [meaningErrMsg, setMeaningErrMsg] = useState("");
     const [meaningIndex, setMeaningIndex] = useState(0);
+    const [selectedLexeme, setSelectedLexeme] = useState<{
+      lexeme: TLexeme;
+      currentMeaning: TMeaning;
+    } | null>(null);
 
     const [containerWidth, setContainerWidth] = useState(300);
     const titleRef = useRef<HTMLDivElement>(null);
@@ -72,10 +83,24 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
     const meaningSize = lexemeSearch?.meaning?.length ?? 0;
     const canNext = meaningIndex < meaningSize - 1;
     const canPrev = meaningIndex > 0;
+    const isFavorite = isFavoriteItem(lexemeSearch?.id);
+
+    function toggleFavorite(lexeme: TLexeme, isFavorite: boolean) {
+      if (isFavorite) {
+        removeFavoriteItem(lexeme.id);
+      } else {
+        addFavoriteItem({
+          ...lexeme,
+          uid: uuid(),
+          type: HistoryItemType.Lexeme,
+        });
+      }
+    }
 
     useOutsideClick({
       ref: popupRef,
       callback: () => {
+        if (selectedLexeme) return;
         setShowPopup(false);
         setMeaningIndex(0);
       },
@@ -143,84 +168,133 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
       };
     }, [lexemeSearch, popupTriggerPosition, calculatePosition]);
 
-    return createPortal(
-      <div
-        ref={popupRef}
-        className="fixed z-[99999] bg-white border min-h-[150px] border-gray-300 p-3 rounded-lg shadow-md"
-        style={{
-          top: `${coords.top}px`,
-          left: `${coords.left}px`,
-          transform: "translateX(-50%)",
-          width: `${containerWidth}px`,
-        }}
-      >
-        {searchingLexeme && "Đang tìm kiếm..."}
-
-        <div
-          ref={titleRef}
-          className={cn("w-fit", meaningSize > 1 && " pr-12")}
-        >
-          <div>
-            {lexemeSearch?.standard}{" "}
-            {lexemeSearch?.standard !== lexemeSearch?.lexeme
-              ? `(${lexemeSearch?.lexeme})`
-              : ""}{" "}
-            {lexemeSearch?.hanviet && <span>({lexemeSearch?.hanviet})</span>}
-            {lexemeSearch?.approved && (
-              <CircleCheckBig className="text-green-500 shrink-0 w-4 h-4" />
+    return (
+      <>
+        {createPortal(
+          <div
+            ref={popupRef}
+            className={cn(
+              "fixed  bg-white border min-h-[150px] border-gray-300 p-3 rounded-lg shadow-md",
+              selectedLexeme ? "z-[9]" : "z-[99999]"
             )}
-          </div>
-          <div className="flex gap-1 flex-nowrap">
-            <span>{lexemeSearch?.hiragana}</span>
-            {lexemeSearch?.hiragana2 && (
-              <span>/ {lexemeSearch?.hiragana2}</span>
-            )}
-          </div>
-        </div>
+            style={{
+              top: `${coords.top}px`,
+              left: `${coords.left}px`,
+              transform: "translateX(-50%)",
+              width: `${containerWidth}px`,
+            }}
+          >
+            {searchingLexeme && "Đang tìm kiếm..."}
 
-        <h2 className="text-lg font-semibold my-2">
-          {currentMeaning?.meaning}
-        </h2>
-        <p className="text-sm">{currentMeaning?.explaination}</p>
+            <div
+              ref={titleRef}
+              className={cn("w-fit", meaningSize > 1 && " pr-12")}
+            >
+              <div>
+                {lexemeSearch?.standard}{" "}
+                {lexemeSearch?.standard !== lexemeSearch?.lexeme
+                  ? `(${lexemeSearch?.lexeme})`
+                  : ""}{" "}
+                {lexemeSearch?.hanviet && (
+                  <span>({lexemeSearch?.hanviet})</span>
+                )}
+                {lexemeSearch?.approved && (
+                  <CircleCheckBig className="text-green-500 shrink-0 w-4 h-4" />
+                )}
+              </div>
+              <div className="flex gap-1 flex-nowrap">
+                <span>{lexemeSearch?.hiragana}</span>
+                {lexemeSearch?.hiragana2 && (
+                  <span>/ {lexemeSearch?.hiragana2}</span>
+                )}
+              </div>
+            </div>
 
-        {meaningSize > 1 && (
-          <div className="flex absolute top-3 right-1 gap-1">
-            <Button
-              size={"sm"}
-              disabled={!canPrev}
-              variant={"ghost"}
-              onClick={() => setMeaningIndex(meaningIndex - 1)}
-              className="p-1 text-muted-foreground h-fit rounded-full"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <Button
-              size={"sm"}
-              disabled={!canNext}
-              variant={"ghost"}
-              onClick={() => setMeaningIndex(meaningIndex + 1)}
-              className="p-1 text-muted-foreground h-fit rounded-full"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
+            <h2 className="text-lg font-semibold my-2">
+              {currentMeaning?.meaning}
+            </h2>
+            <p className="text-sm">{currentMeaning?.explaination}</p>
+
+            <div className="flex absolute top-3 right-1 gap-1">
+              {currentMeaning && (
+                <>
+                  <Button
+                    onClick={() => {
+                      setSelectedLexeme({
+                        lexeme: lexemeSearch,
+                        currentMeaning,
+                      });
+                    }}
+                    className="rounded-full -mt-1 p-2"
+                    size="sm"
+                    variant="ghost"
+                    title="Thêm vào bộ flashcard"
+                  >
+                    <CardIcon />
+                  </Button>
+                  <Button
+                    onClick={() => toggleFavorite(lexemeSearch, isFavorite)}
+                    className="rounded-full -mt-1 p-2"
+                    size="sm"
+                    variant="ghost"
+                    title="Thêm vào danh sách yêu thích"
+                  >
+                    <Heart
+                      className={cn(
+                        " w-5 h-5",
+                        isFavorite && "text-destructive"
+                      )}
+                    />
+                  </Button>
+                </>
+              )}
+              {meaningSize > 1 && (
+                <>
+                  <Button
+                    size={"sm"}
+                    disabled={!canPrev}
+                    variant={"ghost"}
+                    onClick={() => setMeaningIndex(meaningIndex - 1)}
+                    className="p-1 text-muted-foreground h-fit rounded-full"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    size={"sm"}
+                    disabled={!canNext}
+                    variant={"ghost"}
+                    onClick={() => setMeaningIndex(meaningIndex + 1)}
+                    className="p-1 text-muted-foreground h-fit rounded-full"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {meaningErrMsg ? (
+              <div>
+                <Button
+                  onClick={() => retryLexemeSearch()}
+                  variant={"link"}
+                  className="text-xl px-1"
+                >
+                  <RotateCcw className="w-5 h-5 mr-2" /> Thử lại
+                </Button>
+                <p className="text-destructive">{meaningErrMsg}</p>
+              </div>
+            ) : null}
+          </div>,
+          document.body,
+          "meaning-popup"
         )}
 
-        {meaningErrMsg ? (
-          <div>
-            <Button
-              onClick={() => retryLexemeSearch()}
-              variant={"link"}
-              className="text-xl px-1"
-            >
-              <RotateCcw className="w-5 h-5 mr-2" /> Thử lại
-            </Button>
-            <p className="text-destructive">{meaningErrMsg}</p>
-          </div>
-        ) : null}
-      </div>,
-      document.body,
-      "meaning-popup"
+        <AddNewFlashcardModal
+          {...selectedLexeme}
+          open={!!selectedLexeme}
+          onOpenChange={() => setSelectedLexeme(null)}
+        />
+      </>
     );
   }
 );

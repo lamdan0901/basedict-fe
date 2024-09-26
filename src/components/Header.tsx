@@ -102,9 +102,9 @@ const Header = () => {
         href={"/"}
       >
         <Image
-          src={"/images/header_logo_pc.png"}
-          width={128}
-          height={41}
+          src={"/images/header_logo.png"}
+          width={60}
+          height={31}
           alt="basedict-header"
         />
       </Link>
@@ -146,7 +146,7 @@ const Header = () => {
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
-            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
+            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl p-1"
             variant="ghost"
           >
             <Image src="/apps.svg" width={45} height={45} alt="apps" />{" "}
