@@ -98,12 +98,12 @@ const Header = () => {
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
       <Link
-        className="mr-auto sm:block hidden hover:bg-slate-300/40 transition rounded-sm p-1"
+        className="mr-auto ml-2 sm:block hidden hover:bg-slate-300/40 transition rounded-sm px-2 py-1"
         href={"/"}
       >
         <Image
           src={"/images/header_logo.png"}
-          width={78}
+          width={68}
           height={31}
           alt="basedict-header"
         />

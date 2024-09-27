@@ -188,7 +188,7 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
 
             <div
               ref={titleRef}
-              className={cn("w-fit", meaningSize > 1 && " pr-12")}
+              className={cn("w-fit", currentMeaning && " pr-16")}
             >
               <div>
                 {lexemeSearch?.standard}{" "}
@@ -210,46 +210,12 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
               </div>
             </div>
 
-            <h2 className="text-lg font-semibold my-2">
-              {currentMeaning?.meaning}
-            </h2>
-            <p className="text-sm">{currentMeaning?.explaination}</p>
-
-            <div className="flex absolute top-3 right-1 gap-1">
-              {currentMeaning && (
-                <>
-                  <Button
-                    onClick={() => {
-                      setSelectedLexeme({
-                        lexeme: lexemeSearch,
-                        currentMeaning,
-                      });
-                    }}
-                    className="rounded-full -mt-1 p-2"
-                    size="sm"
-                    variant="ghost"
-                    title="Thêm vào bộ flashcard"
-                  >
-                    <CardIcon />
-                  </Button>
-                  <Button
-                    onClick={() => toggleFavorite(lexemeSearch, isFavorite)}
-                    className="rounded-full -mt-1 p-2"
-                    size="sm"
-                    variant="ghost"
-                    title="Thêm vào danh sách yêu thích"
-                  >
-                    <Heart
-                      className={cn(
-                        " w-5 h-5",
-                        isFavorite && "text-destructive"
-                      )}
-                    />
-                  </Button>
-                </>
-              )}
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold my-2">
+                {currentMeaning?.meaning}
+              </h2>
               {meaningSize > 1 && (
-                <>
+                <div className="flex items-center -mr-1 gap-1">
                   <Button
                     size={"sm"}
                     disabled={!canPrev}
@@ -267,6 +233,42 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
                     className="p-1 text-muted-foreground h-fit rounded-full"
                   >
                     <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+            <p className="text-sm">{currentMeaning?.explaination}</p>
+
+            <div className="flex items-center absolute top-2 right-2 gap-1">
+              {currentMeaning && (
+                <>
+                  <Button
+                    onClick={() => {
+                      setSelectedLexeme({
+                        lexeme: lexemeSearch,
+                        currentMeaning,
+                      });
+                    }}
+                    className="rounded-full h-fit p-1"
+                    size="sm"
+                    variant="ghost"
+                    title="Thêm vào bộ flashcard"
+                  >
+                    <CardIcon />
+                  </Button>
+                  <Button
+                    onClick={() => toggleFavorite(lexemeSearch, isFavorite)}
+                    className="rounded-full h-fit p-1"
+                    size="sm"
+                    variant="ghost"
+                    title="Thêm vào danh sách yêu thích"
+                  >
+                    <Heart
+                      className={cn(
+                        " w-5 h-5",
+                        isFavorite && "text-destructive"
+                      )}
+                    />
                   </Button>
                 </>
               )}
