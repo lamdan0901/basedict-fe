@@ -1,4 +1,3 @@
-import { AdSense } from "@/components/Ad/Ad";
 import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -169,8 +168,6 @@ export function ReadingDetail() {
               )}
             </>
           )}
-
-          <AdSense />
         </CardContent>
       </Card>
     </div>

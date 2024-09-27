@@ -103,7 +103,7 @@ const Header = () => {
       >
         <Image
           src={"/images/header_logo.png"}
-          width={60}
+          width={78}
           height={31}
           alt="basedict-header"
         />
@@ -119,7 +119,7 @@ const Header = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
+              className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-1"
               variant="ghost"
             >
               <Image
@@ -146,7 +146,7 @@ const Header = () => {
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
-            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl p-1"
+            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl p-1 h-12"
             variant="ghost"
           >
             <Image src="/apps.svg" width={45} height={45} alt="apps" />{" "}

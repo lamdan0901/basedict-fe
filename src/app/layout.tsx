@@ -44,8 +44,6 @@ export default function RootLayout({
         {children} <Toaster />
         <Script
           id="Adsense-id"
-          // data-ad-test="on"
-          // data-ad-client="ca-pub-3940256099942544/9214589741"
           data-ad-client="ca-pub-9085997021434962"
           async
           strategy="beforeInteractive"
