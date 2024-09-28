@@ -12,7 +12,7 @@ export function Footer() {
           <div className="flex gap-5">
             <Image
               className="object-contain size-[60px]"
-              src="/images/app-logo.png"
+              src="/images/footer-logo.png"
               priority
               alt="basedict | học tiếng nhật"
               width={60}

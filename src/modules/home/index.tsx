@@ -17,6 +17,7 @@ import { v4 as uuid } from "uuid";
 import { HistoryNFavorite } from "@/components/HistoryNFavorite";
 import { TodaysTopic } from "@/modules/home/TodaysTopic";
 import { useEffect, useRef, useState } from "react";
+import { AdSense } from "@/components/Ad/Ad";
 
 export function Home({
   _lexemeSearch,
@@ -34,8 +35,6 @@ export function Home({
 
   const isParagraphMode = text.length >= 20;
   const isVocabMode = !isParagraphMode && !text.startsWith(GRAMMAR_CHAR);
-  // const isGrammarMode =
-  //   !isParagraphMode && text.length >= 1 && text.startsWith(GRAMMAR_CHAR);
 
   const {
     data: lexemeSearch,
@@ -115,14 +114,12 @@ export function Home({
             }
           />
         )}
-        {/* {isGrammarMode && <GrammarSection />} */}
         {isParagraphMode && (
           <TranslatedParagraph error={error} isLoading={translatingParagraph} />
         )}
       </div>
-
       <HistoryNFavorite />
-
+      <AdSense />
       <TodaysTopic />
     </>
   );

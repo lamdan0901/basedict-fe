@@ -1,3 +1,4 @@
+import { AdSense } from "@/components/Ad/Ad";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -52,6 +53,9 @@ function InnerReadingList() {
           <JPLTTestReadingList jlptLevel={jlptLevel} />
         </TabsContent>
       </Tabs>
+      <div className="hidden mt-4 w-full lg:block">
+        <AdSense />
+      </div>
     </div>
   );
 }
@@ -59,7 +63,7 @@ function InnerReadingList() {
 function BaseDictReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
   const hasSetInitialReading = useRef(false);
   const { hasReadBaseDict, setReadingItemId } = useReadingStore();
-  const [readingParams, setReadingParams] = useQueryParams({
+  const [readingParams] = useQueryParams({
     jlptLevel,
     readingType: ReadingType.All,
   });

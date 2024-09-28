@@ -164,6 +164,7 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
           popupTriggerPosition={popupTriggerPosition}
           showPopup={showPopup}
           setShowPopup={setShowPopup}
+          isTriggeredByActionButton
         />
       )}
       {children}

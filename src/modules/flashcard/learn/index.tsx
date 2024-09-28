@@ -1,3 +1,4 @@
+import { ShuffleIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -21,24 +22,94 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
+import { shuffleArray } from "@/lib";
+import { FlashcardSetRegisterPrompt } from "@/modules/flashcard/components/FlashcardSetRegisterPrompt";
 import { DefaultFace } from "@/modules/flashcard/const";
 import { FlashcardCarouselItem } from "@/modules/flashcard/learn/FlashcardCarouselItem";
-import { getRequest } from "@/service/data";
-import { CircleHelp } from "lucide-react";
+import { getRequest, postRequest } from "@/service/data";
+import { fetchUserProfile } from "@/service/user";
+import { Check, CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
+import { useEffect, useMemo, useState } from "react";
+import useSWR, { mutate } from "swr";
+import useSWRMutation from "swr/mutation";
 
 export function FlashcardLearning() {
+  const { toast } = useToast();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+
   const [showingMeaning, setShowingMeaning] = useState(false);
   const [defaultCardFace, setDefaultCardFace] = useState(DefaultFace.Front);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
+    useState(false);
+  const [isForbidden, setIsForbidden] = useState(false);
 
   const { flashcardId } = useParams();
+
+  const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
+    "get-user",
+    fetchUserProfile
+  );
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
+  const { trigger: startLearning, isMutating: isMutatingStartLearning } =
+    useSWRMutation(
+      `/v1/flash-card-sets/${flashcardId}/start-learning`,
+      postRequest
+    );
+
+  const flashCards = useMemo(() => {
+    const _flashcardSet = flashcardSet?.flashCards ?? [];
+    return isShuffling ? shuffleArray(_flashcardSet) : _flashcardSet;
+  }, [flashcardSet?.flashCards, isShuffling]);
+
+  const isLoading = isLoadingFlashcardSet || isLoadingUser;
+  const isMyFlashcard = user?.id === flashcardSet?.owner?.id;
+
+  function handleShuffleCards() {
+    setIsShuffling((prev) => !prev);
+
+    if (!isShuffling) {
+      toast({
+        title: "Trộn flashcard thành công",
+        action: <Check className="h-5 w-5 text-green-500" />,
+      });
+    }
+  }
+
+  async function handleRegisterFlashcardSet() {
+    try {
+      await startLearning();
+
+      setFlashcardRegisterPromptOpen(false);
+      mutate("/v1/flash-card-sets/my-flash-card");
+
+      toast({
+        title: `Đăng kí học thành công`,
+        action: <Check className="h-5 w-5 text-green-500" />,
+      });
+    } catch (err) {
+      if (err === "FORBIDDEN") {
+        setIsForbidden(true);
+        return;
+      }
+      toast({
+        title: `Đăng kí học không thành công, hãy thử lại!`,
+        variant: "destructive",
+      });
+      console.log("err", err);
+    }
+  }
+
+  useEffect(() => {
+    if (!isLoading && !isMyFlashcard && !flashcardSet?.isLearning) {
+      setFlashcardRegisterPromptOpen(true);
+    }
+  }, [isLoading, flashcardSet?.isLearning, isMyFlashcard]);
 
   useEffect(() => {
     if (!api) return;
@@ -67,7 +138,7 @@ export function FlashcardLearning() {
     };
   }, [api]);
 
-  if (isLoadingFlashcardSet) return <div>Đang tải bộ flashcard...</div>;
+  if (isLoading) return <div>Đang tải bộ flashcard...</div>;
   if (!flashcardSet) return <div>Không tìm thấy bộ flashcard</div>;
 
   return (
@@ -111,7 +182,7 @@ export function FlashcardLearning() {
 
       <Carousel setApi={setApi} className="w-full">
         <CarouselContent>
-          {flashcardSet.flashCards?.map((item, index) => (
+          {flashCards.map((item, index) => (
             <FlashcardCarouselItem
               key={index}
               item={item}
@@ -130,8 +201,7 @@ export function FlashcardLearning() {
         />
       </Carousel>
 
-      <div className="flex gap-2 justify-center items-center">
-        <span>Mặc định hiển thị: </span>
+      <div className="flex gap-2 justify-between items-center">
         <Select
           value={defaultCardFace}
           onValueChange={(val) => setDefaultCardFace(val as DefaultFace)}
@@ -146,7 +216,23 @@ export function FlashcardLearning() {
             <SelectItem value={DefaultFace.Back}>{DefaultFace.Back}</SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          size={"icon"}
+          onClick={handleShuffleCards}
+          variant={isShuffling ? "default" : "outline"}
+        >
+          <ShuffleIcon />
+        </Button>
       </div>
+
+      <FlashcardSetRegisterPrompt
+        isForbidden={isForbidden}
+        alertOpen={flashcardRegisterPromptOpen}
+        onOpenChange={setFlashcardRegisterPromptOpen}
+        onRegister={handleRegisterFlashcardSet}
+        disabled={isMutatingStartLearning}
+        fromLearningPage
+      />
     </div>
   );
 }

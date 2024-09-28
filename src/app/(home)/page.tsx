@@ -3,12 +3,12 @@ import { Home } from "@/modules/home";
 import { cache } from "react";
 
 const fetchLexemeSearch = cache(
-  async (search?: string): Promise<TLexeme | undefined> => {
-    if (!search) return;
+  async (word?: string): Promise<TLexeme | undefined> => {
+    if (!word) return;
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/lexemes/search/${search}`,
+        `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/lexemes/search/${word}`,
         { next: { revalidate: 86_400 } } // caching for 1 day
       );
       if (!res.ok) return;
@@ -21,12 +21,11 @@ const fetchLexemeSearch = cache(
 );
 
 export async function generateMetadata(
-  { params }: TComponentProps,
+  { searchParams }: TComponentProps,
   parent: ResolvingMetadata
 ) {
-  const { lexeme: lexemeSlug } = params;
   const [lexemeSearch, previousMeta] = await Promise.all([
-    fetchLexemeSearch(lexemeSlug),
+    fetchLexemeSearch(searchParams.word),
     parent,
   ]);
 
@@ -43,9 +42,8 @@ export async function generateMetadata(
   };
 }
 
-export default async function HomePage({ params }: TComponentProps) {
-  const lexeme = params.lexeme;
-  const lexemeSearch = await fetchLexemeSearch(lexeme);
+export default async function HomePage({ searchParams }: TComponentProps) {
+  const lexemeSearch = await fetchLexemeSearch(searchParams.word);
 
   return <Home _lexemeSearch={lexemeSearch} />;
 }

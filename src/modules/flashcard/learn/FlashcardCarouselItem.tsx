@@ -31,6 +31,7 @@ export function FlashcardCarouselItem({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
+        event.preventDefault();
         handleCardFlip();
       }
     };

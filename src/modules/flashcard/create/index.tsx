@@ -1,8 +1,10 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
   defaultFlashcardSet,
-  FLASHCARD_SETS_LIMIT,
+  FLASHCARD_SETS_LIMIT_MSG,
 } from "@/modules/flashcard/const";
 import { FlashcardItemRegistration } from "@/modules/flashcard/create/FlashcardItemRegistration";
 import {
@@ -12,15 +14,13 @@ import {
 import { getRequest, patchRequest, postRequest } from "@/service/data";
 import { fetchUserProfile } from "@/service/user";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
-import { useParams, useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
-import { Check } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
 
 export function FlashcardCreation() {
   const { toast } = useToast();
@@ -83,7 +83,7 @@ export function FlashcardCreation() {
       toast({
         title:
           err === "FORBIDDEN"
-            ? `Bạn chỉ có thể tạo và theo học tối đa ${FLASHCARD_SETS_LIMIT} bộ`
+            ? FLASHCARD_SETS_LIMIT_MSG
             : `Lưu không thành công, hãy thử lại!`,
         variant: "destructive",
       });

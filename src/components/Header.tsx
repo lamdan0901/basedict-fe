@@ -98,13 +98,13 @@ const Header = () => {
   return (
     <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
       <Link
-        className="mr-auto sm:block hidden hover:bg-slate-300/40 transition rounded-sm p-1"
+        className="mr-auto ml-2 sm:block hidden hover:bg-slate-300/40 transition rounded-sm px-2 py-1"
         href={"/"}
       >
         <Image
-          src={"/images/header_logo_pc.png"}
-          width={128}
-          height={41}
+          src={"/images/header_logo.png"}
+          width={68}
+          height={31}
           alt="basedict-header"
         />
       </Link>
@@ -119,7 +119,7 @@ const Header = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
+              className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-1"
               variant="ghost"
             >
               <Image
@@ -146,7 +146,7 @@ const Header = () => {
       <Popover open={openMenu} onOpenChange={setOpenMenu}>
         <PopoverTrigger asChild>
           <Button
-            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl size-15 px-2 py-0.5"
+            className="hover:bg-white/30 hover:text-white gap-2 text-lg sm:text-xl p-1 h-12"
             variant="ghost"
           >
             <Image src="/apps.svg" width={45} height={45} alt="apps" />{" "}

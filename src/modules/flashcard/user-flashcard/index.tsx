@@ -1,25 +1,22 @@
+"use client";
+
 import { CardIcon } from "@/components/icons";
-import { DEFAULT_AVATAR_URL } from "@/constants";
-import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { getRequest } from "@/service/data";
-import { CheckCheck, GraduationCap } from "lucide-react";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import useSWR from "swr";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { DEFAULT_AVATAR_URL } from "@/constants";
+import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
+import { CheckCheck, GraduationCap } from "lucide-react";
+import Image from "next/image";
 
-export function UserFlashcard() {
-  const { userId } = useParams();
-
-  const { data: owner, isLoading } = useSWR<TFlashcardSetOwner>(
-    `/v1/flash-card-sets/user/${userId}`,
-    getRequest
-  );
+export function UserFlashcard({
+  owner,
+}: {
+  owner: TFlashcardSetOwner | undefined;
+}) {
   const flashcards = owner?.flashCardSets ?? [];
   const total = flashcards?.length ?? 0;
 
@@ -61,8 +58,6 @@ export function UserFlashcard() {
             </div>
           </div>
         </div>
-
-        {isLoading && <span>Đang tải...</span>}
 
         <div className="grid gap-4 xl:grid-cols-2">
           {flashcards.map((card) => (

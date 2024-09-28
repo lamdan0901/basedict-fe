@@ -28,7 +28,6 @@ export const VocabItem = memo<Props>(
     onSimilarWordClick,
     onAddFlashcard,
   }) => {
-    console.log("lexeme", lexeme?.id);
     const [showExamples, setShowExamples] = useState(false);
     const [meaningIndex, setMeaningIndex] = useState(0);
 

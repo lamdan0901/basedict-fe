@@ -11,7 +11,6 @@ import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import { ReadingType, readingTypeMap, TabVal } from "@/modules/reading/const";
 import { jlptLevels } from "@/constants";
 import { useQueryParams } from "@/hooks/useQueryParam";
-import { useAppStore } from "@/store/useAppStore";
 import { useReadingStore } from "@/store/useReadingStore";
 
 type Props = {
