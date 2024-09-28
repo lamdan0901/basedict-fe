@@ -1,3 +1,4 @@
+import { menu } from "@/components/const";
 import { cn } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,8 +8,8 @@ export function Footer() {
     <div
       className={cn("bg-[#e7e7e7] border-t sm:mt-16 mt-10 border-[#b4b4b4]")}
     >
-      <div className="grid max-w-[1440px] mx-auto px-4 py-6 w-full grid-flow-row-dense gap-3 lg:grid-cols-10 md:grid-cols-9">
-        <div className="lg:col-span-4 md:col-span-5 sm:max-w-[400px]">
+      <div className="grid max-w-[1440px] mx-auto px-4 gap-y-6 py-6 w-full grid-flow-row-dense gap-3 md:grid-cols-12">
+        <div className="col-span-5 sm:max-w-[400px]">
           <div className="flex gap-5">
             <Image
               className="object-contain size-[60px]"
@@ -32,22 +33,22 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="lg:col-span-3 md:col-span-2">
+        <div className="col-span-4">
           <h2 className="font-semibold text-xl">Sản phẩm </h2>
-          <div className="ml-4 mt-2 flex flex-col gap-2 w-fit ">
-            <Link className="hover:underline" href={"/"}>
-              Từ điển tiếng nhật
-            </Link>
-            <Link className="hover:underline" href={"/reading"}>
-              Luyện đọc
-            </Link>
-            <Link className="hover:underline" href={"/grammar"}>
-              Ngữ pháp
-            </Link>
+          <div className="ml-4 mt-2 grid grid-cols-2 gap-y-2 gap-x-6 w-fit ">
+            {menu.map((item) => (
+              <Link
+                key={item.href}
+                className="hover:underline"
+                href={item.href}
+              >
+                {item.title}
+              </Link>
+            ))}
           </div>
         </div>
 
-        <div className="lg:col-span-3 md:col-span-2">
+        <div className="col-span-3">
           <h2 className="font-semibold text-xl">Về chúng tôi</h2>
           <div className="ml-4 mt-2 flex flex-col gap-2 w-fit ">
             <Link className="hover:underline" href={"/about-us"}>
