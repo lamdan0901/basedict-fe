@@ -35,6 +35,5 @@ export const MAX_POINT = 180;
 export const questionTypesWithExplanation: TQuestionType[] = [
   "ContextLexeme",
   "Grammar",
-  "Lexeme",
   "GrammarAlign",
 ];
