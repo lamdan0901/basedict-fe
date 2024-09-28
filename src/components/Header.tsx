@@ -54,7 +54,7 @@ const menu = [
     title: "Luyện đọc",
   },
   {
-    href: "/quizzes/general-info",
+    href: "/quizzes/basedict-test",
     icon: "/quiz.svg",
     title: "Luyện thi",
   },
