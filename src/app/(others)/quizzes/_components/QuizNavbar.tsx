@@ -15,10 +15,10 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib";
 
 const menu = [
-  {
-    title: "Thông tin chung",
-    href: "/quizzes/general-info",
-  },
+  // {
+  //   title: "Thông tin chung",
+  //   href: "/quizzes/general-info",
+  // },
   {
     title: "Luyện thi BaseDict",
     href: "/quizzes/basedict-test",
@@ -27,10 +27,10 @@ const menu = [
     title: "Làm đề JLPT",
     href: "/quizzes/jlpt-test",
   },
-  {
-    title: "Bảng xếp hạng",
-    href: "/quizzes/ranking",
-  },
+  // {
+  //   title: "Bảng xếp hạng",
+  //   href: "/quizzes/ranking",
+  // },
   {
     title: "Các dạng bài đề thi JLPT",
     href: "/quizzes/jlpt-question-types",

@@ -332,8 +332,8 @@ export function MeaningSection({
           )}
         >
           Tips: <br />
-          - Hãy bấm vào phần dịch nghĩa để xem các nghĩa khác của từ <br />- Bạn
-          có thể quét 1 từ tiếng nhật bất kì, bấm "dịch từ" để dịch nhanh
+          - Hãy bấm vào phần dịch nghĩa để xem các nghĩa khác của từ. <br />- Bạn
+          có thể quét 1 từ tiếng nhật bất kì, bấm "dịch từ" để dịch nhanh.
         </p>
       </CardContent>
 
