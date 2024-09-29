@@ -31,7 +31,7 @@ export function AuthWrapper({ children }: PropsWithChildren) {
       ) : (
         children
       )}
-      <LoginPrompt alertOpen={alertOpen} onOpenChange={setAlertOpen} />
+      <LoginPrompt open={alertOpen} onOpenChange={setAlertOpen} />
     </>
   );
 }

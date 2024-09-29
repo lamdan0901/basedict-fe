@@ -27,6 +27,7 @@ import { X } from "lucide-react";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { v4 as uuid } from "uuid";
 import { useDebounceFn } from "@/hooks/useDebounce";
+import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 
 type LexemeSearchProps = {
   initialText: string | undefined;
@@ -72,8 +73,11 @@ export const LexemeSearch = forwardRef<
     const searchParams = useSearchParams();
     const search = searchParams.get("search") ?? "";
     const seoSearch = searchParams.get("word") ?? "";
+
+    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const [readyToSearch, setReadyToSearch] = useState(false);
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
+
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
     const isVocabMode =
       !isParagraphMode &&
@@ -352,6 +356,11 @@ export const LexemeSearch = forwardRef<
             bản. Khi bạn nhập quá 20 từ sẽ được coi là đoạn văn. Tối đa dài 500
             kí tự
           </p>
+
+          <LoginPrompt
+            open={loginPromptOpen}
+            onOpenChange={setLoginPromptOpen}
+          />
         </CardContent>
       </Card>
     );

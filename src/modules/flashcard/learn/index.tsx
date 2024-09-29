@@ -227,7 +227,7 @@ export function FlashcardLearning() {
 
       <FlashcardSetRegisterPrompt
         isForbidden={isForbidden}
-        alertOpen={flashcardRegisterPromptOpen}
+        open={flashcardRegisterPromptOpen}
         onOpenChange={setFlashcardRegisterPromptOpen}
         onRegister={handleRegisterFlashcardSet}
         disabled={isMutatingStartLearning}

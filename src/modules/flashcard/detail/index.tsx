@@ -238,13 +238,10 @@ export function FlashcardDetail({
         </AlertDialog>
       </div>
 
-      <LoginPrompt
-        alertOpen={loginPromptOpen}
-        onOpenChange={setLoginPromptOpen}
-      />
+      <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       <FlashcardSetRegisterPrompt
         isForbidden={isForbidden}
-        alertOpen={flashcardRegisterPromptOpen}
+        open={flashcardRegisterPromptOpen}
         onOpenChange={setFlashcardRegisterPromptOpen}
         onRegister={handleRegisterFlashcardSet}
         disabled={isMutatingStartLearning}

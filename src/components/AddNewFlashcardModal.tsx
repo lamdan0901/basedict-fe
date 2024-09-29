@@ -173,10 +173,7 @@ export function AddNewFlashcardModal({
         </DialogContent>
       </Dialog>
 
-      <LoginPrompt
-        alertOpen={loginPromptOpen}
-        onOpenChange={setLoginPromptOpen}
-      />
+      <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
     </>
   );
 }
