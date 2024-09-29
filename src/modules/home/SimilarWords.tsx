@@ -1,5 +1,4 @@
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { GRAMMAR_CHAR } from "@/constants";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 import { SimilarLexemes } from "@/components/SimilarLexemes";
 
@@ -23,17 +22,12 @@ export function SimilarWords({
   if (!similars?.length) return null;
 
   function handleWordClick(word: string) {
+    onWordClick();
     setSearchParam({ search: word });
     setText(word);
-    onWordClick();
-
-    if (!text.startsWith(GRAMMAR_CHAR)) {
-      setWord(word);
-      setVocabMeaningErrMsg("");
-      setSelectedVocab(null);
-    } else {
-      setSelectedGrammar(null);
-    }
+    setWord(word);
+    setVocabMeaningErrMsg("");
+    setSelectedVocab(null);
   }
 
   return <SimilarLexemes similars={similars} onWordClick={handleWordClick} />;

@@ -180,7 +180,10 @@ export function HistoryNFavorite() {
                     <div
                       key={item.uid}
                       onClick={() => {
-                        setTranslatedParagraph(item.translatedParagraph);
+                        setTranslatedParagraph({
+                          translated: item.translatedParagraph,
+                          usedCount: 3,
+                        });
                         setText(item.rawParagraph);
                       }}
                       className={cn(
