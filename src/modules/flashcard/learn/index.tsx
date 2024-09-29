@@ -204,7 +204,7 @@ export function FlashcardLearning() {
       <div className="flex gap-2 justify-between items-center">
         <Select
           value={defaultCardFace}
-          onValueChange={(val) => setDefaultCardFace(val as DefaultFace)}
+          onValueChange={(value: DefaultFace) => setDefaultCardFace(value)}
         >
           <SelectTrigger className="w-28">
             <SelectValue />

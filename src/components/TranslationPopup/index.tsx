@@ -52,7 +52,6 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
     const handleSelectionChange = (event: Event) => {
       if (
         showPopup ||
-        lexemeSearchInput?.contains(event.target as Node) ||
         paragraphInput?.contains(event.target as Node) ||
         translatedParagraph?.contains(event.target as Node)
       )
@@ -83,7 +82,6 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
       if (
         showPopup ||
         popupRef.current?.contains(event.target as Node) ||
-        lexemeSearchInput?.contains(event.target as Node) ||
         paragraphInput?.contains(event.target as Node) ||
         translatedParagraph?.contains(event.target as Node)
       )
@@ -111,7 +109,6 @@ export function TranslationPopup({ children }: { children: ReactNode }) {
       }
     };
 
-    const lexemeSearchInput = document.getElementById("lexeme-search");
     const paragraphInput = document.getElementById("paragraph-input");
     const translatedParagraph = document.getElementById("translated-paragraph");
 

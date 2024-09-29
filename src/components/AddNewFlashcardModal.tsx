@@ -42,7 +42,7 @@ export function AddNewFlashcardModal({
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
 
   const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
-    `/v1/flash-card-sets/my-flash-card`,
+    profile && open ? `/v1/flash-card-sets/my-flash-card` : null,
     getRequest
   );
   const { trigger: addToFlashcardSet, isMutating: isAddingToFlashcardSet } =

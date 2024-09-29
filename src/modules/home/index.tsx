@@ -2,12 +2,10 @@
 
 import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
 import { trimAllSpaces } from "@/lib";
-import { GrammarSection } from "@/modules/home/GrammarSection";
 import { LexemeSearch } from "@/modules/home/LexemeSearch";
 import { MeaningSection } from "@/modules/home/MeaningSection";
 import { getRequest, postRequest } from "@/service/data";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { GRAMMAR_CHAR } from "@/constants";
 import useSWRImmutable from "swr/immutable";
 import useSWRMutation from "swr/mutation";
 import { SimilarWords } from "@/modules/home/SimilarWords";
@@ -34,7 +32,7 @@ export function Home({
   );
 
   const isParagraphMode = text.length >= 20;
-  const isVocabMode = !isParagraphMode && !text.startsWith(GRAMMAR_CHAR);
+  const isVocabMode = !isParagraphMode;
 
   const {
     data: lexemeSearch,

@@ -9,6 +9,6 @@ type TVocabStore = {
 export const useVocabStore = create<TVocabStore>()(
   immer((set) => ({
     sheetOpen: false as boolean,
-    setSheetOpen: (open: boolean) => set({ sheetOpen: open }),
+    setSheetOpen: (open) => set({ sheetOpen: open }),
   }))
 );

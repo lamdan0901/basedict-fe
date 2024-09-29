@@ -31,7 +31,7 @@ export const useAppStore = create<AppState>()(
           state.canShowFlashcardTips = false;
         });
       },
-      setProfile: (profile: TUser) => {
+      setProfile: (profile) => {
         set((state) => {
           state.profile = profile;
         });
@@ -40,7 +40,7 @@ export const useAppStore = create<AppState>()(
         set((state) => {
           state.profile = null;
         }),
-      setSeasonRank: (rank: TJlptLevel) => {
+      setSeasonRank: (rank) => {
         set((state) => {
           state.seasonRank = rank;
         });

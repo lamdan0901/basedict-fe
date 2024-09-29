@@ -33,3 +33,5 @@ type TGrammar = {
   jlptLevel: string;
   similars: string[];
 };
+
+type TTranslatedParagraph = { translated: string; usedCount: number };
