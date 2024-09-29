@@ -9,11 +9,11 @@ export const menu = [
     icon: "/dictionary.svg",
     title: "Từ vựng",
   },
-  {
-    href: "/grammar",
-    icon: "/local_library.svg",
-    title: "Ngữ pháp",
-  },
+  // {
+  //   href: "/grammar",
+  //   icon: "/local_library.svg",
+  //   title: "Ngữ pháp",
+  // },
   {
     href: "/flashcard",
     icon: "/collections_bookmark.svg",
