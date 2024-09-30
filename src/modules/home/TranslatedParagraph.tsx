@@ -26,7 +26,7 @@ export function TranslatedParagraph({
     translatedParagraph?.usedCount || error === "FORBIDDEN";
 
   return (
-    <Card className="w-full rounded-2xl h-fit sm:min-h-[328px] relative ">
+    <Card className="rounded-2xl  w-full  h-fit min-h-[328px] relative ">
       <CardContent id="translated-paragraph" className="!p-4 space-y-2">
         {isLoading ? (
           "Đang dịch..."
@@ -39,7 +39,7 @@ export function TranslatedParagraph({
         )}
         <p
           className={cn(
-            "absolute sm:top-1/2 top-[60%] left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
+            "absolute top-1/2 left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
             shouldShowPlaceholder ? "block" : "hidden"
           )}
         >

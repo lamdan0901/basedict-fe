@@ -28,6 +28,7 @@ import { useSearchParams } from "next/navigation";
 import {
   forwardRef,
   KeyboardEvent,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -163,38 +164,48 @@ export const LexemeSearch = forwardRef<
       setText(value);
     }
 
-    async function handleTranslateParagraph(
-      e: KeyboardEvent<HTMLTextAreaElement>
-    ) {
-      if (!(e.key === "Enter" && e.shiftKey && text)) return;
-      e.preventDefault();
+    const handleTranslateParagraph = useCallback(
+      async (e?: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e) {
+          if (!(e.key === "Enter" && e.shiftKey && text)) return;
+          e.preventDefault();
+        }
 
-      if (!profile) {
-        setLoginPromptOpen(true);
-        return;
-      }
+        if (!profile) {
+          setLoginPromptOpen(true);
+          return;
+        }
 
-      setIsTranslatingParagraph(true);
+        setIsTranslatingParagraph(true);
 
-      const useCount = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
-      if (useCount === MAX_PARAGRAPH_TRANS_TIMES) {
-        setTranslatedParagraph(null);
-        return;
-      }
+        const useCount = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
+        if (useCount === MAX_PARAGRAPH_TRANS_TIMES) {
+          setTranslatedParagraph(null);
+          return;
+        }
 
-      const data = await translateParagraph({ text });
+        const data = await translateParagraph({ text });
 
-      setCookie(PARAGRAPH_TRANS_COUNT_KEY, String(data.usedCount), {
-        expires: setExpireDate(),
-      });
-      setTranslatedParagraph(data);
-      addHistoryItem({
-        rawParagraph: text,
-        translatedParagraph: data.translated,
-        uid: uuid(),
-        type: HistoryItemType.Paragraph,
-      });
-    }
+        setCookie(PARAGRAPH_TRANS_COUNT_KEY, String(data.usedCount), {
+          expires: setExpireDate(),
+        });
+        setTranslatedParagraph(data);
+        addHistoryItem({
+          rawParagraph: text,
+          translatedParagraph: data.translated,
+          uid: uuid(),
+          type: HistoryItemType.Paragraph,
+        });
+      },
+      [
+        addHistoryItem,
+        profile,
+        setIsTranslatingParagraph,
+        setTranslatedParagraph,
+        text,
+        translateParagraph,
+      ]
+    );
 
     function handleSearchLexeme(e: KeyboardEvent<HTMLTextAreaElement>) {
       if (!(e.key === "Enter" && text)) return;
@@ -253,18 +264,26 @@ export const LexemeSearch = forwardRef<
       setWord,
     ]);
 
-    useEffect(() => {
-      function adjustTextareaHeight() {
-        const textarea = textareaRef.current;
-        if (textarea) {
-          // Using both lines ensures that the textarea's height is accurately calculated each time, even when the content becomes shorter.
-          // If we only used the second line, the textarea might not shrink when content is removed.
-          textarea.style.height = "auto";
-          textarea.style.height = `${textarea.scrollHeight}px`;
-        }
+    const adjustTextareaHeight = useCallback(() => {
+      if (!isParagraphMode) return;
+
+      const textarea = textareaRef.current;
+      if (textarea) {
+        // Using both lines ensures that the textarea's height is accurately calculated each time, even when the content becomes shorter.
+        // If we only used the second line, the textarea might not shrink when content is removed.
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
       }
-      if (isParagraphMode) adjustTextareaHeight();
-    }, [isParagraphMode, text]);
+    }, [isParagraphMode]);
+
+    useEffect(adjustTextareaHeight, [adjustTextareaHeight, text]);
+
+    useEffect(() => {
+      window.addEventListener("resize", adjustTextareaHeight);
+      return () => {
+        window.removeEventListener("resize", adjustTextareaHeight);
+      };
+    }, [adjustTextareaHeight]);
 
     useImperativeHandle(
       ref,
@@ -273,8 +292,14 @@ export const LexemeSearch = forwardRef<
           if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
           if (lexemeSearchParam) setLexemeSearchParam("");
         },
+        translateParagraph: () => handleTranslateParagraph(),
       }),
-      [isDisplayingSuggestions, lexemeSearchParam, mutateLexemeVocab]
+      [
+        isDisplayingSuggestions,
+        lexemeSearchParam,
+        handleTranslateParagraph,
+        mutateLexemeVocab,
+      ]
     );
 
     return (
@@ -286,11 +311,11 @@ export const LexemeSearch = forwardRef<
             !text && "min-h-[225px]"
           )}
         >
-          <div className="absolute flex flex-wrap items-center h-10 w-full justify-between left-0 px-3 -top-9">
+          <div className="absolute flex flex-wrap items-center h-10 w-full justify-end sm:justify-between left-0 px-3 -top-9">
             <div
               className={cn(
-                "text-muted-foreground text-sm italic",
-                isParagraphMode ? "block" : "hidden"
+                "text-muted-foreground hidden text-sm italic",
+                isParagraphMode ? "sm:block" : ""
               )}
             >
               Nhấn Shift + Enter để dịch
