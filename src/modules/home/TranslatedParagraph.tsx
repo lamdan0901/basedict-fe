@@ -37,37 +37,6 @@ export function TranslatedParagraph({
             {translatedParagraph.translated}
           </div>
         )}
-
-        <div className="absolute flex items-center text-sm right-2 -top-11 text-muted-foreground">
-          {shouldShowCounter && (
-            <span>
-              {!shouldShowPlaceholder
-                ? translatedParagraph?.usedCount
-                : MAX_PARAGRAPH_TRANS_TIMES}
-              /{MAX_PARAGRAPH_TRANS_TIMES}
-            </span>
-          )}
-          <TooltipProvider>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Button
-                  size={"icon"}
-                  variant={"ghost"}
-                  className="rounded-full size-8 !p-1"
-                >
-                  <CircleHelp className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-[285px]">
-                  Mỗi ngày chỉ có thể dịch được tối đa 3 lần, reset vào 1:00
-                  sáng mỗi ngày
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
         <p
           className={cn(
             "absolute sm:top-1/2 top-[60%] left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
@@ -81,6 +50,36 @@ export function TranslatedParagraph({
           từ tương ứng và click "Dịch từ"
         </p>
       </CardContent>
+
+      <div className="absolute flex items-center text-sm right-2 -top-9 text-muted-foreground">
+        {shouldShowCounter && (
+          <span>
+            {!shouldShowPlaceholder
+              ? translatedParagraph?.usedCount
+              : MAX_PARAGRAPH_TRANS_TIMES}
+            /{MAX_PARAGRAPH_TRANS_TIMES}
+          </span>
+        )}
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button
+                size={"icon"}
+                variant={"ghost"}
+                className="rounded-full size-8 !p-1"
+              >
+                <CircleHelp className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-[285px]">
+                Mỗi ngày chỉ có thể dịch được tối đa 3 lần, reset vào 1:00 sáng
+                mỗi ngày
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
     </Card>
   );
 }

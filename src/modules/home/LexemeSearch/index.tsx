@@ -5,8 +5,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { HistoryItemType } from "@/constants";
 import { useDebounceFn } from "@/hooks/useDebounce";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { cn, stringifyParams, trimAllSpaces } from "@/lib";
-import { MAX_CHARS_LENGTH, PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
+import {
+  cn,
+  getCookie,
+  setCookie,
+  stringifyParams,
+  trimAllSpaces,
+} from "@/lib";
+import {
+  MAX_CHARS_LENGTH,
+  MAX_PARAGRAPH_TRANS_TIMES,
+  PARAGRAPH_MIN_LENGTH,
+  PARAGRAPH_TRANS_COUNT_KEY,
+} from "@/modules/home/const";
+import { setExpireDate } from "@/modules/home/utils";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { useHistoryStore } from "@/store/useHistoryStore";
@@ -154,7 +166,7 @@ export const LexemeSearch = forwardRef<
     async function handleTranslateParagraph(
       e: KeyboardEvent<HTMLTextAreaElement>
     ) {
-      if (!(e.key === "Enter" && !e.shiftKey && text)) return;
+      if (!(e.key === "Enter" && e.shiftKey && text)) return;
       e.preventDefault();
 
       if (!profile) {
@@ -164,7 +176,17 @@ export const LexemeSearch = forwardRef<
 
       setIsTranslatingParagraph(true);
 
+      const useCount = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
+      if (useCount === MAX_PARAGRAPH_TRANS_TIMES) {
+        setTranslatedParagraph(null);
+        return;
+      }
+
       const data = await translateParagraph({ text });
+
+      setCookie(PARAGRAPH_TRANS_COUNT_KEY, String(data.usedCount), {
+        expires: setExpireDate(),
+      });
       setTranslatedParagraph(data);
       addHistoryItem({
         rawParagraph: text,
@@ -264,7 +286,7 @@ export const LexemeSearch = forwardRef<
             !text && "min-h-[225px]"
           )}
         >
-          <div className="absolute flex flex-wrap items-center w-full justify-between left-0 px-3 -top-9">
+          <div className="absolute flex flex-wrap items-center h-10 w-full justify-between left-0 px-3 -top-9">
             <div
               className={cn(
                 "text-muted-foreground text-sm italic",
@@ -325,7 +347,7 @@ export const LexemeSearch = forwardRef<
           />
           <p
             className={cn(
-              "text-xl pt-2 whitespace-pre-line",
+              "text-xl pt-2 h-full whitespace-pre-line",
               isTranslatingParagraph ? "block" : "hidden"
             )}
           >
