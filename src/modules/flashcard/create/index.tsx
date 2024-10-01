@@ -12,7 +12,7 @@ import {
   TFlashCardSetForm,
 } from "@/modules/flashcard/schema";
 import { getRequest, patchRequest, postRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -26,6 +26,7 @@ export function FlashcardCreation() {
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
+  const userId = useAppStore((state) => state.profile?.id);
 
   const form = useForm<TFlashCardSetForm>({
     mode: "onSubmit",
@@ -39,10 +40,6 @@ export function FlashcardCreation() {
     formState: { errors },
   } = form;
 
-  const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
-    flashcardId ? "get-user" : null,
-    fetchUserProfile
-  );
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(
       flashcardId ? `flash-card-sets/${flashcardId}/get-one` : null,
@@ -57,9 +54,9 @@ export function FlashcardCreation() {
         patchRequest(`/v1/flash-card-sets/${flashcardId}`, { arg })
     );
 
-  const isLoading = isLoadingFlashcardSet || isLoadingUser;
+  const isLoading = isLoadingFlashcardSet;
   const isMutating = isAddingFlashcardSet || isUpdatingFlashcardSet;
-  const isMyFlashcard = user?.id === flashcardSet?.owner?.id;
+  const isMyFlashcard = userId === flashcardSet?.owner?.id;
 
   async function submitForm(data: TFlashCardSetForm) {
     try {

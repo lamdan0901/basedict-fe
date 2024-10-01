@@ -28,7 +28,7 @@ import { FlashcardSetRegisterPrompt } from "@/modules/flashcard/components/Flash
 import { DefaultFace } from "@/modules/flashcard/const";
 import { FlashcardCarouselItem } from "@/modules/flashcard/learn/FlashcardCarouselItem";
 import { getRequest, postRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { Check, CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -41,6 +41,9 @@ export function FlashcardLearning() {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
+  const { flashcardId } = useParams();
+  const userId = useAppStore((state) => state.profile?.id);
+
   const [showingMeaning, setShowingMeaning] = useState(false);
   const [defaultCardFace, setDefaultCardFace] = useState(DefaultFace.Front);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -48,12 +51,6 @@ export function FlashcardLearning() {
     useState(false);
   const [isForbidden, setIsForbidden] = useState(false);
 
-  const { flashcardId } = useParams();
-
-  const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
-    "get-user",
-    fetchUserProfile
-  );
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
@@ -67,8 +64,8 @@ export function FlashcardLearning() {
     return isShuffling ? shuffleArray(_flashcardSet) : _flashcardSet;
   }, [flashcardSet?.flashCards, isShuffling]);
 
-  const isLoading = isLoadingFlashcardSet || isLoadingUser;
-  const isMyFlashcard = user?.id === flashcardSet?.owner?.id;
+  const isLoading = isLoadingFlashcardSet;
+  const isMyFlashcard = userId === flashcardSet?.owner?.id;
 
   function handleShuffleCards() {
     setIsShuffling((prev) => !prev);

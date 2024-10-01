@@ -3,20 +3,26 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DEFAULT_AVATAR_URL } from "@/constants";
+import { MAX_POINT } from "@/modules/quizzes/const";
 import { WeekdayCarousel } from "@/modules/quizzes/general/WeekdayCarousel";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
+import dayjs from "dayjs";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
-import dayjs from "dayjs";
-import { MAX_POINT } from "@/modules/quizzes/const";
-import { fetchUserProfile } from "@/service/user";
+import { shallow } from "zustand/shallow";
 
 export function QuizGeneralInfo() {
-  const { setSeasonRank } = useAppStore();
+  const profile = useAppStore(
+    (state) => ({
+      avatar: state.profile?.avatar,
+      name: state.profile?.name,
+      setSeasonRank: state.setSeasonRank,
+    }),
+    shallow
+  );
   const [currentSeason, setCurrentSeason] = useState<TSeason | undefined>();
-  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
 
   const { isLoading: loadingSeasonList } = useSWR<TSeason[]>(
     "/v1/exams/season-list",
@@ -42,7 +48,7 @@ export function QuizGeneralInfo() {
       getRequest,
       {
         onSuccess(data) {
-          setSeasonRank(data.rank);
+          profile.setSeasonRank(data.rank);
         },
       }
     );
@@ -86,11 +92,11 @@ export function QuizGeneralInfo() {
               width={80}
               height={80}
               className="rounded-full"
-              src={user?.avatar || DEFAULT_AVATAR_URL}
+              src={profile?.avatar || DEFAULT_AVATAR_URL}
               alt="avatar"
             />
             <div>
-              <div className="text-xl font-semibold">{user?.name}</div>
+              <div className="text-xl font-semibold">{profile?.name}</div>
               <div className="flex mt-2 gap-2">
                 {seasonProfile?.badge.map((badge) => (
                   <Badge key={badge} variant={"secondary"} className="h-6">

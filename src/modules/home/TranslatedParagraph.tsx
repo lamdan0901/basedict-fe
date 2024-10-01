@@ -42,10 +42,14 @@ export function TranslatedParagraph({
         ) : shouldShowPlaceholder ? null : error ? (
           <p className="text-destructive">Có lỗi xảy ra khi dịch đoạn văn</p>
         ) : (
-          <div className="text-xl" id="translated-paragraph">
+          <div
+            className="text-xl whitespace-pre-line"
+            id="translated-paragraph"
+          >
             {translatedParagraph.translated}
           </div>
         )}
+
         <div
           className={cn(
             "absolute top-1/2 -translate-x-4 w-full space-y-8 text-muted-foreground -translate-y-1/2 pointer-events-none"

@@ -1,5 +1,8 @@
+import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
+import { CardIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandItem, CommandList } from "@/components/ui/command";
 import {
   Popover,
@@ -8,20 +11,17 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
-import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
 import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
 import { postRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
 import { useAppStore } from "@/store/useAppStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import useSWR, { type KeyedMutator } from "swr";
+import { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
-import { CardIcon } from "@/components/icons";
+import { shallow } from "zustand/shallow";
 
 type MeaningSectionProps = {
   lexemeSearch: TLexeme | null | undefined;
@@ -44,29 +44,41 @@ export function MeaningSection({
   wordIdToReport,
   retryLexemeSearch,
 }: MeaningSectionProps) {
+  const profile = useAppStore((state) => state.profile?.id);
   const {
     canShowFlashcardTips,
     canShowMeaningTips,
     hideFlashcardTips,
     hideMeaningTips,
-  } = useAppStore();
+  } = useAppStore(
+    (state) => ({
+      canShowFlashcardTips: state.canShowFlashcardTips,
+      canShowMeaningTips: state.canShowMeaningTips,
+      hideFlashcardTips: state.hideFlashcardTips,
+      hideMeaningTips: state.hideMeaningTips,
+    }),
+    shallow
+  );
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
+  const vocabMeaningErrMsg = useLexemeStore(
+    (state) => state.vocabMeaningErrMsg
+  );
+
   const [shouldShowMeaningTips, toggleMeaningTips] = useState(false);
   const [shouldShowFlashcardTips, toggleFlashcardTips] = useState(false);
   const [meaningReportModalOpen, setMeaningReportModalOpen] = useState(false);
   const [addFlashcardModalOpen, setAddFlashcardModalOpen] = useState(false);
-  const { vocabMeaningErrMsg } = useLexemeStore();
   const [meaningSelectorOpen, setMeaningSelectorOpen] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
   const [meaningIndex, setMeaningIndex] = useState(0);
+
   const [isWordReported, setIsWordReported] = useState<boolean | null>(null);
   const reportedWords = getLocalStorageItem("reportedWords", {});
 
   const isFavorite = isFavoriteItem(lexemeSearch?.id);
   const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
-  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
   const { trigger: reportWrongWordTrigger, isMutating: isReportingWrongWord } =
     useSWRMutation(`/v1/lexemes/report-wrong/${wordIdToReport}`, postRequest);
 
@@ -208,7 +220,7 @@ export function MeaningSection({
                     {currentMeaning?.context}
                   </div>
                 )}
-                {user && (
+                {profile && (
                   <Button
                     onClick={() => setAddFlashcardModalOpen(true)}
                     className="rounded-full p-2"
@@ -219,7 +231,7 @@ export function MeaningSection({
                     <CardIcon />
                   </Button>
                 )}
-                {user && canShowFlashcardTips && (
+                {profile && canShowFlashcardTips && (
                   <Popover
                     open={shouldShowFlashcardTips}
                     onOpenChange={toggleFlashcardTips}

@@ -1,23 +1,31 @@
-import { Button } from "@/components/ui/button";
-import { DEFAULT_AVATAR_URL } from "@/constants";
-import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
-import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { getRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
-import { CheckCheck, CircleHelp, GraduationCap, Plus } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import useSWR from "swr";
 import { CardIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { DEFAULT_AVATAR_URL } from "@/constants";
+import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
+import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
+import { getRequest } from "@/service/data";
+import { useAppStore } from "@/store/useAppStore";
+import { CheckCheck, CircleHelp, GraduationCap, Plus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import useSWR from "swr";
+import { shallow } from "zustand/shallow";
 
 export function MyFlashcard() {
-  const { data: user } = useSWR<TUser>("get-user", fetchUserProfile);
+  const profile = useAppStore(
+    (state) => ({
+      avatar: state.profile?.avatar,
+      name: state.profile?.name,
+    }),
+    shallow
+  );
+
   const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
     `/v1/flash-card-sets/my-flash-card`,
     getRequest
@@ -35,14 +43,14 @@ export function MyFlashcard() {
       <div className="space-y-4">
         <div className="flex pb-4 border-b border-muted-foreground items-center gap-4">
           <Image
-            src={user?.avatar || DEFAULT_AVATAR_URL}
+            src={profile?.avatar || DEFAULT_AVATAR_URL}
             width={80}
             height={80}
             className="rounded-full size-20 object-cover shrink-0"
             alt="owner-avatar"
           />
           <div className="space-y-4">
-            <span className="text-lg font-semibold">{user?.name}</span>
+            <span className="text-lg font-semibold">{profile?.name}</span>
             <div className="flex gap-2">
               <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
                 <CardIcon width={20} height={20} /> {total} bộ flashcard

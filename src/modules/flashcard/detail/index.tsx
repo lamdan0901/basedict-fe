@@ -18,12 +18,12 @@ import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { FlashcardSetRegisterPrompt } from "@/modules/flashcard/components/FlashcardSetRegisterPrompt";
 import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
 import { deleteRequest, postRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import useSWR, { mutate } from "swr";
+import { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
 export function FlashcardDetail({
@@ -34,16 +34,14 @@ export function FlashcardDetail({
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
+  const userId = useAppStore((state) => state.profile?.id);
+
   const [alertOpen, setAlertOpen] = useState(false);
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
   const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
     useState(false);
   const [isForbidden, setIsForbidden] = useState(false);
 
-  const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
-    "get-user",
-    fetchUserProfile
-  );
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
     useSWRMutation(
       `/v1/flash-card-sets/${flashcardId}/start-learning`,
@@ -59,15 +57,14 @@ export function FlashcardDetail({
     deleteRequest
   );
 
-  const isMyFlashcard = user?.id === flashcardSet?.owner?.id;
+  const isMyFlashcard = userId === flashcardSet?.owner?.id;
   const isTogglingLearning = isMutatingStartLearning || isMutatingStopLearning;
-  const isLoading = isLoadingUser;
   const learningStatusTitle = flashcardSet?.isLearning
     ? "Huỷ đăng kí"
     : "Đăng kí học";
 
   async function toggleLearningStatus() {
-    if (!user?.id) {
+    if (!userId) {
       setLoginPromptOpen(true);
       return;
     }
@@ -112,7 +109,7 @@ export function FlashcardDetail({
   }
 
   function handleStartLearning() {
-    if (!user?.id) {
+    if (!userId) {
       setLoginPromptOpen(true);
       return;
     }
@@ -149,7 +146,6 @@ export function FlashcardDetail({
     }
   }
 
-  if (isLoading) return <div>Đang tải bộ flashcard...</div>;
   if (!flashcardSet) return <div>Không tìm thấy bộ flashcard</div>;
 
   return (
