@@ -3,23 +3,21 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { jlptLevels } from "@/constants";
 import { cn } from "@/lib";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 
 export function LevelSelector() {
   const router = useRouter();
+  const jlptLevel = useAppStore((state) => state.profile?.jlptLevel);
   const [selectedLevel, setSelectedLevel] = useState("N3");
 
-  const { data, isLoading } = useSWR<TUser>("get-user", fetchUserProfile);
-
   useEffect(() => {
-    setSelectedLevel(data?.jlptLevel || "N3");
-  }, [data?.jlptLevel]);
+    setSelectedLevel(jlptLevel || "N3");
+  }, [jlptLevel]);
 
   return (
     <div>
@@ -52,12 +50,11 @@ export function LevelSelector() {
         })}
       </RadioGroup>
       <Button
-        disabled={isLoading}
         onClick={() => router.push(`/quizzes/basedict-test/${selectedLevel}`)}
         className="w-fit block mx-auto mt-8 text-base"
         variant={"secondary"}
       >
-        {isLoading ? "Đang tải..." : "Vào làm bài"}
+        Vào làm bài
       </Button>
     </div>
   );

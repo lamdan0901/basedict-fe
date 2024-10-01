@@ -2,17 +2,23 @@
 
 import { Badge } from "@/components/ui/badge";
 import { getRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
+import { shallow } from "zustand/shallow";
 
 export function TodaysTopic() {
   const { setText, setVocabMeaningErrMsg, setSelectedVocab, setWord } =
     useLexemeStore();
 
-  const { data: user, isLoading } = useSWR<TUser>("get-user", fetchUserProfile);
-  const jlptLevel = isLoading ? undefined : user?.jlptLevel || "N3";
+  const { profileJlptLevel, isLoading } = useAppStore(
+    (state) => ({
+      profileJlptLevel: state.profile?.jlptLevel,
+      isLoading: state.isLoading,
+    }),
+    shallow
+  );
+  const jlptLevel = isLoading ? undefined : profileJlptLevel || "N3";
 
   const { data: todaysTopic, isLoading: loadingTodaysTopic } =
     useSWRImmutable<TReadingDetail>(

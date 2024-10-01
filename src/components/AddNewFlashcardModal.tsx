@@ -42,7 +42,7 @@ export function AddNewFlashcardModal({
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
 
   const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
-    `/v1/flash-card-sets/my-flash-card`,
+    profile && open ? `/v1/flash-card-sets/my-flash-card` : null,
     getRequest
   );
   const { trigger: addToFlashcardSet, isMutating: isAddingToFlashcardSet } =
@@ -98,19 +98,19 @@ export function AddNewFlashcardModal({
           <DialogHeader>
             <DialogTitle>Thêm vào bộ flashcard của bạn</DialogTitle>
             <DialogDescription>
-              {hasFlashcardSet
-                ? "Hãy chọn một bộ flashcard bạn muốn thêm vào"
-                : ""}
+              {hasFlashcardSet && (
+                <span>Hãy chọn một bộ flashcard bạn muốn thêm vào</span>
+              )}
+              {isLoading && (
+                <span>Đang tải danh sách các bộ flashcard hiện có...</span>
+              )}
               <br />
               {errorMsg && <div className="text-destructive">{errorMsg}</div>}
             </DialogDescription>
           </DialogHeader>
 
           <div className="mb-12">
-            {isLoading && (
-              <span>Đang tải danh sách các bộ flashcard hiện có</span>
-            )}
-            {!hasFlashcardSet && (
+            {!hasFlashcardSet && !isLoading && (
               <div className="h-40 flex flex-col items-center justify-center gap-y-4">
                 <BookX className="size-28 text-muted-foreground" />
                 <span>Bạn chưa có bộ flashcard nào</span>
@@ -173,10 +173,7 @@ export function AddNewFlashcardModal({
         </DialogContent>
       </Dialog>
 
-      <LoginPrompt
-        alertOpen={loginPromptOpen}
-        onOpenChange={setLoginPromptOpen}
-      />
+      <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
     </>
   );
 }

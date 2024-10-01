@@ -13,7 +13,7 @@ import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
 import { useRouter } from "next/navigation";
 
 type Props = {
-  alertOpen: boolean;
+  open: boolean;
   onOpenChange(open: boolean): void;
   onRegister(): void;
   disabled?: boolean;
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export function FlashcardSetRegisterPrompt({
-  alertOpen,
+  open,
   disabled,
   isForbidden,
   fromLearningPage,
@@ -31,7 +31,7 @@ export function FlashcardSetRegisterPrompt({
 }: Props) {
   const router = useRouter();
   return (
-    <AlertDialog open={alertOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent aria-describedby={undefined}>
         <AlertDialogHeader>
           <AlertDialogTitle className="sm:!text-center font-medium">

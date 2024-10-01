@@ -8,10 +8,11 @@ import { ReadingType, TabVal } from "@/modules/reading/const";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import { useReadingStore } from "@/store/useReadingStore";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import useSWR from "swr";
+import { shallow } from "zustand/shallow";
 
 export function ReadingList() {
   const { sheetOpen, setSheetOpen } = useReadingStore();
@@ -35,8 +36,14 @@ export function ReadingList() {
 function InnerReadingList() {
   const [tab, setTab] = useQueryParam("tab", TabVal.BaseDict);
 
-  const { data: user, isLoading } = useSWR<TUser>("get-user", fetchUserProfile);
-  const jlptLevel = isLoading ? undefined : user?.jlptLevel || "N3";
+  const { profileJlptLevel, isLoading } = useAppStore(
+    (state) => ({
+      profileJlptLevel: state.profile?.jlptLevel,
+      isLoading: state.isLoading,
+    }),
+    shallow
+  );
+  const jlptLevel = isLoading ? undefined : profileJlptLevel || "N3";
 
   return (
     <div className=" mb-2">

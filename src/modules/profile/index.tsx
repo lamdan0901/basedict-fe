@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAppStore } from "@/store/useAppStore";
 
 type TUserForm = {
   name: string;
@@ -32,6 +33,7 @@ type TUserForm = {
 export function Profile() {
   const supabase = createClient();
   const { toast } = useToast();
+  const setProfile = useAppStore((state) => state.setProfile);
 
   const {
     register,
@@ -70,8 +72,13 @@ export function Profile() {
     try {
       await updateUser(data);
       if (user) {
-        mutateUser({ ...user, ...data });
-        mutate("get-user", { ...user, ...data });
+        const newUserData = {
+          ...user,
+          ...data,
+        };
+        mutateUser(newUserData);
+        mutate("get-user", newUserData);
+        setProfile(newUserData);
       }
       toast({
         title: "Cập nhật thông tin thành công",

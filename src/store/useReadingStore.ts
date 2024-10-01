@@ -15,7 +15,7 @@ type TReadingStore = {
 
 export const useReadingStore = create<TReadingStore>((set) => ({
   selectedReadingItemId: null,
-  setReadingItemId: (id: number | null) => set({ selectedReadingItemId: id }),
+  setReadingItemId: (id) => set({ selectedReadingItemId: id }),
   hasReadBaseDict: false,
   setHasReadBaseDict: (hasReadBaseDict: boolean) => set({ hasReadBaseDict }),
   hasReadJLPTTest: false,

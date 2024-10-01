@@ -1,8 +1,9 @@
-import { create } from "zustand";
+import { createWithEqualityFn as create } from "zustand/traditional";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 interface AppState {
+  isLoading: boolean;
   profile: TUser | null;
   seasonRank: TJlptLevel;
   canShowMeaningTips: boolean;
@@ -17,6 +18,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     immer((set) => ({
+      isLoading: true as boolean,
       profile: null as TUser | null,
       seasonRank: "N3" as TJlptLevel,
       canShowMeaningTips: true as boolean,
@@ -31,7 +33,7 @@ export const useAppStore = create<AppState>()(
           state.canShowFlashcardTips = false;
         });
       },
-      setProfile: (profile: TUser) => {
+      setProfile: (profile) => {
         set((state) => {
           state.profile = profile;
         });
@@ -40,7 +42,7 @@ export const useAppStore = create<AppState>()(
         set((state) => {
           state.profile = null;
         }),
-      setSeasonRank: (rank: TJlptLevel) => {
+      setSeasonRank: (rank) => {
         set((state) => {
           state.seasonRank = rank;
         });
@@ -48,6 +50,9 @@ export const useAppStore = create<AppState>()(
     })),
     {
       name: "app",
+      onRehydrateStorage: () => (state) => {
+        if (state) state.isLoading = false;
+      },
     }
   )
 );

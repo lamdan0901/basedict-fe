@@ -5,27 +5,30 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
 import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
 import { getRequest } from "@/service/data";
-import { fetchUserProfile } from "@/service/user";
+import { useAppStore } from "@/store/useAppStore";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
+import { shallow } from "zustand/shallow";
 
 export function JLPTTests() {
   const searchParams = useSearchParams();
   const _jlptLevel = searchParams.get("jlptLevel") as TJlptLevel;
 
-  const { data: user, isLoading: isLoadingUser } = useSWR<TUser>(
-    !_jlptLevel ? "get-user" : null,
-    fetchUserProfile
+  const { profileJlptLevel, isLoading: isLoadingUser } = useAppStore(
+    (state) => ({
+      profileJlptLevel: state.profile?.jlptLevel,
+      isLoading: state.isLoading,
+    }),
+    shallow
   );
   const jlptLevel =
-    _jlptLevel ?? (isLoadingUser ? undefined : user?.jlptLevel || "N3");
+    _jlptLevel ?? (isLoadingUser ? undefined : profileJlptLevel || "N3");
 
-  const { data: jlptTests = [], isLoading: isLoadingJlptTests } = useSWR<
-    TTestPeriod[]
-  >(jlptLevel ? `/v1/exams/jlpt?jlptLevel=${jlptLevel}` : null, getRequest);
-
-  const isLoading = isLoadingJlptTests || isLoadingUser;
+  const { data: jlptTests = [], isLoading } = useSWR<TTestPeriod[]>(
+    jlptLevel ? `/v1/exams/jlpt?jlptLevel=${jlptLevel}` : null,
+    getRequest
+  );
 
   return (
     <Card>

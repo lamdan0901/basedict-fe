@@ -11,22 +11,26 @@ interface ILexemeStore {
   setSelectedVocab: (vocab: TLexeme | null) => void;
   selectedGrammar: TGrammar | null;
   setSelectedGrammar: (grammar: TGrammar | null) => void;
-  translatedParagraph: string;
-  setTranslatedParagraph: (text: string) => void;
+  translatedParagraph: TTranslatedParagraph | null;
+  setTranslatedParagraph: (p: TTranslatedParagraph | null) => void;
+  isTranslatingParagraph: boolean;
+  setIsTranslatingParagraph: (isTranslating: boolean) => void;
 }
 
 export const useLexemeStore = create<ILexemeStore>()((set) => ({
   text: "",
-  setText: (text: string) => set({ text }),
+  setText: (text) => set({ text }),
   word: "",
-  setWord: (word: string) => set({ word }),
+  setWord: (word) => set({ word }),
   vocabMeaningErrMsg: "",
-  setVocabMeaningErrMsg: (msg: string) => set({ vocabMeaningErrMsg: msg }),
+  setVocabMeaningErrMsg: (msg) => set({ vocabMeaningErrMsg: msg }),
   selectedVocab: null,
-  setSelectedVocab: (vocab: TLexeme | null) => set({ selectedVocab: vocab }),
+  setSelectedVocab: (vocab) => set({ selectedVocab: vocab }),
   selectedGrammar: null,
-  setSelectedGrammar: (grammar: TGrammar | null) =>
-    set({ selectedGrammar: grammar }),
-  translatedParagraph: "",
-  setTranslatedParagraph: (text: string) => set({ translatedParagraph: text }),
+  setSelectedGrammar: (grammar) => set({ selectedGrammar: grammar }),
+  translatedParagraph: null,
+  setTranslatedParagraph: (p) => set({ translatedParagraph: p }),
+  isTranslatingParagraph: false,
+  setIsTranslatingParagraph: (isTranslating) =>
+    set({ isTranslatingParagraph: isTranslating }),
 }));

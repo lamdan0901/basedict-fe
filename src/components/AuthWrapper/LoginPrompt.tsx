@@ -13,13 +13,13 @@ import Image from "next/image";
 import { useFormStatus } from "react-dom";
 
 type Props = {
-  alertOpen: boolean;
+  open: boolean;
   onOpenChange(open: boolean): void;
 };
 
-export function LoginPrompt({ alertOpen, onOpenChange }: Props) {
+export function LoginPrompt({ open, onOpenChange }: Props) {
   return (
-    <AlertDialog open={alertOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent aria-describedby={undefined}>
         <AlertDialogHeader>
           <AlertDialogTitle className="sm:!text-center font-medium">

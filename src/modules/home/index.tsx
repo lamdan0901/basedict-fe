@@ -2,12 +2,10 @@
 
 import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
 import { trimAllSpaces } from "@/lib";
-import { GrammarSection } from "@/modules/home/GrammarSection";
 import { LexemeSearch } from "@/modules/home/LexemeSearch";
 import { MeaningSection } from "@/modules/home/MeaningSection";
 import { getRequest, postRequest } from "@/service/data";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { GRAMMAR_CHAR } from "@/constants";
 import useSWRImmutable from "swr/immutable";
 import useSWRMutation from "swr/mutation";
 import { SimilarWords } from "@/modules/home/SimilarWords";
@@ -18,23 +16,29 @@ import { HistoryNFavorite } from "@/components/HistoryNFavorite";
 import { TodaysTopic } from "@/modules/home/TodaysTopic";
 import { useEffect, useRef, useState } from "react";
 import { AdSense } from "@/components/Ad/Ad";
+import { Button } from "@/components/ui/button";
 
-export function Home({
-  _lexemeSearch,
-}: {
+type TLexemeRef = {
+  hideSuggestions: () => void;
+  translateParagraph: () => void;
+};
+
+type Props = {
   _lexemeSearch: TLexeme | undefined;
-}) {
+};
+
+export function Home({ _lexemeSearch }: Props) {
   const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
     useLexemeStore();
   const { addHistoryItem } = useHistoryStore();
-  const lexemeRef = useRef<{ hideSuggestions: () => void }>(null);
+  const lexemeRef = useRef<TLexemeRef>(null);
   const [initialLexemeSearch, setInitialLexemeSearch] = useState(_lexemeSearch);
   const [initialLexemeText, setInitialLexemeText] = useState(
     _lexemeSearch?.standard ?? ""
   );
 
   const isParagraphMode = text.length >= 20;
-  const isVocabMode = !isParagraphMode && !text.startsWith(GRAMMAR_CHAR);
+  const isVocabMode = !isParagraphMode;
 
   const {
     data: lexemeSearch,
@@ -115,9 +119,24 @@ export function Home({
           />
         )}
         {isParagraphMode && (
-          <TranslatedParagraph error={error} isLoading={translatingParagraph} />
+          <>
+            <div className="mx-auto sm:hidden">
+              <Button
+                className="w-fit"
+                onClick={lexemeRef.current?.translateParagraph}
+                variant={"outline"}
+              >
+                Dịch đoạn văn
+              </Button>
+            </div>
+            <TranslatedParagraph
+              error={error}
+              isLoading={translatingParagraph}
+            />
+          </>
         )}
       </div>
+
       <HistoryNFavorite />
       <AdSense />
       <TodaysTopic />
