@@ -10,16 +10,8 @@ export function SimilarWords({
   onWordClick: () => void;
 }) {
   const setSearchParam = useUrlSearchParams();
-  const {
-    text,
-    setText,
-    setSelectedVocab,
-    setSelectedGrammar,
-    setWord,
-    setVocabMeaningErrMsg,
-  } = useLexemeStore();
-
-  if (!similars?.length) return null;
+  const { setText, setSelectedVocab, setWord, setVocabMeaningErrMsg } =
+    useLexemeStore();
 
   function handleWordClick(word: string) {
     onWordClick();
@@ -29,6 +21,8 @@ export function SimilarWords({
     setVocabMeaningErrMsg("");
     setSelectedVocab(null);
   }
+
+  if (!similars?.length) return null;
 
   return <SimilarLexemes similars={similars} onWordClick={handleWordClick} />;
 }

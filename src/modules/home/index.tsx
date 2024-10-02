@@ -14,9 +14,9 @@ import { useHistoryStore } from "@/store/useHistoryStore";
 import { v4 as uuid } from "uuid";
 import { HistoryNFavorite } from "@/components/HistoryNFavorite";
 import { TodaysTopic } from "@/modules/home/TodaysTopic";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AdSense } from "@/components/Ad/Ad";
-import { Button } from "@/components/ui/button";
+import { PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
 
 type TLexemeRef = {
   hideSuggestions: () => void;
@@ -37,7 +37,7 @@ export function Home({ _lexemeSearch }: Props) {
     _lexemeSearch?.standard ?? ""
   );
 
-  const isParagraphMode = text.length >= 20;
+  const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
   const isVocabMode = !isParagraphMode;
 
   const {
@@ -71,6 +71,11 @@ export function Home({ _lexemeSearch }: Props) {
   } = useSWRMutation("/v1/paragraphs/translate", postRequest);
 
   const effectiveLexemeSearch = lexemeSearch || initialLexemeSearch;
+
+  const onTranslateParagraph = useCallback(
+    () => lexemeRef.current?.translateParagraph(),
+    []
+  );
 
   useEffect(() => {
     if (lexemeSearch) {
@@ -119,21 +124,11 @@ export function Home({ _lexemeSearch }: Props) {
           />
         )}
         {isParagraphMode && (
-          <>
-            <div className="mx-auto sm:hidden">
-              <Button
-                className="w-fit"
-                onClick={lexemeRef.current?.translateParagraph}
-                variant={"outline"}
-              >
-                Dịch đoạn văn
-              </Button>
-            </div>
-            <TranslatedParagraph
-              error={error}
-              isLoading={translatingParagraph}
-            />
-          </>
+          <TranslatedParagraph
+            error={error}
+            isLoading={translatingParagraph}
+            onTranslateParagraph={onTranslateParagraph}
+          />
         )}
       </div>
 

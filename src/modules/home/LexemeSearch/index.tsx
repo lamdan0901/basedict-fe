@@ -78,7 +78,7 @@ export const LexemeSearch = forwardRef<
       setIsTranslatingParagraph,
     } = useLexemeStore();
     const addHistoryItem = useHistoryStore((state) => state.addHistoryItem);
-    const profile = useAppStore((state) => state.profile);
+    const profile = useAppStore((state) => state.profile?.id);
 
     const setSearchParam = useUrlSearchParams();
     const searchParams = useSearchParams();
@@ -336,6 +336,7 @@ export const LexemeSearch = forwardRef<
               <Pencil className="size-5" /> <span>Chỉnh sửa</span>
             </Button>
           </div>
+
           <Textarea
             id="paragraph-input"
             ref={textareaRef}
@@ -370,6 +371,7 @@ export const LexemeSearch = forwardRef<
                 : handleSearchLexeme(e)
             }
           />
+
           <p
             className={cn(
               "text-xl pt-2 h-full whitespace-pre-line",
@@ -378,6 +380,7 @@ export const LexemeSearch = forwardRef<
           >
             {text}
           </p>
+
           <Button
             variant={"ghost"}
             onClick={() => {

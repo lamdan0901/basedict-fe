@@ -33,7 +33,7 @@ export function MeaningReportModal({
   onOpenChange,
   onMeaningReported,
 }: MeaningReportModalProps) {
-  const profile = useAppStore((state) => state.profile);
+  const profile = useAppStore((state) => state.profile?.id);
   const { toast } = useToast();
   const {
     register,
