@@ -48,7 +48,6 @@ export async function generateMetadata(
   };
 }
 
-export default async function FlashcardViewPage({ params }: TComponentProps) {
-  const flashcardSet = await fetchFlashcardSet(params.flashcardId);
-  return <FlashcardDetail flashcardSet={flashcardSet} />;
+export default function FlashcardViewPage() {
+  return <FlashcardDetail />;
 }

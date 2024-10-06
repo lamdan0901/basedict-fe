@@ -17,20 +17,16 @@ import { useToast } from "@/components/ui/use-toast";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { FlashcardSetRegisterPrompt } from "@/modules/flashcard/components/FlashcardSetRegisterPrompt";
 import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
-import { deleteRequest, postRequest } from "@/service/data";
+import { deleteRequest, getRequest, postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
-export function FlashcardDetail({
-  flashcardSet,
-}: {
-  flashcardSet: TFlashcardSet | null | undefined;
-}) {
+export function FlashcardDetail() {
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
@@ -42,6 +38,10 @@ export function FlashcardDetail({
     useState(false);
   const [isForbidden, setIsForbidden] = useState(false);
 
+  const { data: flashcardSet, isLoading } = useSWR<TFlashcardSet>(
+    `/v1/flash-card-sets/${flashcardId}`,
+    getRequest
+  );
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
     useSWRMutation(
       `/v1/flash-card-sets/${flashcardId}/start-learning`,
@@ -146,6 +146,7 @@ export function FlashcardDetail({
     }
   }
 
+  if (isLoading) return <div>Đang tải bộ flashcard...</div>;
   if (!flashcardSet) return <div>Không tìm thấy bộ flashcard</div>;
 
   return (

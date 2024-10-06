@@ -1,5 +1,5 @@
 import { CardIcon } from "@/components/icons";
-import { SimilarLexemes } from "@/components/SimilarLexemes";
+import { BadgeList } from "@/components/BadgeList";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib";
@@ -151,8 +151,9 @@ export const VocabItem = memo<Props>(
         </Card>
 
         {lexeme.similars.length > 0 && (
-          <SimilarLexemes
-            similars={lexeme.similars}
+          <BadgeList
+            title="Từ tương tự:"
+            words={lexeme.similars}
             onWordClick={onSimilarWordClick}
           />
         )}

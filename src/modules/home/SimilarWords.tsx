@@ -1,6 +1,6 @@
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { SimilarLexemes } from "@/components/SimilarLexemes";
+import { BadgeList } from "@/components/BadgeList";
 
 export function SimilarWords({
   similars,
@@ -24,5 +24,11 @@ export function SimilarWords({
 
   if (!similars?.length) return null;
 
-  return <SimilarLexemes similars={similars} onWordClick={handleWordClick} />;
+  return (
+    <BadgeList
+      title="Từ tương tự:"
+      words={similars}
+      onWordClick={handleWordClick}
+    />
+  );
 }

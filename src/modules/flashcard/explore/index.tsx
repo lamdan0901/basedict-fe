@@ -1,13 +1,22 @@
 "use client";
 
+import { BadgeList } from "@/components/BadgeList";
 import { Input } from "@/components/ui/input";
 import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreator";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { getRequest } from "@/service/data";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 
 export function FlashcardExploring() {
+  const router = useRouter();
+
+  const { data: flashcardTags } = useSWR<TFlashcardTag[]>(
+    "/v1/flash-card-sets/tags",
+    getRequest
+  );
+
   const { data: flashcardDiscover, isLoading: isLoadingDiscover } = useSWR<{
     data: TFlashcardSet[];
     total: number;
@@ -41,6 +50,17 @@ export function FlashcardExploring() {
           Tìm kiếm thêm
         </Link>
       </div>
+
+      <BadgeList
+        className="px-0 pb-4"
+        titleClassName="font-semibold w-full"
+        title="Các tag phổ biến"
+        words={flashcardTags?.map((tag) => `${tag.name} (${tag.count})`)}
+        onWordClick={(tag) => {
+          tag = `q=~%28search~%27*23${tag.split("(")[0].trim()}%29`;
+          router.push(`/flashcard/search?${tag}`);
+        }}
+      />
 
       <div>
         <h2 className="text-lg mb-2 font-semibold">Top 5 người đóng góp</h2>
