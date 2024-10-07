@@ -12,6 +12,7 @@ import {
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
 import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
+import { isDifferenceGreaterSpecifiedDay } from "@/modules/home/utils";
 import { postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
@@ -29,14 +30,6 @@ type MeaningSectionProps = {
   wordIdToReport: string;
   retryLexemeSearch: KeyedMutator<TLexeme>;
 };
-
-function isDifferenceGreaterSpecifiedDay(dateISO: string, days = 7) {
-  const millisPerDay = 86400000; // 24 * 60 * 60 * 1000
-  const difference = Math.abs(
-    new Date().getTime() - new Date(dateISO).getTime()
-  );
-  return difference >= millisPerDay * days;
-}
 
 export const MeaningSection = memo<MeaningSectionProps>(
   ({
@@ -132,6 +125,11 @@ export const MeaningSection = memo<MeaningSectionProps>(
         toggleFlashcardTips(true);
       }
     }, [canShowFlashcardTips, canShowMeaningTips, lexemeSearch]);
+
+    // Reset the meaning index when the lexeme search changes
+    useEffect(() => {
+      setMeaningIndex(0);
+    }, [lexemeSearch?.id]);
 
     return (
       <Card

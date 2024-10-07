@@ -38,10 +38,11 @@ export function FlashcardDetail() {
     useState(false);
   const [isForbidden, setIsForbidden] = useState(false);
 
-  const { data: flashcardSet, isLoading } = useSWR<TFlashcardSet>(
-    `/v1/flash-card-sets/${flashcardId}`,
-    getRequest
-  );
+  const {
+    data: flashcardSet,
+    isLoading,
+    mutate: mutateFlashcardSet,
+  } = useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
     useSWRMutation(
       `/v1/flash-card-sets/${flashcardId}/start-learning`,
@@ -72,8 +73,10 @@ export function FlashcardDetail() {
     try {
       await (flashcardSet?.isLearning ? stopLearning() : startLearning());
 
-      await mutate("/v1/flash-card-sets/my-flash-card");
-      router.refresh();
+      await Promise.all([
+        mutate("/v1/flash-card-sets/my-flash-card"),
+        mutateFlashcardSet(),
+      ]);
       toast({
         title: `${learningStatusTitle} thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,

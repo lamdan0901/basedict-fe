@@ -20,7 +20,7 @@ import { PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
 
 type TLexemeRef = {
   hideSuggestions: () => void;
-  translateParagraph: () => void;
+  translateParagraph: () => Promise<void>;
 };
 
 type Props = {

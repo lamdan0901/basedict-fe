@@ -38,7 +38,7 @@ import useSWRImmutable from "swr/immutable";
 import { TriggerWithOptionsArgs } from "swr/mutation";
 import { v4 as uuid } from "uuid";
 
-type LexemeSearchProps = {
+type Props = {
   initialText: string | undefined;
   lexemeSearch: TLexeme | undefined;
   onInputClear: () => void;
@@ -51,10 +51,12 @@ type LexemeSearchProps = {
   >;
 };
 
-export const LexemeSearch = forwardRef<
-  { hideSuggestions: () => void },
-  LexemeSearchProps
->(
+type ForwardedRefProps = {
+  hideSuggestions: () => void;
+  translateParagraph(): Promise<void>;
+};
+
+export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
   (
     {
       lexemeSearch,
@@ -65,7 +67,6 @@ export const LexemeSearch = forwardRef<
     },
     ref
   ) => {
-    const abortControllerRef = useRef<AbortController | null>(null);
     const {
       text,
       setText,
@@ -86,6 +87,7 @@ export const LexemeSearch = forwardRef<
     const search = searchParams.get("search") ?? "";
     const seoSearch = searchParams.get("word") ?? "";
 
+    const abortControllerRef = useRef<AbortController | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const initTextSet = useRef(false);
 
@@ -217,6 +219,9 @@ export const LexemeSearch = forwardRef<
       e.preventDefault();
 
       setWord(text);
+
+      // Make sure that the hanviet/hiragana section always sync with lexeme search
+      if (selectedVocab) setSelectedVocab(null);
 
       // when user press Enter, we need to cancel the request to get suggestion list
       abortControllerRef.current?.abort();
