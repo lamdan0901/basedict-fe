@@ -54,7 +54,7 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
 
     const { trigger, isMutating } = useSWRMutation(
       `/v1/question-masters/${question.id}/explanation`,
-      getRequest
+      (key) => getRequest(key)
     );
 
     async function handleGetExplanation() {
