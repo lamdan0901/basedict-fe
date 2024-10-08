@@ -7,6 +7,7 @@ import {
   FLASHCARD_SETS_LIMIT_MSG,
 } from "@/modules/flashcard/const";
 import { FlashcardItemRegistration } from "@/modules/flashcard/create/FlashcardItemRegistration";
+import { TagsSelect } from "@/modules/flashcard/create/TagsSelect";
 import {
   flashCardSetSchema,
   TFlashCardSetForm,
@@ -49,8 +50,8 @@ export function FlashcardCreation() {
     useSWRMutation("/v1/flash-card-sets", postRequest);
   const { trigger: updateFlashcardSet, isMutating: isUpdatingFlashcardSet } =
     useSWRMutation(
-      `flash-card-sets/${flashcardId}/delete`,
-      (_, { arg }: { arg: TFlashCardSetForm }) =>
+      `flash-card-sets/${flashcardId}/update`,
+      (_, { arg }: { arg: any }) =>
         patchRequest(`/v1/flash-card-sets/${flashcardId}`, { arg })
     );
 
@@ -64,10 +65,14 @@ export function FlashcardCreation() {
         delete item.uid;
         if (item.id === "") delete item.id;
       });
+      const formattedData = {
+        ...data,
+        tags: data.tags.map((tag) => tag.label.split("(")[0].trim()),
+      };
 
       const { id } = await (flashcardId
-        ? updateFlashcardSet(data)
-        : addFlashcardSet(data));
+        ? updateFlashcardSet(formattedData)
+        : addFlashcardSet(formattedData));
 
       mutate("/v1/flash-card-sets/my-flash-card");
       toast({
@@ -95,6 +100,9 @@ export function FlashcardCreation() {
           ...item,
           uid: uuid(),
         })),
+        tags:
+          flashcardSet.tags?.map((tag) => ({ label: tag, value: uuid() })) ??
+          [],
       });
   }, [flashcardSet, reset]);
 
@@ -126,6 +134,7 @@ export function FlashcardCreation() {
         />
       </div>
       <FormProvider {...form}>
+        <TagsSelect />
         <FlashcardItemRegistration
           isMutating={isMutating}
           onSubmit={handleSubmit(submitForm)}

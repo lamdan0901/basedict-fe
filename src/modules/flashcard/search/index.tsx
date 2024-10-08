@@ -16,8 +16,9 @@ import { flashcardSortMap } from "@/modules/flashcard/const";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { Searchbar } from "@/modules/flashcard/components/Searchbar";
 import { getRequest } from "@/service/data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { formatSearchParams } from "@/modules/flashcard/search/utils";
 
 const TOP_EL_ID = "top-of-flashcard-search";
 
@@ -29,12 +30,15 @@ export function FlashcardSearch() {
     limit: 20,
   });
   const [searchText, setSearchText] = useState(searchParams.search);
+  const shouldSearchByTag = searchParams.search.startsWith("#");
 
   const { data: flashcardSearch, isLoading: isSearching } = useSWR<{
     data: TFlashcardSet[];
     total: number;
   }>(
-    `/v1/flash-card-sets/discover?${stringifyParams(searchParams)}`,
+    `/v1/flash-card-sets/discover?${stringifyParams(
+      formatSearchParams(searchParams, shouldSearchByTag)
+    )}`,
     getRequest
   );
   const flashcards = flashcardSearch?.data ?? [];
@@ -48,6 +52,10 @@ export function FlashcardSearch() {
     setSearchText(text);
     debouncedSearch(text);
   }
+
+  useEffect(() => {
+    setSearchText(searchParams.search);
+  }, [searchParams.search]);
 
   return (
     <div className="space-y-4">

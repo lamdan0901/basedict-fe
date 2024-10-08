@@ -1,8 +1,9 @@
 import { axiosData } from "@/lib/axios";
+import { AxiosRequestConfig } from "axios";
 
-export const getRequest = async (url: string) => {
+export const getRequest = async (url: string, config?: AxiosRequestConfig) => {
   try {
-    const res = await axiosData.get(url);
+    const res = await axiosData.get(url, config);
     return res.data.data;
   } catch (err) {
     throw err;

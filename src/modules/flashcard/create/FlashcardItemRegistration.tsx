@@ -7,7 +7,7 @@ import {
   defaultFlashcardItem,
   FLASHCARD_LIMIT,
 } from "@/modules/flashcard/const";
-import { TFlashCardSetForm } from "@/modules/flashcard/schema";
+import { TFlashCardItem, TFlashCardSetForm } from "@/modules/flashcard/schema";
 import { ChevronRight, Plus, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useFormContext } from "react-hook-form";
@@ -25,7 +25,10 @@ export function FlashcardItemRegistration({
     register,
     formState: { errors },
   } = useFormContext<TFlashCardSetForm>();
-  const { fields, append, remove } = useFieldArray<TFlashCardSetForm>({
+
+  const { fields, append, remove } = useFieldArray<{
+    flashCards: TFlashCardItem[];
+  }>({
     name: "flashCards",
   });
   const total = fields.length;

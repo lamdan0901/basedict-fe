@@ -1,6 +1,6 @@
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { SimilarLexemes } from "@/components/SimilarLexemes";
+import { BadgeList } from "@/components/BadgeList";
 
 export function SimilarWords({
   similars,
@@ -10,16 +10,8 @@ export function SimilarWords({
   onWordClick: () => void;
 }) {
   const setSearchParam = useUrlSearchParams();
-  const {
-    text,
-    setText,
-    setSelectedVocab,
-    setSelectedGrammar,
-    setWord,
-    setVocabMeaningErrMsg,
-  } = useLexemeStore();
-
-  if (!similars?.length) return null;
+  const { setText, setSelectedVocab, setWord, setVocabMeaningErrMsg } =
+    useLexemeStore();
 
   function handleWordClick(word: string) {
     onWordClick();
@@ -30,5 +22,13 @@ export function SimilarWords({
     setSelectedVocab(null);
   }
 
-  return <SimilarLexemes similars={similars} onWordClick={handleWordClick} />;
+  if (!similars?.length) return null;
+
+  return (
+    <BadgeList
+      title="Từ tương tự:"
+      words={similars}
+      onWordClick={handleWordClick}
+    />
+  );
 }

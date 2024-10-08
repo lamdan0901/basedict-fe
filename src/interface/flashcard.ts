@@ -7,6 +7,7 @@ type TFlashcardSet = {
   learningNumber: number;
   owner?: TUser;
   flashCards?: TFlashCardItem[];
+  tags?: string[];
   isLearning?: boolean;
   flashCardNumber?: number;
 };
@@ -36,4 +37,10 @@ type TFlashCardItem = {
   backSideComment: string;
   frontSide: string;
   frontSideComment: string;
+};
+
+type TFlashcardTag = {
+  id: number;
+  count: number;
+  name: string;
 };

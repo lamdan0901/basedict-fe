@@ -38,7 +38,7 @@ import useSWRImmutable from "swr/immutable";
 import { TriggerWithOptionsArgs } from "swr/mutation";
 import { v4 as uuid } from "uuid";
 
-type LexemeSearchProps = {
+type Props = {
   initialText: string | undefined;
   lexemeSearch: TLexeme | undefined;
   onInputClear: () => void;
@@ -51,10 +51,12 @@ type LexemeSearchProps = {
   >;
 };
 
-export const LexemeSearch = forwardRef<
-  { hideSuggestions: () => void },
-  LexemeSearchProps
->(
+type ForwardedRefProps = {
+  hideSuggestions: () => void;
+  translateParagraph(): Promise<void>;
+};
+
+export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
   (
     {
       lexemeSearch,
@@ -78,15 +80,17 @@ export const LexemeSearch = forwardRef<
       setIsTranslatingParagraph,
     } = useLexemeStore();
     const addHistoryItem = useHistoryStore((state) => state.addHistoryItem);
-    const profile = useAppStore((state) => state.profile);
+    const profile = useAppStore((state) => state.profile?.id);
 
     const setSearchParam = useUrlSearchParams();
     const searchParams = useSearchParams();
     const search = searchParams.get("search") ?? "";
     const seoSearch = searchParams.get("word") ?? "";
 
+    const abortControllerRef = useRef<AbortController | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const initTextSet = useRef(false);
+
     const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const [readyToSearch, setReadyToSearch] = useState(false);
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
@@ -95,8 +99,8 @@ export const LexemeSearch = forwardRef<
     const isVocabMode = !isParagraphMode && lexemeSearchParam;
 
     const {
-      data: lexemeVocabRes,
-      isLoading: loadingLexemeVocab,
+      data: lexemeSuggestionRes,
+      isLoading: loadingLexemeSuggestion,
       mutate: mutateLexemeVocab,
     } = useSWRImmutable<{
       data: TLexeme[];
@@ -106,11 +110,14 @@ export const LexemeSearch = forwardRef<
             search: trimAllSpaces(lexemeSearchParam),
           })}`
         : null,
-      getRequest
+      (url: string) => {
+        abortControllerRef.current = new AbortController();
+        return getRequest(url, { signal: abortControllerRef.current.signal });
+      }
     );
 
-    const lexemeVocabs = lexemeVocabRes?.data ?? [];
-    const isDisplayingSuggestions = lexemeVocabs.length > 0;
+    const lexemeSuggestion = lexemeSuggestionRes?.data ?? [];
+    const isDisplayingSuggestions = lexemeSuggestion.length > 0;
 
     const lexemeToShowHanviet = selectedVocab ?? lexemeSearch;
     const hanviet = lexemeToShowHanviet?.hanviet
@@ -211,14 +218,15 @@ export const LexemeSearch = forwardRef<
       if (!(e.key === "Enter" && text)) return;
       e.preventDefault();
 
-      // when user press Enter, we need to cancel the request to get suggestion list
-      setLexemeSearchParam("");
+      setWord(text);
 
-      if (isVocabMode) {
-        setWord(text);
-        setVocabMeaningErrMsg("");
-        mutateLexemeVocab({ data: [] });
-      }
+      // Make sure that the hanviet/hiragana section always sync with lexeme search
+      if (selectedVocab) setSelectedVocab(null);
+
+      // when user press Enter, we need to cancel the request to get suggestion list
+      abortControllerRef.current?.abort();
+      setLexemeSearchParam("");
+      setVocabMeaningErrMsg("");
     }
 
     function handleVocabClick(lexeme: TLexeme) {
@@ -336,6 +344,7 @@ export const LexemeSearch = forwardRef<
               <Pencil className="size-5" /> <span>Chỉnh sửa</span>
             </Button>
           </div>
+
           <Textarea
             id="paragraph-input"
             ref={textareaRef}
@@ -370,6 +379,7 @@ export const LexemeSearch = forwardRef<
                 : handleSearchLexeme(e)
             }
           />
+
           <p
             className={cn(
               "text-xl pt-2 h-full whitespace-pre-line",
@@ -378,6 +388,7 @@ export const LexemeSearch = forwardRef<
           >
             {text}
           </p>
+
           <Button
             variant={"ghost"}
             onClick={() => {
@@ -407,12 +418,12 @@ export const LexemeSearch = forwardRef<
                 ? "sm:h-[195px] h-[137px]"
                 : "sm:h-[220px] h-[137px]",
               !isParagraphMode && !isDisplayingSuggestions && "h-0",
-              loadingLexemeVocab && " min-h-[137px]"
+              loadingLexemeSuggestion && " min-h-[137px]"
             )}
           >
-            {loadingLexemeVocab
+            {loadingLexemeSuggestion
               ? "Đang tìm kiếm..."
-              : lexemeVocabs.map((lexeme) => {
+              : lexemeSuggestion.map((lexeme) => {
                   const lexemeStandard =
                     lexeme.standard === lexeme.lexeme
                       ? lexeme.standard

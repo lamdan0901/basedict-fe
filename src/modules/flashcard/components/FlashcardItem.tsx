@@ -10,6 +10,7 @@ import { DEFAULT_AVATAR_URL } from "@/constants";
 import { cn } from "@/lib";
 import { CheckCheck, GraduationCap, Clock } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function FlashcardItem({
@@ -46,6 +47,18 @@ export function FlashcardItem({
               <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-6 text-sm">
                 {card.flashCardNumber ?? flashCardNumber} thẻ
               </div>
+            </div>
+            <div className="flex gap-2 items-center">
+              {card.tags?.map((tag) => (
+                <Link
+                  href={`/flashcard/search?q=~%28search~%27*23${tag}%29`}
+                  onClick={(e) => e.stopPropagation()}
+                  key={tag}
+                  className="italic hover:underline text-gray-700 hover:text-blue-500 text-xs"
+                >
+                  #{tag}
+                </Link>
+              ))}
             </div>
             <p
               className={cn(

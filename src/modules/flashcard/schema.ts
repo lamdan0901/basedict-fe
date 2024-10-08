@@ -21,6 +21,11 @@ const flashCardItemSchema = z.object({
   id: z.any().optional(),
 });
 
+const flashCardTagSchema = z.object({
+  value: z.string(),
+  label: z.string(),
+});
+
 export const flashCardSetSchema = z.object({
   title: z
     .string()
@@ -30,8 +35,10 @@ export const flashCardSetSchema = z.object({
     .string()
     .max(1000, "Mô tả không được quá 1000 ký tự")
     .optional(),
+  tags: z.array(flashCardTagSchema).min(1, "Cần có ít nhất 1 tag"),
   flashCards: z.array(flashCardItemSchema),
 });
 
 export type TFlashCardItem = z.infer<typeof flashCardItemSchema>;
+export type TFlashCardTagItem = z.infer<typeof flashCardTagSchema>;
 export type TFlashCardSetForm = z.infer<typeof flashCardSetSchema>;
