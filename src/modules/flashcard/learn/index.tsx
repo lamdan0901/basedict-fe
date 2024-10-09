@@ -27,13 +27,12 @@ import { shuffleArray } from "@/lib";
 import { RegisterRequiredWrapper } from "@/modules/flashcard/components/RegisterRequiredWrapper";
 import { DefaultFace } from "@/modules/flashcard/const";
 import { FlashcardCarouselItem } from "@/modules/flashcard/learn/FlashcardCarouselItem";
-import { getRequest, postRequest } from "@/service/data";
+import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import useSWR, { mutate } from "swr";
-import useSWRMutation from "swr/mutation";
+import useSWR from "swr";
 
 export function FlashcardLearning() {
   const { toast } = useToast();
