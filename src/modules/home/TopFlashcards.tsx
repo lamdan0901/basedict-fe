@@ -33,8 +33,8 @@ export function TopFlashcardSets() {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="top-[unset] -bottom-14 left-1/3" />
-        <CarouselNext className="top-[unset] -bottom-14 right-1/3" />
+        <CarouselPrevious className="md:-left-12 md:top-1/2 md:-translate-y-1/2 top-[unset] -bottom-14 left-1/3" />
+        <CarouselNext className="md:-right-12 md:top-1/2 md:-translate-y-1/2 top-[unset] -bottom-14 right-1/3" />
       </Carousel>
     </div>
   );
