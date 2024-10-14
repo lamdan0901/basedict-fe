@@ -16,7 +16,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { FlashcardSetRegisterPrompt } from "@/modules/flashcard/components/FlashcardSetRegisterPrompt";
-import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
+import {
+  FLASHCARD_SETS_LIMIT_MSG,
+  MIN_CARDS_TO_MATCH,
+} from "@/modules/flashcard/const";
+import { MatchingOptionSelector } from "@/modules/flashcard/detail/MatchingOptionSelector";
 import { deleteRequest, getRequest, postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck, ChevronRight } from "lucide-react";
@@ -32,6 +36,7 @@ export function FlashcardDetail() {
   const { flashcardId } = useParams();
   const userId = useAppStore((state) => state.profile?.id);
 
+  const [matchingOptionOpen, setMatchingOptionOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
   const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
@@ -58,7 +63,9 @@ export function FlashcardDetail() {
     deleteRequest
   );
 
+  const flashCardsLength = flashcardSet?.flashCards?.length || 0;
   const isMyFlashcard = userId === flashcardSet?.owner?.id;
+  const canMatch = flashCardsLength >= MIN_CARDS_TO_MATCH;
   const isTogglingLearning = isMutatingStartLearning || isMutatingStopLearning;
   const learningStatusTitle = flashcardSet?.isLearning
     ? "Huỷ đăng kí"
@@ -111,17 +118,35 @@ export function FlashcardDetail() {
     }
   }
 
-  function handleStartLearning() {
+  function canGoToLearning() {
     if (!userId) {
       setLoginPromptOpen(true);
-      return;
+      return false;
     }
     if (!isMyFlashcard && !flashcardSet?.isLearning) {
       setFlashcardRegisterPromptOpen(true);
+      return false;
+    }
+    return true;
+  }
+
+  function handleStartLearning() {
+    if (!canGoToLearning()) return;
+
+    router.push(`/flashcard/${flashcardId}/learn`);
+  }
+
+  function handleFlashcardMatching() {
+    if (!canGoToLearning()) return;
+    if (!canMatch) {
+      toast({
+        title: `Bạn cần ít nhất ${MIN_CARDS_TO_MATCH} thẻ để thực hiện flashcard matching`,
+        variant: "destructive",
+      });
       return;
     }
 
-    router.push(`/flashcard/${flashcardId}/learn`);
+    setMatchingOptionOpen(true);
   }
 
   async function handleRegisterFlashcardSet() {
@@ -163,6 +188,7 @@ export function FlashcardDetail() {
 
         <div className="flex gap-2 pt-4 border-t border-muted-foreground justify-center">
           <Button onClick={handleStartLearning}>Bắt đầu học</Button>
+          <Button onClick={handleFlashcardMatching}>Flashcard Matching</Button>
           {!isMyFlashcard && (
             <Button
               disabled={isTogglingLearning}
@@ -238,6 +264,16 @@ export function FlashcardDetail() {
         </AlertDialog>
       </div>
 
+      <MatchingOptionSelector
+        open={matchingOptionOpen}
+        onClick={(selectedOption) =>
+          router.push(
+            `/flashcard/${flashcardId}/match?option=${selectedOption}`
+          )
+        }
+        flashCardsLength={flashCardsLength}
+        onOpenChange={setMatchingOptionOpen}
+      />
       <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       <FlashcardSetRegisterPrompt
         isForbidden={isForbidden}

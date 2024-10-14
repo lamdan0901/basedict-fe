@@ -12,28 +12,32 @@ import { CheckCheck, GraduationCap, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { HTMLAttributes } from "react";
 
 export function FlashcardItem({
   card,
   hiddenDate,
   asHeading,
   flashCardNumber = 0,
+  className,
 }: {
   card: TFlashcardSet;
   hiddenDate?: boolean;
   asHeading?: boolean;
   flashCardNumber?: number;
+  className?: HTMLAttributes<HTMLDivElement>["className"];
 }) {
   const router = useRouter();
 
   return (
     <TooltipProvider delayDuration={200} skipDelayDuration={0}>
       <Card
-        className={
+        className={cn(
           asHeading
             ? "border-2"
-            : "cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300 "
-        }
+            : "cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300 ",
+          className
+        )}
         onClick={() => {
           !asHeading && router.push(`/flashcard/${card.id}`);
         }}
