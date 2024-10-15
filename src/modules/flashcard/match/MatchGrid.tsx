@@ -44,6 +44,7 @@ export function MatchGrid({
         },
       ])
       .sort(() => Math.random() - 0.5);
+
     setMatchCards(shuffledCards);
   }, [flashCards]);
 
@@ -60,7 +61,9 @@ export function MatchGrid({
               ? { ...c, isMatched: true, isHidden: true }
               : c
           );
-          if (hiddenCards.every((card) => card.isMatched)) {
+
+          const allCardsMatched = hiddenCards.every((card) => card.isMatched);
+          if (allCardsMatched) {
             setTimeout(() => setAllMatched(true));
           }
           return hiddenCards;
