@@ -90,9 +90,9 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
     const abortControllerRef = useRef<AbortController | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const initTextSet = useRef(false);
+    const cancelSuggestionRef = useRef(false);
 
     const [loginPromptOpen, setLoginPromptOpen] = useState(false);
-    const [readyToSearch, setReadyToSearch] = useState(false);
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
 
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
@@ -137,6 +137,10 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
       : "";
 
     const debouncedSearch = useDebounceFn((value: string) => {
+      if (cancelSuggestionRef.current) {
+        cancelSuggestionRef.current = false;
+        return;
+      }
       setSearchParam({ search: value });
       setLexemeSearchParam(value);
     });
@@ -147,6 +151,7 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
         return;
       }
 
+      if (cancelSuggestionRef.current) cancelSuggestionRef.current = false;
       setText(value);
       debouncedSearch(value);
 
@@ -224,6 +229,7 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
       if (selectedVocab) setSelectedVocab(null);
 
       // when user press Enter, we need to cancel the request to get suggestion list
+      cancelSuggestionRef.current = true;
       abortControllerRef.current?.abort();
       setLexemeSearchParam("");
       setVocabMeaningErrMsg("");
@@ -237,15 +243,6 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
       setText(lexeme.standard);
       setWord(lexeme.lexeme);
     }
-
-    // After user select a lexeme from the list, user can click on that word again to search for similar ones
-    useEffect(() => {
-      if (readyToSearch) {
-        setSearchParam({ search: text, word: null });
-        setLexemeSearchParam(text);
-        setReadyToSearch(false);
-      }
-    }, [setSearchParam, text, readyToSearch]);
 
     // Initially fill input text with search param
     useEffect(() => {
@@ -362,9 +359,6 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
               if (isParagraphMode) return;
               if (initialText) {
                 onClearInitialText();
-              }
-              if (text && !readyToSearch) {
-                setReadyToSearch(true);
               }
             }}
             value={text || initialText}
