@@ -46,7 +46,7 @@ export default function RootLayout({
           id="Adsense-id"
           data-ad-client="ca-pub-9085997021434962"
           async
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
         />
       </body>
