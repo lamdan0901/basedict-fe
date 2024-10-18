@@ -17,7 +17,6 @@ interface AdSenseProps {
 type TAdSlot = keyof typeof adSlots;
 
 export function AdSense({ slot = "square" }: AdSenseProps) {
-  return null;
   return (
     <ReactAdsense
       client="ca-pub-9085997021434962"
