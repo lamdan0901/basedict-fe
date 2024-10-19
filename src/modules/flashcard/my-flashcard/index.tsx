@@ -1,3 +1,4 @@
+import { AdSense } from "@/components/Ad/Ad";
 import { CardIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -129,6 +130,8 @@ export function MyFlashcard() {
           </div>
         </div>
       </div>
+
+      <AdSense slot="horizontal" />
     </TooltipProvider>
   );
 }

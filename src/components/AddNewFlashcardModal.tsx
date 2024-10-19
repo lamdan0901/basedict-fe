@@ -152,7 +152,9 @@ export function AddNewFlashcardModal({
               type="button"
               onClick={handleSubmit}
               disabled={
-                isAddingToFlashcardSet || (hasFlashcardSet && !selectedSet)
+                isLoading ||
+                isAddingToFlashcardSet ||
+                (hasFlashcardSet && !selectedSet)
               }
             >
               {!hasFlashcardSet

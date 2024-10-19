@@ -1,5 +1,6 @@
 "use client";
 
+import { AdSense } from "@/components/Ad/Ad";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DEFAULT_AVATAR_URL } from "@/constants";
@@ -136,6 +137,8 @@ export function QuizGeneralInfo() {
           </div>
         </div>
       </CardContent>
+
+      <AdSense slot="horizontal" />
     </Card>
   );
 }

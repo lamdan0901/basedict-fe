@@ -11,7 +11,7 @@ export default function Layout({ children }: PropsWithChildren) {
         <div className="lg:w-[250px] lg:gap-y-6 lg:h-fit flex flex-col shrink-0">
           <FlashcardNavbar />
           <div className="w-full mb-2 lg:mb-0 shrink-0 lg:order-2 order-1 lg:flex-1">
-            <AdSense />
+            <AdSense slot="vertical" />
           </div>
         </div>
         <div className="flex-1">{children}</div>

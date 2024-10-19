@@ -1,3 +1,4 @@
+import { AdSense } from "@/components/Ad/Ad";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
@@ -27,6 +28,8 @@ export function JlptTestModule({ title = "", data, isDailyTest }: Props) {
         <JlptTestQuestions isDailyTest={isDailyTest} data={data} />
         <ScrollToTopButton id="#top-of-jlpt-test" />
       </CardContent>
+
+      <AdSense slot="horizontal" />
     </Card>
   );
 }

@@ -242,9 +242,7 @@ export function FlashcardDetail() {
           </div>
         </div>
 
-        <div className="min-w-[250px] md:block hidden">
-          <AdSense />
-        </div>
+        <AdSense slot="horizontal" />
 
         <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
           <AlertDialogContent aria-describedby="end-test">

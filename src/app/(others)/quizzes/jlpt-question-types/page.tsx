@@ -1,3 +1,4 @@
+import { AdSense } from "@/components/Ad/Ad";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResolvingMetadata } from "next";
 
@@ -195,6 +196,8 @@ export default function JlptQuestionTypesPage() {
           7/9/2024
         </div>
       </CardContent>
+
+      <AdSense slot="horizontal" />
     </Card>
   );
 }

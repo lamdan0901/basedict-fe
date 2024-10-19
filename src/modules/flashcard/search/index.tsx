@@ -19,6 +19,7 @@ import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { formatSearchParams } from "@/modules/flashcard/search/utils";
+import { AdSense } from "@/components/Ad/Ad";
 
 const TOP_EL_ID = "top-of-flashcard-search";
 
@@ -106,6 +107,8 @@ export function FlashcardSearch() {
       />
 
       <ScrollToTopButton id={`#${TOP_EL_ID}`} />
+
+      <AdSense slot="horizontal" />
     </div>
   );
 }

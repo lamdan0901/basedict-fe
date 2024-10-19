@@ -1,3 +1,4 @@
+import { AdSense } from "@/components/Ad/Ad";
 import { Card, CardContent } from "@/components/ui/card";
 import { LevelSelector } from "@/modules/quizzes/basedict-test/LevelSelector";
 
@@ -31,6 +32,8 @@ export function QuizBasedictTest() {
           </p>
         </div>
       </CardContent>
+
+      <AdSense slot="horizontal" />
     </Card>
   );
 }

@@ -8,20 +8,19 @@ const adSlots = {
   square: "5107312515",
 } as const;
 
+type TAdSlot = keyof typeof adSlots;
+
 interface AdSenseProps {
   slot?: TAdSlot;
-  adFormat?: string;
   style?: React.CSSProperties;
 }
 
-type TAdSlot = keyof typeof adSlots;
-
-export function AdSense({ slot = "square" }: AdSenseProps) {
+export function AdSense({ slot = "square", style }: AdSenseProps) {
   return (
     <ReactAdsense
       client="ca-pub-9085997021434962"
       slot={adSlots[slot]}
-      style={{ display: "block" }}
+      style={{ display: "block", ...style }}
       layout="in-article"
       format="fluid"
     />

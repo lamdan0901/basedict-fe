@@ -135,7 +135,7 @@ export function Home({ _lexemeSearch }: Props) {
 
       <HistoryNFavorite />
       <TopFlashcardSets />
-      <AdSense />
+      <AdSense slot="horizontal" />
       <TodaysTopic />
     </>
   );
