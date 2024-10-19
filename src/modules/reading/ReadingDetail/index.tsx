@@ -13,6 +13,7 @@ import { Check, SquareMenu } from "lucide-react";
 import { MouseEvent, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
+import Markdown from "react-markdown";
 
 export function ReadingDetail() {
   const { sheetOpen, setSheetOpen, selectedReadingItemId } = useReadingStore();
@@ -102,12 +103,7 @@ export function ReadingDetail() {
               </div>
 
               <div className="relative mb-6 ">
-                <p
-                  className="whitespace-pre-line"
-                  dangerouslySetInnerHTML={{
-                    __html: readingItem?.japanese ?? "",
-                  }}
-                ></p>
+                <Markdown>{readingItem?.japanese}</Markdown>
                 <Button
                   onClick={() => setShowVietnamese(!showVietnamese)}
                   variant={"link"}
@@ -116,12 +112,7 @@ export function ReadingDetail() {
                   {showVietnamese ? "Ẩn bản dịch" : "  Xem bản dịch"}
                 </Button>
                 {showVietnamese && (
-                  <p
-                    className="mb-2 whitespace-pre-line"
-                    dangerouslySetInnerHTML={{
-                      __html: readingItem?.vietnamese ?? "",
-                    }}
-                  ></p>
+                  <Markdown>{readingItem?.vietnamese}</Markdown>
                 )}
               </div>
 

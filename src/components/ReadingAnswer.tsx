@@ -1,10 +1,10 @@
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib";
 import {
@@ -16,11 +16,7 @@ import { CircleHelp } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { getRequest } from "../service/data";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import Markdown from "react-markdown";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -68,12 +64,7 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
 
     return (
       <div className="space-y-3 mb-4">
-        <div
-          className="whitespace-pre-line"
-          dangerouslySetInnerHTML={{
-            __html: questionText,
-          }}
-        ></div>
+        <Markdown>{questionText}</Markdown>
         <RadioGroup
           key={radioGroupKey}
           value={_value}
@@ -116,13 +107,9 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                     }
                   }}
                 />
-                <Label
-                  dangerouslySetInnerHTML={{
-                    __html: answer,
-                  }}
-                  className=" cursor-pointer"
-                  htmlFor={answer + index}
-                ></Label>
+                <Label className="cursor-pointer" htmlFor={answer + index}>
+                  <Markdown>{answer}</Markdown>
+                </Label>
                 {shouldShowTooltip && (
                   <Popover>
                     <PopoverTrigger
@@ -137,17 +124,14 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                     <PopoverContent
                       className={cn(
                         "p-1",
-                        !isMutating && "w-80 sm:w-[480px] lg:w-[768px]"
+                        !isMutating && "w-80 text-sm sm:w-[480px] lg:w-[768px]"
                       )}
                     >
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: isMutating
-                            ? "Đang tải giải thích..."
-                            : question.explanation || explanation,
-                        }}
-                        className="whitespace-pre-line text-sm"
-                      ></p>
+                      <Markdown>
+                        {isMutating
+                          ? "Đang tải giải thích..."
+                          : question.explanation || explanation}
+                      </Markdown>
                     </PopoverContent>
                   </Popover>
                 )}
