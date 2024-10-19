@@ -2,13 +2,27 @@ import { CardIcon } from "@/components/icons";
 import { BadgeList } from "@/components/BadgeList";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib";
-import { ChevronLeft, ChevronRight, CircleCheckBig, Heart } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheckBig,
+  Heart,
+  X,
+} from "lucide-react";
 import { memo, MouseEvent, useState } from "react";
 
 type Props = {
   lexeme: TLexeme;
+  hasLearned: boolean;
   isFavorite: boolean;
+  onToggleLearnedVocab: (lexeme: TLexeme, hasLearned: boolean) => void;
   onSimilarWordClick: (lexeme: string, e: MouseEvent<HTMLDivElement>) => void;
   onAddFlashcard({
     lexeme,
@@ -23,7 +37,9 @@ type Props = {
 export const VocabItem = memo<Props>(
   ({
     lexeme,
+    hasLearned,
     isFavorite,
+    onToggleLearnedVocab,
     onToggleFavorite,
     onSimilarWordClick,
     onAddFlashcard,
@@ -69,6 +85,32 @@ export const VocabItem = memo<Props>(
                       )}
                     </span>
                     <div className="flex items-start gap-1">
+                      <Tooltip delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size={"sm"}
+                            variant={"ghost"}
+                            onClick={() =>
+                              onToggleLearnedVocab(lexeme, !hasLearned)
+                            }
+                            className="rounded-full  -mt-1 p-2"
+                          >
+                            {hasLearned ? (
+                              <X className="size-5" />
+                            ) : (
+                              <Check className="size-5" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {hasLearned
+                              ? "Đánh dấu là chưa học"
+                              : "Đánh dấu là đã học"}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+
                       {currentMeaning && (
                         <>
                           <Button
@@ -98,6 +140,7 @@ export const VocabItem = memo<Props>(
                           </Button>
                         </>
                       )}
+
                       {meaningSize > 1 && (
                         <>
                           <Button
@@ -162,7 +205,9 @@ export const VocabItem = memo<Props>(
   },
   (prev, next) => {
     return (
-      prev.lexeme.id === next.lexeme.id && prev.isFavorite === next.isFavorite
+      prev.lexeme.id === next.lexeme.id &&
+      prev.isFavorite === next.isFavorite &&
+      prev.hasLearned === next.hasLearned
     );
   }
 );

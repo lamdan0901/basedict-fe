@@ -1,5 +1,6 @@
 "use client";
 
+import { AdSense } from "@/components/Ad/Ad";
 import { CardIcon } from "@/components/icons";
 import {
   Tooltip,
@@ -65,6 +66,8 @@ export function UserFlashcard({
           ))}
         </div>
       </div>
+
+      <AdSense slot="horizontal" />
     </TooltipProvider>
   );
 }

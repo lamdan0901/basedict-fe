@@ -61,7 +61,7 @@ function InnerReadingList() {
         </TabsContent>
       </Tabs>
       <div className="hidden mt-4 w-full lg:block">
-        <AdSense />
+        <AdSense slot="vertical" />
       </div>
     </div>
   );

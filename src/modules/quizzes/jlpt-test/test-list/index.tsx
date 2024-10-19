@@ -1,5 +1,6 @@
 "use client";
 
+import { AdSense } from "@/components/Ad/Ad";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
@@ -64,6 +65,8 @@ export function JLPTTests() {
               ))}
         </div>
       </CardContent>
+
+      <AdSense slot="horizontal" />
     </Card>
   );
 }

@@ -4,7 +4,7 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounceFn } from "@/hooks/useDebounce";
-import { useQueryParams } from "@/hooks/useQueryParam";
+import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
 import { cn, stringifyParams } from "@/lib";
 import { VocabItem } from "@/modules/vocabulary/VocabItem";
 import { AppPagination } from "@/components/AppPagination";
@@ -19,6 +19,19 @@ import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { HistoryItemType } from "@/constants";
 import { v4 as uuid } from "uuid";
+import { useLearnedVocabStore } from "@/store/useVocabStore";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  LearningState,
+  learningStateOptions,
+} from "@/modules/vocabulary/const";
 
 const TOP_EL_ID = "top-of-vocabulary";
 
@@ -26,10 +39,7 @@ export function Vocabulary() {
   const jlptLevel = useParams().level?.[0] ?? "N3";
   const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
     useFavoriteStore();
-  const [selectedLexeme, setSelectedLexeme] = useState<{
-    lexeme: TLexeme;
-    currentMeaning: TMeaning;
-  } | null>(null);
+  const { learnedVocabMap, toggleLearnedVocab } = useLearnedVocabStore();
 
   const meaningPopupRef = useRef<HTMLDivElement>(null);
   const [selection, setSelection] = useState("");
@@ -39,6 +49,10 @@ export function Vocabulary() {
     left: 0,
   });
 
+  const [learningState, setLearningState] = useQueryParam(
+    "learningState",
+    LearningState.All
+  );
   const [searchParams, setSearchParams] = useQueryParams({
     search: "",
     jlptLevel: jlptLevel,
@@ -46,12 +60,23 @@ export function Vocabulary() {
     offset: 1,
   });
   const [searchText, setSearchText] = useState(searchParams.search);
+  const [selectedLexeme, setSelectedLexeme] = useState<{
+    lexeme: TLexeme;
+    currentMeaning: TMeaning;
+  } | null>(null);
 
   const { data, isLoading } = useSWR<{ data: TLexeme[]; total: number }>(
     `/v1/lexemes/?${stringifyParams(searchParams)}`,
     getRequest
   );
-  const lexemes = data?.data ?? [];
+  const lexemes =
+    learningState === LearningState.All
+      ? data?.data
+      : data?.data?.filter(({ id }) =>
+          learningState === LearningState.Learned
+            ? learnedVocabMap[id]
+            : !learnedVocabMap[id]
+        ) ?? [];
   const total = data?.total ?? 0;
 
   const debouncedSearch = useDebounceFn((value: string) => {
@@ -118,26 +143,51 @@ export function Vocabulary() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div>Đang tải...</div>
-      ) : lexemes?.length === 0 ? (
-        <div>Không tìm thấy từ vựng nào</div>
-      ) : (
-        <div className="space-y-6">
-          {lexemes?.map((lexeme) => (
-            <VocabItem
-              key={lexeme.id}
-              onAddFlashcard={setSelectedLexeme}
-              lexeme={lexeme}
-              isFavorite={isFavoriteItem(lexeme?.id)}
-              onToggleFavorite={(isFavorite) => {
-                toggleFavorite(lexeme, isFavorite);
-              }}
-              onSimilarWordClick={handleSimilarWordClick}
-            />
-          ))}
-        </div>
-      )}
+      <div className="flex items-center justify-end space-x-2">
+        <p className="text-sm font-medium">Lọc theo</p>
+        <Select
+          value={learningState}
+          onValueChange={(value: LearningState) => {
+            setLearningState(value);
+          }}
+        >
+          <SelectTrigger className="h-8 w-fit">
+            <SelectValue placeholder={""} />
+          </SelectTrigger>
+          <SelectContent side="top">
+            {learningStateOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <TooltipProvider>
+        {isLoading ? (
+          <div>Đang tải...</div>
+        ) : lexemes?.length === 0 ? (
+          <div>Không tìm thấy từ vựng nào</div>
+        ) : (
+          <div className="space-y-6">
+            {lexemes?.map((lexeme) => (
+              <VocabItem
+                key={lexeme.id}
+                hasLearned={learnedVocabMap[lexeme.id]}
+                onToggleLearnedVocab={toggleLearnedVocab}
+                onAddFlashcard={setSelectedLexeme}
+                lexeme={lexeme}
+                isFavorite={isFavoriteItem(lexeme?.id)}
+                onToggleFavorite={(isFavorite) => {
+                  toggleFavorite(lexeme, isFavorite);
+                }}
+                onSimilarWordClick={handleSimilarWordClick}
+              />
+            ))}
+          </div>
+        )}
+      </TooltipProvider>
 
       <AppPagination
         total={total}
