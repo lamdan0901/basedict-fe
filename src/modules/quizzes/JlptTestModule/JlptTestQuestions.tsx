@@ -26,6 +26,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { useAnswerStore } from "@/store/useAnswerStore";
+import { Markdown } from "@/components/Markdown";
 
 export function JlptTestQuestions({
   data,
@@ -153,7 +154,7 @@ export function JlptTestQuestions({
               key={index}
               selectionDisabled={selectionDisabled}
               shouldShowAns={shouldShowAns && !isDailyTest}
-              questionText={`${index + 1}. ${question.question}`}
+              questionText={`${index + 1}\\. ${question.question}`}
               radioGroupKey={`${index}-${resetKey}`}
               question={question}
               index={`|${index}`} // answers can be duplicated, so we need to add index to make it unique
@@ -170,12 +171,7 @@ export function JlptTestQuestions({
           return (
             <div key={i}>
               <div className="bg-gray-200 whitespace-pre-line p-2 rounded-sm mb-1">
-                <p
-                  className="whitespace-pre-line"
-                  dangerouslySetInnerHTML={{
-                    __html: reading?.japanese ?? "",
-                  }}
-                ></p>
+                <Markdown markdown={reading?.japanese} />
               </div>
               {reading.questions?.map((question, j) => {
                 const readingQuesIndex =
@@ -185,7 +181,7 @@ export function JlptTestQuestions({
                     key={readingQuesIndex + j}
                     selectionDisabled={selectionDisabled}
                     shouldShowAns={shouldShowAns && !isDailyTest}
-                    questionText={`${readingQuesIndex + 1}. ${
+                    questionText={`${readingQuesIndex + 1}\\. ${
                       question.question
                     }`}
                     radioGroupKey={`${readingQuesIndex}-${resetKey}`}

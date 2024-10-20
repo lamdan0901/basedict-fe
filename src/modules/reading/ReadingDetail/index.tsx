@@ -1,4 +1,5 @@
 import { AdSense } from "@/components/Ad/Ad";
+import { Markdown } from "@/components/Markdown";
 import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,16 @@ import { Check, SquareMenu } from "lucide-react";
 import { MouseEvent, useRef, useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
-import Markdown from "react-markdown";
+
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+
+export function markdownToHtml(markdown?: string) {
+  if (!markdown) return "";
+
+  const html = marked.parse(markdown, { async: false });
+  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+}
 
 export function ReadingDetail() {
   const { sheetOpen, setSheetOpen, selectedReadingItemId } = useReadingStore();
@@ -103,7 +113,8 @@ export function ReadingDetail() {
               </div>
 
               <div className="relative mb-6 ">
-                <Markdown>{readingItem?.japanese}</Markdown>
+                <Markdown markdown={readingItem?.japanese} />
+
                 <Button
                   onClick={() => setShowVietnamese(!showVietnamese)}
                   variant={"link"}
@@ -112,7 +123,7 @@ export function ReadingDetail() {
                   {showVietnamese ? "Ẩn bản dịch" : "  Xem bản dịch"}
                 </Button>
                 {showVietnamese && (
-                  <Markdown>{readingItem?.vietnamese}</Markdown>
+                  <Markdown markdown={readingItem?.vietnamese} />
                 )}
               </div>
 
