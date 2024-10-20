@@ -16,7 +16,7 @@ import { CircleHelp } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { getRequest } from "../service/data";
-import Markdown from "react-markdown";
+import { Markdown } from "@/components/Markdown";
 
 interface ReadingAnswerProps {
   question: TReadingQuestion;
@@ -64,7 +64,7 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
 
     return (
       <div className="space-y-3 mb-4">
-        <Markdown>{questionText}</Markdown>
+        <Markdown markdown={questionText} />
         <RadioGroup
           key={radioGroupKey}
           value={_value}
@@ -108,7 +108,7 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                   }}
                 />
                 <Label className="cursor-pointer" htmlFor={answer + index}>
-                  <Markdown>{answer}</Markdown>
+                  <Markdown markdown={answer} />
                 </Label>
                 {shouldShowTooltip && (
                   <Popover>
@@ -127,11 +127,13 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                         !isMutating && "w-80 text-sm sm:w-[480px] lg:w-[768px]"
                       )}
                     >
-                      <Markdown>
-                        {isMutating
-                          ? "Đang tải giải thích..."
-                          : question.explanation || explanation}
-                      </Markdown>
+                      <Markdown
+                        markdown={
+                          isMutating
+                            ? "Đang tải giải thích..."
+                            : question.explanation || explanation
+                        }
+                      />
                     </PopoverContent>
                   </Popover>
                 )}

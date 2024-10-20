@@ -29,7 +29,7 @@ export function ReadingQuestions({
           index={""}
           selectionDisabled={shouldShowAns}
           shouldShowAns={shouldShowAns}
-          questionText={`${index + 1}. ${question.question}`}
+          questionText={`${index + 1}\\. ${question.question}`}
           radioGroupKey={`${index}-${resetKey}`}
           question={question}
           value={userAnswers[index]}
