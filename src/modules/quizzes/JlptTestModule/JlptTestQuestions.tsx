@@ -181,7 +181,7 @@ export function JlptTestQuestions({
                     key={readingQuesIndex + j}
                     selectionDisabled={selectionDisabled}
                     shouldShowAns={shouldShowAns && !isDailyTest}
-                    questionText={`${readingQuesIndex + 1}. ${
+                    questionText={`${readingQuesIndex + 1}\\. ${
                       question.question
                     }`}
                     radioGroupKey={`${readingQuesIndex}-${resetKey}`}
