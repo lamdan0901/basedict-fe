@@ -22,7 +22,7 @@ export function AdSense({ slot = "square", style }: AdSenseProps) {
       slot={adSlots[slot]}
       style={{ display: "block", ...style }}
       layout="in-article"
-      format="fluid"
+      format="auto"
     />
   );
 }
