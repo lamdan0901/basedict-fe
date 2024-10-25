@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";

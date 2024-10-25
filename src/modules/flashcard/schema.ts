@@ -35,7 +35,7 @@ export const flashCardSetSchema = z.object({
     .string()
     .max(1000, "Mô tả không được quá 1000 ký tự")
     .optional(),
-  tags: z.array(flashCardTagSchema).min(1, "Cần có ít nhất 1 tag"),
+  tags: z.array(flashCardTagSchema),
   flashCards: z.array(flashCardItemSchema),
 });
 

@@ -15,7 +15,7 @@ import { v4 as uuid } from "uuid";
 import { HistoryNFavorite } from "@/components/HistoryNFavorite";
 import { TodaysTopic } from "@/modules/home/TodaysTopic";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
 import { TopFlashcardSets } from "@/modules/home/TopFlashcards";
 

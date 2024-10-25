@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { ShuffleIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {

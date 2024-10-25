@@ -22,7 +22,7 @@ export const defaultFlashcardItem = (uid: string) => ({
 export const defaultFlashcardSet = {
   title: "",
   description: "",
-  flashCards: [defaultFlashcardItem(uuid())],
+  flashCards: [],
 };
 
 export enum DefaultFace {

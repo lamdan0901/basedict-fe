@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { Card, CardContent } from "@/components/ui/card";
 import { LevelSelector } from "@/modules/quizzes/basedict-test/LevelSelector";
 

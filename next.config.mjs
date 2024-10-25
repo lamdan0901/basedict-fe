@@ -19,7 +19,7 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: `
                 default-src 'self';
-                script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.googletagservices.com;
+                script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ep2.adtrafficquality.google https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.googletagservices.com;
                 style-src 'self' 'unsafe-inline';
                 img-src 'self' data: https://pagead2.googlesyndication.com;
                 frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com;

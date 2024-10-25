@@ -1,6 +1,6 @@
 import { FlashcardNavbar } from "@/app/(others)/flashcard/_components/FlashcardNavbar";
 import { FlashcardPageTitle } from "@/app/(others)/flashcard/_components/FlashcardPageTitle";
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {

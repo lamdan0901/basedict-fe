@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { ReadingDetailBody } from "@/modules/reading/ReadingDetail/ReadingDetailBody";
 import { ReadingDetailHeader } from "@/modules/reading/ReadingDetail/ReadingDetailHeader";
 

@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { shuffleArray } from "@/lib";
 import { RegisterRequiredWrapper } from "@/modules/flashcard/components/RegisterRequiredWrapper";
 import { MatchGrid } from "@/modules/flashcard/match/MatchGrid";

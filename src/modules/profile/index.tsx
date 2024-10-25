@@ -24,7 +24,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAppStore } from "@/store/useAppStore";
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 
 type TUserForm = {
   name: string;

@@ -12,14 +12,18 @@ import { Button } from "@/components/ui/button";
 import { getRequest, postRequest } from "@/service/data";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import useSWR from "swr";
-import { useRouter } from "next/navigation";
 import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FLASHCARD_LIMIT_MSG } from "@/modules/flashcard/const";
+import {
+  FLASHCARD_LIMIT_MSG,
+  FLASHCARD_SETS_LIMIT,
+} from "@/modules/flashcard/const";
 import { useToast } from "@/components/ui/use-toast";
 import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 import { useAppStore } from "@/store/useAppStore";
+import Link from "next/link";
+import { stringifyParams } from "@/lib";
 
 type Props = {
   open: boolean;
@@ -35,7 +39,6 @@ export function AddNewFlashcardModal({
   onOpenChange,
 }: Props) {
   const { toast } = useToast();
-  const router = useRouter();
   const profile = useAppStore((state) => state.profile);
   const [selectedSet, setSelectedSet] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -54,23 +57,23 @@ export function AddNewFlashcardModal({
   const myFlashCards = myFlashcardSet?.myFlashCards ?? [];
   const hasFlashcardSet = myFlashCards.length > 0;
 
+  function formatLexemeToFlashcard() {
+    const hanviet = lexeme?.hanviet ? `(${lexeme?.hanviet})` : "";
+    const hiragana2 = lexeme?.hiragana2 ? `/ ${lexeme?.hiragana2}` : "";
+
+    return {
+      frontSide: lexeme?.standard,
+      frontSideComment: `${lexeme?.lexeme} ${hanviet}\n${lexeme?.hiragana} ${hiragana2}`,
+      backSide: currentMeaning?.meaning,
+      backSideComment: currentMeaning?.explaination,
+    };
+  }
+
   async function handleSubmit() {
-    if (!hasFlashcardSet) {
-      router.push("/flashcard/create");
-      return;
-    }
     if (!selectedSet) return;
 
     try {
-      const hanviet = lexeme?.hanviet ? `(${lexeme?.hanviet})` : "";
-      const hiragana2 = lexeme?.hiragana2 ? `/ ${lexeme?.hiragana2}` : "";
-
-      await addToFlashcardSet({
-        frontSide: lexeme?.standard,
-        frontSideComment: `${lexeme?.lexeme} ${hanviet}\n${lexeme?.hiragana} ${hiragana2}`,
-        backSide: currentMeaning?.meaning,
-        backSideComment: currentMeaning?.explaination,
-      });
+      await addToFlashcardSet(formatLexemeToFlashcard());
 
       toast({
         title: "Thêm flashcard thành công",
@@ -94,7 +97,7 @@ export function AddNewFlashcardModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent aria-describedby="" className="sm:min-w-[425px]">
+        <DialogContent aria-describedby="" className="sm:min-w-[575px]">
           <DialogHeader>
             <DialogTitle>Thêm vào bộ flashcard của bạn</DialogTitle>
             <DialogDescription>
@@ -135,7 +138,7 @@ export function AddNewFlashcardModal({
                     />
                     <Label className={"cursor-pointer"} htmlFor={value}>
                       <Badge
-                        className="h-10 text-base truncate max-w-[462px] block pt-1.5 font-normal w-full text-center"
+                        className="h-10 text-base truncate max-w-[562px] block pt-1.5 font-normal w-full text-center"
                         variant={isSelected ? "default" : "outline"}
                       >
                         {card.title}
@@ -148,26 +151,37 @@ export function AddNewFlashcardModal({
           </div>
 
           <DialogFooter className="sm:mt-6 fixed left-1/2 bottom-[20px] -translate-x-1/2 mt-3 sm:justify-center sm:space-x-4">
-            <Button
-              type="button"
-              onClick={handleSubmit}
-              disabled={
-                isLoading ||
-                isAddingToFlashcardSet ||
-                (hasFlashcardSet && !selectedSet)
-              }
-            >
-              {!hasFlashcardSet
-                ? "Tạo một bộ flashcard ngay"
-                : "Thêm ngay vào bộ flashcard"}
-            </Button>
+            {myFlashCards.length <= FLASHCARD_SETS_LIMIT && (
+              <Link
+                href={`/flashcard/create?defaultFlashcard=${JSON.stringify(
+                  formatLexemeToFlashcard()
+                )}`}
+              >
+                <Button type="button" variant={"outline"}>
+                  Tạo bộ flashcard mới
+                </Button>
+              </Link>
+            )}
+            {hasFlashcardSet && (
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={
+                  isLoading ||
+                  isAddingToFlashcardSet ||
+                  (hasFlashcardSet && !selectedSet)
+                }
+              >
+                Thêm ngay vào bộ flashcard
+              </Button>
+            )}
             <Button
               disabled={isAddingToFlashcardSet}
               onClick={() => {
                 onOpenChange(false);
               }}
               type="button"
-              variant={"outline"}
+              variant={"destructive"}
             >
               Hủy
             </Button>

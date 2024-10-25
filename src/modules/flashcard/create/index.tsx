@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,7 +17,7 @@ import { getRequest, patchRequest, postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
@@ -28,12 +28,20 @@ export function FlashcardCreation() {
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
+  const searchParams = useSearchParams();
   const userId = useAppStore((state) => state.profile?.id);
+
+  const defaultFlashcard = JSON.parse(
+    searchParams.get("defaultFlashcard") ?? ""
+  );
 
   const form = useForm<TFlashCardSetForm>({
     mode: "onSubmit",
     resolver: zodResolver(flashCardSetSchema),
-    defaultValues: defaultFlashcardSet,
+    defaultValues: {
+      ...defaultFlashcardSet,
+      flashCards: defaultFlashcard ? [defaultFlashcard] : [],
+    },
   });
   const {
     reset,
@@ -134,6 +142,7 @@ export function FlashcardCreation() {
           placeholder="Mô tả"
         />
       </div>
+
       <FormProvider {...form}>
         <TagsSelect />
         <FlashcardItemRegistration
