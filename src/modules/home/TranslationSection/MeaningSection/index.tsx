@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
-import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
+import { MeaningReportModal } from "@/modules/home/TranslationSection/MeaningSection/MeaningReportModal";
 import { isDifferenceGreaterSpecifiedDay } from "@/modules/home/utils";
 import { postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
