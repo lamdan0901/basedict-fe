@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useDebounceFn } from "@/hooks/useDebounce";
 import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
+import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   onTranslateJPToVN: () => Promise<void> | undefined;
@@ -13,17 +13,9 @@ type Props = {
 
 export function VietnameseSearch({ onTranslateJPToVN }: Props) {
   const [searchParam, setSearchParam] = useQueryParam("searchVietnamese", "");
-  const [searchText, setSearchText] = useState("");
+  const { searchText, setSearchText } = useVnToJpTransStore();
   const initTextSet = useRef(false);
-
-  const debouncedSearch = useDebounceFn((value: string) => {
-    setSearchParam(value);
-  });
-
-  function handleSearchTextChange(text: string) {
-    setSearchText(text);
-    debouncedSearch(text);
-  }
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Initially fill input text with search param
   useEffect(() => {
@@ -31,7 +23,7 @@ export function VietnameseSearch({ onTranslateJPToVN }: Props) {
       setSearchText(searchParam);
     }
     initTextSet.current = true;
-  }, [searchParam, searchText]);
+  }, [searchParam, searchText, setSearchText]);
 
   return (
     <Card className="relative rounded-2xl">
@@ -43,17 +35,21 @@ export function VietnameseSearch({ onTranslateJPToVN }: Props) {
       >
         <Textarea
           autoFocus
+          ref={textareaRef}
+          maxLength={20}
           value={searchText}
           onChange={(e) => {
-            handleSearchTextChange(e.target.value);
+            setSearchText(e.target.value);
           }}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) e.preventDefault();
-            if (e.key === "Enter" && !searchText.trim()) return;
-            onTranslateJPToVN();
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              setSearchParam(e.currentTarget.value);
+              if (searchText.trim()) onTranslateJPToVN();
+            }
           }}
           className={cn(
-            "border-none sm:placeholder:text-2xl placeholder:text-lg resize-none px-0 focus-visible:ring-transparent",
+            "border-none sm:placeholder:text-2xl placeholder:text-lg resize-none p-0 focus-visible:ring-transparent",
             // isParagraphMode
             //   ? "h-full sm:min-h-[248px] text-xl"   :
             "text-[26px] min-h-0 max-h-10 overflow-hidden sm:text-3xl"
@@ -64,7 +60,11 @@ export function VietnameseSearch({ onTranslateJPToVN }: Props) {
         <Button
           variant={"ghost"}
           onClick={() => {
-            handleSearchTextChange("");
+            setSearchText("");
+            setSearchParam("");
+            setTimeout(() => {
+              textareaRef.current?.focus();
+            });
           }}
           className={cn(
             "rounded-full px-2 absolute  right-1 top-4",

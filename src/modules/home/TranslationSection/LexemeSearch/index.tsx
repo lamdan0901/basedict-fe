@@ -18,6 +18,7 @@ import {
   PARAGRAPH_MIN_LENGTH,
   PARAGRAPH_TRANS_COUNT_KEY,
 } from "@/modules/home/const";
+import { LexemeSuggestion } from "@/modules/home/TranslationSection/LexemeSearch/LexemeSuggestion";
 import { setExpireDate } from "@/modules/home/utils";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
@@ -116,8 +117,8 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
       }
     );
 
-    const lexemeSuggestion = lexemeSuggestionRes?.data ?? [];
-    const isDisplayingSuggestions = lexemeSuggestion.length > 0;
+    const lexemeSuggestions = lexemeSuggestionRes?.data ?? [];
+    const isDisplayingSuggestions = lexemeSuggestions.length > 0;
 
     const lexemeToShowHanviet = selectedVocab ?? lexemeSearch;
     const hanviet = lexemeToShowHanviet?.hanviet
@@ -190,8 +191,8 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
 
         setIsTranslatingParagraph(true);
 
-        const useCount = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
-        if (useCount === MAX_PARAGRAPH_TRANS_TIMES) {
+        const transTimes = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
+        if (transTimes === MAX_PARAGRAPH_TRANS_TIMES) {
           setTranslatedParagraph(null);
           return;
         }
@@ -244,15 +245,14 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
       setWord(lexeme.lexeme);
     }
 
-    // Initially fill input text with search param
-    useEffect(() => {
+    const fillInputWithSearchParam = useCallback(() => {
       if ((search || seoSearch) && !text && !initTextSet.current) {
         setText(search || seoSearch);
       }
       initTextSet.current = true;
     }, [search, seoSearch, setText, text]);
 
-    useEffect(() => {
+    const handleInputModeSwitch = useCallback(() => {
       if (isParagraphMode) {
         setSearchParam({ search: "" });
         setLexemeSearchParam("");
@@ -268,6 +268,9 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
       setSelectedVocab,
       setWord,
     ]);
+
+    useEffect(fillInputWithSearchParam, [fillInputWithSearchParam]);
+    useEffect(handleInputModeSwitch, [handleInputModeSwitch]);
 
     const adjustTextareaHeight = useCallback(() => {
       if (!isParagraphMode) return;
@@ -350,7 +353,7 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
               maxLength={MAX_CHARS_LENGTH}
               placeholder="Nhập text để tìm kiếm"
               className={cn(
-                "border-none sm:placeholder:text-2xl placeholder:text-lg resize-none px-0 focus-visible:ring-transparent",
+                "border-none sm:placeholder:text-2xl placeholder:text-lg resize-none p-0 focus-visible:ring-transparent",
                 isParagraphMode
                   ? "h-full sm:min-h-[248px] text-xl"
                   : "text-[26px] min-h-0 max-h-10 overflow-hidden sm:text-3xl",
@@ -388,6 +391,9 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
               variant={"ghost"}
               onClick={() => {
                 handleSearchTextChange("");
+                setTimeout(() => {
+                  textareaRef.current?.focus();
+                });
               }}
               className={cn(
                 "rounded-full px-2 absolute  right-1 top-4",
@@ -418,32 +424,13 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
             >
               {loadingLexemeSuggestion
                 ? "Đang tìm kiếm..."
-                : lexemeSuggestion.map((lexeme) => {
-                    const lexemeStandard =
-                      lexeme.standard === lexeme.lexeme
-                        ? lexeme.standard
-                        : `${lexeme.standard} ${lexeme.lexeme}`;
-                    const hiragana = lexeme.hiragana
-                      ? `(${lexeme.hiragana} ${
-                          lexeme.hiragana2 ? "/ " + lexeme.hiragana2 : ""
-                        })`
-                      : "";
-
-                    return (
-                      <Button
-                        key={lexeme.id}
-                        onClick={() => handleVocabClick(lexeme)}
-                        className="items-center text-lg sm:text-xl py-7 font-normal relative px-1 w-full flex-col"
-                        variant="ghost"
-                      >
-                        <span>
-                          {lexemeStandard} {hiragana}
-                        </span>
-                        <span>{lexeme.hanviet}</span>
-                        <div className="w-full h-px bg-muted-foreground absolute -bottom-2 left-0"></div>
-                      </Button>
-                    );
-                  })}
+                : lexemeSuggestions.map((lexemeSuggestion) => (
+                    <LexemeSuggestion
+                      key={lexemeSuggestion.id}
+                      onClick={() => handleVocabClick(lexemeSuggestion)}
+                      lexemeSuggestion={lexemeSuggestion}
+                    />
+                  ))}
             </div>
 
             {isParagraphMode && (
