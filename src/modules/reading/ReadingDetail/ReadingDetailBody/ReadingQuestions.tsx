@@ -1,4 +1,4 @@
-import { ReadingAnswer } from "@/components/ReadingAnswer";
+import { ReadingQuestion } from "@/components/ReadingQuestion";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -24,7 +24,7 @@ export function ReadingQuestions({
     <div className="">
       <h2 className="text-lg mb-3 font-semibold">Câu hỏi:</h2>
       {readingQuestions?.map((question, index) => (
-        <ReadingAnswer
+        <ReadingQuestion
           key={index}
           index={""}
           selectionDisabled={shouldShowAns}

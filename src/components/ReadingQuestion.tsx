@@ -1,3 +1,4 @@
+import { Markdown } from "@/components/Markdown";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -13,12 +14,11 @@ import {
 } from "@/modules/quizzes/const";
 import { useAnswerStore } from "@/store/useAnswerStore";
 import { CircleHelp } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { memo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { getRequest } from "../service/data";
-import { Markdown } from "@/components/Markdown";
 
-interface ReadingAnswerProps {
+interface ReadingQuestionProps {
   question: TReadingQuestion;
   selectionDisabled: boolean;
   shouldShowAns: boolean;
@@ -30,7 +30,7 @@ interface ReadingAnswerProps {
   index: string;
 }
 
-export const ReadingAnswer = memo<ReadingAnswerProps>(
+export const ReadingQuestion = memo<ReadingQuestionProps>(
   ({
     question,
     selectionDisabled,
@@ -42,11 +42,8 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
     index,
     onValueChange,
   }) => {
+    const setUserAnswers = useAnswerStore((state) => state.setUserAnswers);
     const [explanation, setExplanation] = useState("");
-    const _value = useMemo(
-      () => value ?? useAnswerStore.getState().userAnswers[+index.slice(1)],
-      [index, value]
-    );
 
     const { trigger, isMutating } = useSWRMutation(
       `/v1/question-masters/${question.id}/explanation`,
@@ -62,17 +59,24 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
       }
     }
 
+    const handleAnswerChange = (answer: string) => {
+      if (selectionDisabled) return;
+      const questionIndex = +index.slice(1);
+      setUserAnswers(questionIndex, answer);
+    };
+
     return (
       <div className="space-y-3 mb-4">
         <Markdown markdown={questionText} />
         <RadioGroup
           key={radioGroupKey}
-          value={_value}
-          onValueChange={onValueChange}
+          value={value}
+          onValueChange={onValueChange ?? handleAnswerChange}
           className="space-y-3 ml-4"
         >
           {question.answers.map((answer) => {
-            const isUserSelectedAns = _value === answer + index;
+            const answerValue = answer + index;
+            const isUserSelectedAns = value === answerValue;
             const isCorrectAnswer = answer === question.correctAnswer;
             const shouldShowTooltip =
               shouldShowAns &&
@@ -82,7 +86,7 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
 
             return (
               <div
-                key={answer + index}
+                key={answerValue}
                 className={cn(
                   "flex items-center space-x-2",
                   shouldShowAns && isCorrectAnswer && "text-green-500",
@@ -94,9 +98,9 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
               >
                 <RadioGroupItem
                   className="text-inherit"
-                  value={answer + index}
+                  value={answerValue}
                   disabled={selectionDisabled && testState !== TestState.Ready}
-                  id={answer + index}
+                  id={answerValue}
                   onClick={(e) => {
                     if (selectionDisabled && testState === TestState.Ready) {
                       e.preventDefault();
@@ -107,7 +111,7 @@ export const ReadingAnswer = memo<ReadingAnswerProps>(
                     }
                   }}
                 />
-                <Label className="cursor-pointer" htmlFor={answer + index}>
+                <Label className="cursor-pointer" htmlFor={answerValue}>
                   <Markdown markdown={answer} />
                 </Label>
                 {shouldShowTooltip && (
