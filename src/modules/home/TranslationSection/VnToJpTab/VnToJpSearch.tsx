@@ -62,7 +62,7 @@ export function VnToJpSearch({
   }, [searchParam, searchText, setSearchText]);
 
   return (
-    <div>
+    <div className="relative">
       <ParagraphControls
         show={isParagraphMode}
         showEditButton={isTranslatingParagraph}
@@ -78,7 +78,7 @@ export function VnToJpSearch({
         <CardContent
           className={cn(
             "!p-4 h-fit !pr-8",
-            isParagraphMode ? "min-h-0 sm:min-h-[296px]" : "sm:min-h-[328px]",
+            isParagraphMode ? "min-h-0 sm:min-h-[328px]" : "sm:min-h-[328px]",
             !searchText && "min-h-[225px]"
           )}
         >
@@ -96,7 +96,7 @@ export function VnToJpSearch({
             className={cn(
               "border-none sm:placeholder:text-2xl placeholder:text-lg resize-none p-0 focus-visible:ring-transparent",
               isParagraphMode
-                ? "h-full sm:min-h-[248px] text-xl"
+                ? "h-full sm:min-h-[280px] text-xl"
                 : "text-[26px] min-h-0 max-h-10 overflow-hidden sm:text-3xl",
               isTranslatingParagraph ? "hidden" : "block"
             )}

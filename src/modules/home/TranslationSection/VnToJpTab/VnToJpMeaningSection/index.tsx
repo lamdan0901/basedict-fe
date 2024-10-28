@@ -125,9 +125,7 @@ export const VnToJpMeaningSection = memo(
           </Button>
         </div>
 
-        <Card
-          className={cn("w-full rounded-2xl min-h-[328px] h-fit relative ")}
-        >
+        <Card className={cn("w-full rounded-2xl min-h-[328px] h-fit relative")}>
           <CardContent className="!p-4 space-y-1">
             {isMutating ? (
               <span>Đang dịch...</span>

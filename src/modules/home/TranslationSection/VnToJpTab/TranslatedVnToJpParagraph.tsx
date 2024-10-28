@@ -26,6 +26,8 @@ import { HistoryItemType } from "@/constants";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { setExpireDate } from "@/modules/home/utils";
 import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
+import { useAppStore } from "@/store/useAppStore";
+import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 
 export type VnToJpParagraphSectionRef = {
   translateParagraphVnToJp(): Promise<void>;
@@ -33,10 +35,13 @@ export type VnToJpParagraphSectionRef = {
 
 export const TranslatedVnToJpParagraph = memo(
   forwardRef<VnToJpParagraphSectionRef>((_, ref) => {
+    const profile = useAppStore((state) => state.profile);
     const { setIsTranslatingParagraph } = useVnToJpTransStore((state) => ({
       setIsTranslatingParagraph: state.setIsTranslatingParagraph,
     }));
     const addHistoryItem = useHistoryStore((state) => state.addHistoryItem);
+
+    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const [
       { usedCount, translated: translatedParagraph },
       setTranslatedParagraph,
@@ -52,6 +57,11 @@ export const TranslatedVnToJpParagraph = memo(
     } = useSWRMutation("/v1/paragraphs/translate", postRequest);
 
     const translateParagraphVnToJp = useCallback(async () => {
+      if (!profile) {
+        setLoginPromptOpen(true);
+        return;
+      }
+
       const transTimes = Number(
         getCookie(PARAGRAPH_VN_TO_JP_TRANS_COUNT_KEY) ?? 0
       );
@@ -78,7 +88,12 @@ export const TranslatedVnToJpParagraph = memo(
         uid: uuid(),
         type: HistoryItemType.Paragraph,
       });
-    }, [addHistoryItem, translateParagraph, setIsTranslatingParagraph]);
+    }, [
+      profile,
+      setIsTranslatingParagraph,
+      translateParagraph,
+      addHistoryItem,
+    ]);
 
     const useCount = Number(getCookie(PARAGRAPH_VN_TO_JP_TRANS_COUNT_KEY) ?? 0);
     const shouldShowPlaceholder = !translatedParagraph || error === "FORBIDDEN";
@@ -107,7 +122,7 @@ export const TranslatedVnToJpParagraph = memo(
           </Button>
         </div>
 
-        <Card className="rounded-2xl  w-full  h-fit min-h-[328px] relative ">
+        <Card className="rounded-2xl w-full h-fit min-h-[328px] relative lg:mt-0 sm:mt-8 mt-0">
           <CardContent id="translated-paragraph" className="!p-4 space-y-2">
             {translatingParagraph ? (
               "Đang dịch..."
@@ -184,6 +199,8 @@ export const TranslatedVnToJpParagraph = memo(
             </TooltipProvider>
           </div>
         </Card>
+
+        <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       </>
     );
   })

@@ -51,7 +51,7 @@ export const TranslatedJpToVnParagraph = memo<Props>(
           </Button>
         </div>
 
-        <Card className="rounded-2xl  w-full  h-fit min-h-[328px] relative ">
+        <Card className="rounded-2xl w-full lg:mt-0 sm:mt-8 mt-0  h-fit min-h-[328px] relative ">
           <CardContent id="translated-paragraph" className="!p-4 space-y-2">
             {isLoading ? (
               "Đang dịch..."

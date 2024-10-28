@@ -17,6 +17,7 @@ export const ParagraphControls = ({
     <div
       className={cn(
         "flex-wrap h-8 items-center w-full justify-end sm:justify-between px-3",
+        "lg:absolute -top-[44px] right-0 lg:w-[calc(100%-200px)]",
         show ? "sm:flex hidden" : "hidden"
       )}
     >
