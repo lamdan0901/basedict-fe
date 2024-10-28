@@ -9,6 +9,7 @@ import { cn } from "@/lib";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { usePathname } from "next/navigation";
+import { shallow } from "zustand/shallow";
 
 enum SheetType {
   History = "Lịch sử",
@@ -25,7 +26,15 @@ export function HistoryNFavorite() {
     setSelectedVocab,
     setTranslatedParagraph,
     setText,
-  } = useLexemeStore();
+  } = useLexemeStore(
+    (state) => ({
+      setSelectedGrammar: state.setSelectedGrammar,
+      setSelectedVocab: state.setSelectedVocab,
+      setTranslatedParagraph: state.setTranslatedParagraph,
+      setText: state.setText,
+    }),
+    shallow
+  );
   const [sheetType, setSheetType] = useState<SheetType | null>(null);
 
   const data = sheetType === SheetType.History ? historyItems : favoriteItems;

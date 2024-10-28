@@ -11,7 +11,6 @@ import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import { ReadingType, readingTypeMap, TabVal } from "@/modules/reading/const";
 import { jlptLevels } from "@/constants";
 import { useQueryParams } from "@/hooks/useQueryParam";
-import { useReadingStore } from "@/store/useReadingStore";
 
 type Props = {
   readingList: TReadingMaterial[];
@@ -46,13 +45,11 @@ export function ReadingListContent({
   jlptLevel,
   examId,
 }: Props) {
-  const {
-    hasReadBaseDict,
-    setHasReadBaseDict,
-    hasReadJLPTTest,
-    setHasReadJLPTTest,
-  } = useReadingStore();
-
+  const [{ hasReadBaseDict, hasReadJLPTTest }, setHasReadFilter] =
+    useQueryParams({
+      hasReadBaseDict: false,
+      hasReadJLPTTest: false,
+    });
   const [readingParams, setReadingParams] = useQueryParams({
     jlptLevel,
     jlptTestLevel,
@@ -139,9 +136,10 @@ export function ReadingListContent({
             <p className="basis-[80px] shrink-0">Đã đọc</p>{" "}
             <Switch
               onCheckedChange={(value) => {
-                isBaseDictTab
-                  ? setHasReadBaseDict(value)
-                  : setHasReadJLPTTest(value);
+                setHasReadFilter({
+                  [isBaseDictTab ? "hasReadBaseDict" : "hasReadJLPTTest"]:
+                    value,
+                });
               }}
               checked={isBaseDictTab ? hasReadBaseDict : hasReadJLPTTest}
               id="isRead"

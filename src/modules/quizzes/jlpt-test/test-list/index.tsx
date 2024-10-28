@@ -1,6 +1,6 @@
 "use client";
 
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";

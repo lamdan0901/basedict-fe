@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/popover";
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
-import { MeaningReportModal } from "@/modules/home/MeaningSection/MeaningReportModal";
+import { MeaningReportModal } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnMeaningSection/MeaningReportModal";
+import { MeaningSectionTips } from "@/modules/home/TranslationSection/components/MeaningSectionTips";
 import { isDifferenceGreaterSpecifiedDay } from "@/modules/home/utils";
 import { postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
@@ -31,7 +32,7 @@ type MeaningSectionProps = {
   retryLexemeSearch: KeyedMutator<TLexeme>;
 };
 
-export const MeaningSection = memo<MeaningSectionProps>(
+export const JpToVnMeaningSection = memo<MeaningSectionProps>(
   ({
     lexemeSearch,
     loadingLexemeSearch,
@@ -134,7 +135,7 @@ export const MeaningSection = memo<MeaningSectionProps>(
     return (
       <Card
         className={cn(
-          "w-full rounded-2xl sm:min-h-[328px] h-fit relative ",
+          "w-full rounded-2xl sm:min-h-[328px] h-fit relative",
           !lexemeSearch && "min-h-[328px]"
         )}
       >
@@ -344,17 +345,7 @@ export const MeaningSection = memo<MeaningSectionProps>(
             </div>
           ) : null}
 
-          <p
-            className={cn(
-              "absolute top-1/2 left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
-              lexemeSearch ? "hidden" : "block"
-            )}
-          >
-            Tips: <br />
-            - Hãy bấm vào phần dịch nghĩa để xem các nghĩa khác của từ. <br />-
-            Bạn có thể quét chọn 1 từ tiếng nhật bất kì, click "Dịch từ" để dịch
-            nhanh.
-          </p>
+          <MeaningSectionTips hidden={!!lexemeSearch} />
         </CardContent>
 
         <MeaningReportModal

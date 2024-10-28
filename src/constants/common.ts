@@ -9,6 +9,7 @@ export const MEANING_ERR_MSG = {
 export const MAX_HISTORY_ITEMS = 50;
 export const MAX_FAVORITE_ITEMS = 100;
 export const DEFAULT_AVATAR_URL = "/default-avatar.svg";
+export const VIP_USER = "vipuser";
 
 export enum HistoryItemType {
   Lexeme,

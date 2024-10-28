@@ -1,6 +1,6 @@
 "use client";
 
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { BadgeList } from "@/components/BadgeList";
 import { Input } from "@/components/ui/input";
 import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreator";

@@ -19,7 +19,7 @@ import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { formatSearchParams } from "@/modules/flashcard/search/utils";
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 
 const TOP_EL_ID = "top-of-flashcard-search";
 

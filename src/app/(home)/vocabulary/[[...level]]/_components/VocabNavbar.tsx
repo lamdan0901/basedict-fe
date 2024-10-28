@@ -19,6 +19,7 @@ import { cn } from "@/lib";
 import { useParams } from "next/navigation";
 import { SquareMenu } from "lucide-react";
 import { useState } from "react";
+import { AdSense } from "@/components/Ad";
 
 export function VocabNavbar() {
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -58,7 +59,7 @@ function InnerVocabNavbar({
   const [tab, setTab] = useQueryParam("tab", TabVal.Levels);
 
   return (
-    <div className="mt-8 lg:mt-0 mb-2">
+    <div className="mt-8 lg:mt-0 mb-2 lg:w-[250px] lg:gap-y-6 lg:h-fit flex flex-col shrink-0">
       <Tabs value={tab} onValueChange={(val) => setTab(val as TabVal)}>
         {/* <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value={TabVal.Levels}>Theo cấp độ</TabsTrigger>
@@ -71,6 +72,8 @@ function InnerVocabNavbar({
           <VocabBookList />
         </TabsContent>
       </Tabs>
+
+      <AdSense />
     </div>
   );
 }

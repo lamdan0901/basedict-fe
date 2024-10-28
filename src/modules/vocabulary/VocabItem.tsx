@@ -14,7 +14,6 @@ import {
   ChevronRight,
   CircleCheckBig,
   Heart,
-  X,
 } from "lucide-react";
 import { memo, MouseEvent, useState } from "react";
 
@@ -93,13 +92,13 @@ export const VocabItem = memo<Props>(
                             onClick={() =>
                               onToggleLearnedVocab(lexeme, !hasLearned)
                             }
-                            className="rounded-full  -mt-1 p-2"
-                          >
-                            {hasLearned ? (
-                              <X className="size-5" />
-                            ) : (
-                              <Check className="size-5" />
+                            className={cn(
+                              "rounded-full  -mt-1 p-2",
+                              hasLearned &&
+                                "bg-blue-500 text-white hover:text-white hover:bg-blue-500/90"
                             )}
+                          >
+                            <Check className="size-5" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>

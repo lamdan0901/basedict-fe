@@ -1,6 +1,6 @@
 "use client";
 
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { CardIcon } from "@/components/icons";
 import {
   Tooltip,

@@ -12,6 +12,7 @@ export function Markdown({ markdown }: { markdown?: string }) {
   return (
     <div
       className="markdown-body"
+      style={{ color: "inherit !important" }}
       dangerouslySetInnerHTML={{
         __html: markdownToHtml(markdown),
       }}

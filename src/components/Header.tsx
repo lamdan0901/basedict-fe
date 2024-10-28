@@ -54,7 +54,7 @@ const Header = () => {
   }
 
   useEffect(() => {
-    if (!profile && user) {
+    if (user && profile?.id !== user.id) {
       setProfile(user);
       toast({
         title: "Đăng nhập thành công",

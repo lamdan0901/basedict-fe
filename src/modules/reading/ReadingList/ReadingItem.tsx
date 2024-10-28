@@ -1,3 +1,4 @@
+import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
 import { readingTypeMap } from "@/modules/reading/const";
 import { useReadingStore } from "@/store/useReadingStore";
@@ -11,8 +12,10 @@ export function ReadingItem({
   isRead,
   createdAt,
 }: TReadingMaterial) {
-  const { selectedReadingItemId, setSheetOpen, setReadingItemId } =
-    useReadingStore();
+  const { setSheetOpen } = useReadingStore();
+  const [selectedReadingItemId, setReadingItemId] = useQueryParam<
+    number | null
+  >("selectedReadingItemId", null);
 
   const readingTypeTitle = readingTypeMap[readingType];
   const isActive = selectedReadingItemId === id;

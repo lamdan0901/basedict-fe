@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ReadingAnswer } from "@/components/ReadingAnswer";
+import { Markdown } from "@/components/Markdown";
+import { ReadingQuestion } from "@/components/ReadingQuestion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,24 +9,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { stateSwitcherVariant, TestState } from "@/modules/quizzes/const";
-import {
-  StateSwitcher,
-  TStateSwitcherRef,
-} from "@/modules/quizzes/JlptTestModule/StateSwitcher";
-import useSWRMutation from "swr/mutation";
-import { postRequest } from "@/service/data";
-import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
-import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
-import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
 import {
   DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
+import { stateSwitcherVariant, TestState } from "@/modules/quizzes/const";
+import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
+import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
+import {
+  StateSwitcher,
+  TStateSwitcherRef,
+} from "@/modules/quizzes/JlptTestModule/StateSwitcher";
+import { postRequest } from "@/service/data";
 import { useAnswerStore } from "@/store/useAnswerStore";
-import { Markdown } from "@/components/Markdown";
+import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
+import { useEffect, useRef, useState } from "react";
+import useSWRMutation from "swr/mutation";
 
 export function JlptTestQuestions({
   data,
@@ -35,15 +35,18 @@ export function JlptTestQuestions({
   data: TJlptTestItem | undefined;
   isDailyTest?: boolean;
 }) {
+  const { userAnswers } = useAnswerStore();
+
   const stateSwitcherRef = useRef<TStateSwitcherRef>(null);
   const [resetKey, setResetKey] = useState(0);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [resultDialogOpen, setResultDialogOpen] = useState(false);
-  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
   const [testState, setTestState] = useState(
     data?.isDone ? TestState.Done : TestState.Ready
   );
-  const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [resultDialogOpen, setResultDialogOpen] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
   const { trigger: submitAnswers } = useSWRMutation(
     `/v1/exams/${data?.id}/exam-execute`,
@@ -59,8 +62,6 @@ export function JlptTestQuestions({
   const shouldShowAns = testState === TestState.Done;
 
   function countCorrectAnswers() {
-    const { userAnswers } = useAnswerStore.getState();
-
     return questions?.reduce((acc, question, i) => {
       if (question.correctAnswer === userAnswers[i]?.split("|")?.[0] || "") {
         return acc + 1;
@@ -99,15 +100,6 @@ export function JlptTestQuestions({
         break;
     }
   }
-
-  const handleAnswerChange = useCallback(
-    (questionIndex: number) => (answer: string) => {
-      if (selectionDisabled) return;
-
-      useAnswerStore.getState().setUserAnswers(questionIndex, answer);
-    },
-    [selectionDisabled]
-  );
 
   async function handleSubmitAnswers() {
     const { userAnswers } = useAnswerStore.getState();
@@ -149,16 +141,17 @@ export function JlptTestQuestions({
 
       <div className="mt-2 overflow-auto">
         {questions.map((question, index) => {
+          const key = `|${index}`;
           return (
-            <ReadingAnswer
-              key={index}
+            <ReadingQuestion
+              key={key}
+              index={key} // answers can be duplicated, so we need to add index to make it unique
+              value={userAnswers[index]}
               selectionDisabled={selectionDisabled}
               shouldShowAns={shouldShowAns && !isDailyTest}
               questionText={`${index + 1}\\. ${question.question}`}
               radioGroupKey={`${index}-${resetKey}`}
               question={question}
-              index={`|${index}`} // answers can be duplicated, so we need to add index to make it unique
-              onValueChange={handleAnswerChange(index)}
               testState={testState}
             />
           );
@@ -176,9 +169,12 @@ export function JlptTestQuestions({
               {reading.questions?.map((question, j) => {
                 const readingQuesIndex =
                   initialReadingQuesIndex + prevReadingQuestionsLengthAcc + j;
+                const key = `|${readingQuesIndex}`;
                 return (
-                  <ReadingAnswer
-                    key={readingQuesIndex + j}
+                  <ReadingQuestion
+                    key={key}
+                    index={key} // answers can be duplicated, so we need to add index to make it unique
+                    value={userAnswers[readingQuesIndex]}
                     selectionDisabled={selectionDisabled}
                     shouldShowAns={shouldShowAns && !isDailyTest}
                     questionText={`${readingQuesIndex + 1}\\. ${
@@ -186,9 +182,7 @@ export function JlptTestQuestions({
                     }`}
                     radioGroupKey={`${readingQuesIndex}-${resetKey}`}
                     question={question}
-                    onValueChange={handleAnswerChange(readingQuesIndex)}
                     testState={testState}
-                    index={`|${readingQuesIndex}`} // answers can be duplicated, so we need to add index to make it unique
                   />
                 );
               })}

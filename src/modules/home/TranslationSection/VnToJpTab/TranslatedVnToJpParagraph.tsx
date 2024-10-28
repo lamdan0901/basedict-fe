@@ -1,8 +1,7 @@
-import { useLexemeStore } from "@/store/useLexemeStore";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   MAX_PARAGRAPH_TRANS_TIMES,
-  PARAGRAPH_TRANS_COUNT_KEY,
+  PARAGRAPH_VN_TO_JP_TRANS_COUNT_KEY,
 } from "@/modules/home/const";
 import { CircleHelp } from "lucide-react";
 import {
@@ -12,48 +11,120 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { cn, getCookie } from "@/lib";
-import { memo } from "react";
-import { shallow } from "zustand/shallow";
+import { cn, getCookie, setCookie } from "@/lib";
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from "react";
+import useSWRMutation from "swr/mutation";
+import { postRequest } from "@/service/data";
+import { v4 as uuid } from "uuid";
+import { HistoryItemType } from "@/constants";
+import { useHistoryStore } from "@/store/useHistoryStore";
+import { setExpireDate } from "@/modules/home/utils";
+import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
+import { useAppStore } from "@/store/useAppStore";
+import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 
-type Props = {
-  isLoading: boolean;
-  error: string;
-  onTranslateParagraph: (() => void) | undefined;
+export type VnToJpParagraphSectionRef = {
+  translateParagraphVnToJp(): Promise<void>;
 };
 
-export const TranslatedParagraph = memo<Props>(
-  ({ isLoading, error, onTranslateParagraph }) => {
-    const { usedCount, translatedParagraph } = useLexemeStore(
-      (state) => ({
-        translatedParagraph: state.translatedParagraph?.translated,
-        usedCount: state.translatedParagraph?.usedCount,
-      }),
-      shallow
-    );
+export const TranslatedVnToJpParagraph = memo(
+  forwardRef<VnToJpParagraphSectionRef>((_, ref) => {
+    const profile = useAppStore((state) => state.profile);
+    const { setIsTranslatingParagraph } = useVnToJpTransStore((state) => ({
+      setIsTranslatingParagraph: state.setIsTranslatingParagraph,
+    }));
+    const addHistoryItem = useHistoryStore((state) => state.addHistoryItem);
 
-    const useCount = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
+    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+    const [
+      { usedCount, translated: translatedParagraph },
+      setTranslatedParagraph,
+    ] = useState({
+      usedCount: 0,
+      translated: "",
+    });
+
+    const {
+      trigger: translateParagraph,
+      isMutating: translatingParagraph,
+      error,
+    } = useSWRMutation("/v1/paragraphs/translate", postRequest);
+
+    const translateParagraphVnToJp = useCallback(async () => {
+      if (!profile) {
+        setLoginPromptOpen(true);
+        return;
+      }
+
+      const transTimes = Number(
+        getCookie(PARAGRAPH_VN_TO_JP_TRANS_COUNT_KEY) ?? 0
+      );
+      if (transTimes === MAX_PARAGRAPH_TRANS_TIMES) {
+        setTranslatedParagraph({
+          usedCount: MAX_PARAGRAPH_TRANS_TIMES,
+          translated: "",
+        });
+        return;
+      }
+
+      setIsTranslatingParagraph(true);
+
+      const searchText = useVnToJpTransStore.getState().searchText;
+      const data = await translateParagraph({ text: searchText });
+
+      setCookie(PARAGRAPH_VN_TO_JP_TRANS_COUNT_KEY, String(data.usedCount), {
+        expires: setExpireDate(),
+      });
+      setTranslatedParagraph(data);
+      addHistoryItem({
+        rawParagraph: searchText ?? "",
+        translatedParagraph: data.translated,
+        uid: uuid(),
+        type: HistoryItemType.Paragraph,
+      });
+    }, [
+      profile,
+      setIsTranslatingParagraph,
+      translateParagraph,
+      addHistoryItem,
+    ]);
+
+    const useCount = Number(getCookie(PARAGRAPH_VN_TO_JP_TRANS_COUNT_KEY) ?? 0);
     const shouldShowPlaceholder = !translatedParagraph || error === "FORBIDDEN";
     const shouldShowCounter = usedCount || error === "FORBIDDEN";
     const shouldShowUsedUpMsg =
       (!translatedParagraph && useCount === MAX_PARAGRAPH_TRANS_TIMES) ||
       error === "FORBIDDEN";
 
+    useImperativeHandle(
+      ref,
+      () => ({
+        translateParagraphVnToJp,
+      }),
+      [translateParagraphVnToJp]
+    );
+
     return (
       <>
         <div className="mx-auto sm:hidden">
           <Button
             className="w-fit"
-            onClick={onTranslateParagraph}
+            onClick={translateParagraphVnToJp}
             variant={"outline"}
           >
             Dịch đoạn văn
           </Button>
         </div>
 
-        <Card className="rounded-2xl  w-full  h-fit min-h-[328px] relative ">
+        <Card className="rounded-2xl w-full h-fit min-h-[328px] relative lg:mt-0 sm:mt-8 mt-0">
           <CardContent id="translated-paragraph" className="!p-4 space-y-2">
-            {isLoading ? (
+            {translatingParagraph ? (
               "Đang dịch..."
             ) : shouldShowPlaceholder ? null : error ? (
               <p className="text-destructive">
@@ -128,7 +199,9 @@ export const TranslatedParagraph = memo<Props>(
             </TooltipProvider>
           </div>
         </Card>
+
+        <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       </>
     );
-  }
+  })
 );

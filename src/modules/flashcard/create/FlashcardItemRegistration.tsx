@@ -75,22 +75,19 @@ export function FlashcardItemRegistration({
                     {...register(`flashCards.${i}.backSideComment`)}
                   />
                 </div>
-                {total > 1 && (
-                  <Button
-                    type="button"
-                    className={
-                      "rounded-full absolute p-2 h-8 z-10 top-1 right-1"
-                    }
-                    size={"sm"}
-                    variant={"ghost"}
-                    title="remove"
-                    onClick={() => {
-                      remove(i);
-                    }}
-                  >
-                    <Trash className="text-destructive size-5" />
-                  </Button>
-                )}
+
+                <Button
+                  type="button"
+                  className={"rounded-full absolute p-2 h-8 z-10 top-1 right-1"}
+                  size={"sm"}
+                  variant={"ghost"}
+                  title="remove"
+                  onClick={() => {
+                    remove(i);
+                  }}
+                >
+                  <Trash className="text-destructive size-5" />
+                </Button>
               </CardContent>
             </Card>
           );
@@ -104,6 +101,7 @@ export function FlashcardItemRegistration({
         <Button
           size={"sm"}
           type="button"
+          variant={"outline"}
           disabled={isMutating}
           onClick={() => {
             if (limitReached) {
@@ -118,12 +116,7 @@ export function FlashcardItemRegistration({
         >
           <Plus className="size-5 mr-2" /> Thêm thẻ mới
         </Button>
-        <Button
-          variant={"outline"}
-          disabled={isMutating}
-          onClick={onSubmit}
-          size={"sm"}
-        >
+        <Button disabled={isMutating} onClick={onSubmit} size={"sm"}>
           Lưu bộ flashcard
         </Button>
         <Button

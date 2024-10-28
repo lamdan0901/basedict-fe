@@ -1,17 +1,14 @@
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
-import { stringifyParams } from "@/lib";
-import { ReadingType, TabVal } from "@/modules/reading/const";
+import { useQueryParam } from "@/hooks/useQueryParam";
+import { TabVal } from "@/modules/reading/const";
+import { BaseDictReadingList } from "@/modules/reading/ReadingList/BaseDictReadingList";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
-import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
-import { getRequest } from "@/service/data";
+import { JPLTTestReadingList } from "@/modules/reading/ReadingList/JPLTTestReadingList";
 import { useAppStore } from "@/store/useAppStore";
 import { useReadingStore } from "@/store/useReadingStore";
-import { useRef } from "react";
-import useSWR from "swr";
 import { shallow } from "zustand/shallow";
 
 export function ReadingList() {
@@ -48,6 +45,7 @@ function InnerReadingList() {
   return (
     <div className=" mb-2">
       <JLPTReadingDescModal />
+
       <Tabs value={tab} onValueChange={(val) => setTab(val as TabVal)}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value={TabVal.BaseDict}>BaseDict</TabsTrigger>
@@ -60,113 +58,10 @@ function InnerReadingList() {
           <JPLTTestReadingList jlptLevel={jlptLevel} />
         </TabsContent>
       </Tabs>
+
       <div className="hidden mt-4 w-full lg:block">
         <AdSense slot="vertical" />
       </div>
     </div>
-  );
-}
-
-function BaseDictReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
-  const hasSetInitialReading = useRef(false);
-  const { hasReadBaseDict, setReadingItemId } = useReadingStore();
-  const [readingParams] = useQueryParams({
-    jlptLevel,
-    readingType: ReadingType.All,
-  });
-
-  const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    readingParams.jlptLevel
-      ? `/v1/readings?${stringifyParams({
-          source: "BaseDict",
-          jlptLevel: readingParams.jlptLevel,
-          readingType:
-            readingParams.readingType !== "all"
-              ? readingParams.readingType
-              : undefined,
-        })}`
-      : null,
-    getRequest,
-    {
-      onSuccess(data) {
-        if (data[0] && !hasSetInitialReading.current) {
-          setReadingItemId(data[0].id);
-          hasSetInitialReading.current = true;
-        }
-      },
-    }
-  );
-
-  const filteredReadingList = readingList.filter((reading) => {
-    return hasReadBaseDict === reading.isRead;
-  });
-
-  return (
-    <ReadingListContent
-      readingList={filteredReadingList}
-      isLoading={isLoading}
-      tab={TabVal.BaseDict}
-      {...readingParams}
-    />
-  );
-}
-
-function JPLTTestReadingList({ jlptLevel }: { jlptLevel?: TJlptLevel }) {
-  const hasSetInitialReading = useRef(false);
-  const { hasReadJLPTTest, setReadingItemId } = useReadingStore();
-  const [{ jlptTestLevel, examId }, setReadingParams] = useQueryParams<{
-    jlptTestLevel: TJlptLevel | undefined;
-    examId: string | undefined;
-  }>({
-    jlptTestLevel: jlptLevel,
-    examId: undefined,
-  });
-
-  const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
-    examId && jlptTestLevel
-      ? `/v1/readings?${stringifyParams({
-          source: "JLPT",
-          examId,
-          jlptLevel: jlptTestLevel,
-        })}`
-      : null,
-    getRequest,
-    {
-      onSuccess(data) {
-        if (data[0] && !hasSetInitialReading.current) {
-          setReadingItemId(data[0].id);
-          hasSetInitialReading.current = true;
-        }
-      },
-    }
-  );
-
-  const { data: testPeriods = [], isLoading: isLoadingTestPeriods } = useSWR<
-    TTestPeriod[]
-  >(
-    jlptTestLevel ? `v1/exams/jlpt?jlptLevel=${jlptTestLevel}` : null,
-    getRequest,
-    {
-      onSuccess(data) {
-        if (!examId && data.length)
-          setReadingParams({ examId: data[0].id.toString() });
-      },
-    }
-  );
-
-  const filteredReadingList = readingList.filter((reading) => {
-    return hasReadJLPTTest === reading.isRead;
-  });
-
-  return (
-    <ReadingListContent
-      readingList={filteredReadingList}
-      isLoading={isLoading}
-      isLoadingTestPeriods={isLoadingTestPeriods}
-      testPeriods={testPeriods}
-      jlptTestLevel={jlptTestLevel}
-      examId={examId}
-      tab={TabVal.JLPT}
-    />
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { AdSense } from "@/components/Ad/Ad";
+import { AdSense } from "@/components/Ad";
 import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 import {
   AlertDialog,
