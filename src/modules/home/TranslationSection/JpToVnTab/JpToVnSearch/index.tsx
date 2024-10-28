@@ -19,7 +19,8 @@ import {
   PARAGRAPH_MIN_LENGTH,
 } from "@/modules/home/const";
 import { LexemeSuggestion } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch/LexemeSuggestion";
-import { ParagraphControls } from "@/modules/home/TranslationSection/ParagraphControls";
+import { ParagraphControls } from "@/modules/home/TranslationSection/components/ParagraphControls";
+import { TranslationTips } from "@/modules/home/TranslationSection/components/TranslationTips";
 import { setExpireDate } from "@/modules/home/utils";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
@@ -427,18 +428,7 @@ export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
               </div>
             )}
 
-            <p
-              className={cn(
-                "absolute sm:top-1/2 top-[60%] left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
-                text || initialText ? "hidden" : "block"
-              )}
-            >
-              Tips: <br />
-              - Hãy nhập từ vựng theo thể từ điển. Tối đa 7 kí tự, và chỉ bao
-              gồm chữ hán, hiragana hoặc katakana <br /> - Bạn có thể dịch 1
-              đoạn văn bản. Khi bạn nhập quá 20 từ sẽ được coi là đoạn văn. Tối
-              đa dài {MAX_CHARS_LENGTH} kí tự
-            </p>
+            <TranslationTips hidden={!!(text || initialText)} />
           </CardContent>
         </Card>
 

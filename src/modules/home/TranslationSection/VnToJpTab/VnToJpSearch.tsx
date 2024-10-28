@@ -4,7 +4,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
 import { MAX_CHARS_LENGTH, PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
-import { ParagraphControls } from "@/modules/home/TranslationSection/ParagraphControls";
+import { ParagraphControls } from "@/modules/home/TranslationSection/components/ParagraphControls";
+import { TranslationTips } from "@/modules/home/TranslationSection/components/TranslationTips";
 import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
 import { X } from "lucide-react";
 import { KeyboardEvent, useEffect, useRef } from "react";
@@ -127,6 +128,8 @@ export function VnToJpSearch({
           >
             <X />
           </Button>
+
+          <TranslationTips hidden={!!searchText} />
         </CardContent>
       </Card>
     </div>

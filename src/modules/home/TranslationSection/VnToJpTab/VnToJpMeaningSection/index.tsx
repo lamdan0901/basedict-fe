@@ -4,12 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
 import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
+import { MeaningSectionTips } from "@/modules/home/TranslationSection/components/MeaningSectionTips";
 import { MeaningInDetail } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpMeaningSection/MeaningInDetail";
 import { MeaningInPreview } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpMeaningSection/MeaningInPreview";
 import { getRequest } from "@/service/data";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
-import { ChevronLeft, ChevronRight, CircleChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   forwardRef,
   memo,
@@ -28,12 +29,12 @@ export type VnToJpMeaningSectionRef = {
 
 export const VnToJpMeaningSection = memo(
   forwardRef((_, ref) => {
+    const { searchText } = useVnToJpTransStore();
     const [searchParam] = useQueryParam("searchVietnamese", "");
     const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
       useFavoriteStore();
 
     const [addFlashcardModalOpen, setAddFlashcardModalOpen] = useState(false);
-    const [showMeaning, setShowMeaning] = useState(false);
 
     const [lexemeToSearch, setLexemeToSearch] = useState<string>("");
     const [rawTranslatedLexemes, setRawTranslatedLexemes] = useState<string[]>(
@@ -45,23 +46,17 @@ export const VnToJpMeaningSection = memo(
 
     const { trigger: translateWordVnToJpTrigger, isMutating } = useSWRMutation<
       string[]
-    >(
-      `v1/lexemes/vietnamese/${useVnToJpTransStore.getState().searchText}`,
-      (url: string) => getRequest(url),
-      {
-        onError(errMsg) {
-          setTransErrMsg(errMsg ?? MEANING_ERR_MSG.UNKNOWN);
-        },
-        onSuccess() {
-          setTransErrMsg("");
-        },
-      }
-    );
+    >(`v1/lexemes/vietnamese/${searchText}`, (url: string) => getRequest(url), {
+      onError(errMsg) {
+        setTransErrMsg(errMsg ?? MEANING_ERR_MSG.UNKNOWN);
+      },
+      onSuccess() {
+        setTransErrMsg("");
+      },
+    });
 
     const { data: lexemeSearch, isLoading: searchingLexeme } = useSWR<TLexeme>(
-      lexemeToSearch && showMeaning
-        ? `/v1/lexemes/search/${lexemeToSearch}`
-        : null,
+      lexemeToSearch ? `/v1/lexemes/search/${lexemeToSearch}` : null,
       getRequest,
       {
         onError(errMsg) {
@@ -99,17 +94,16 @@ export const VnToJpMeaningSection = memo(
 
     useEffect(() => {
       setMeaningIndex(0);
-      setShowMeaning(false);
-      if (searchParam) setRawTranslatedLexemes([]);
+      if (!searchParam) setRawTranslatedLexemes([]);
     }, [searchParam]);
 
     const translateWordVnToJp = useCallback(async () => {
-      if (!useVnToJpTransStore.getState().searchText) return;
+      if (!searchText) return;
 
       const data = await translateWordVnToJpTrigger();
       setRawTranslatedLexemes(data);
       setLexemeToSearch(data?.[0]);
-    }, [translateWordVnToJpTrigger]);
+    }, [searchText, translateWordVnToJpTrigger]);
 
     useImperativeHandle(
       ref,
@@ -148,25 +142,8 @@ export const VnToJpMeaningSection = memo(
                   lexemeSearch={lexemeSearch}
                   lexemeToSearch={lexemeToSearch}
                   rawTranslatedLexemes={rawTranslatedLexemes}
-                  onLexemeSelect={(lexeme) => {
-                    setShowMeaning(false);
-                    setLexemeToSearch(lexeme);
-                  }}
+                  onLexemeSelect={setLexemeToSearch}
                 />
-
-                <Button
-                  onClick={() => setShowMeaning((prev) => !prev)}
-                  variant={"ghost"}
-                  className="p-1 h-8"
-                >
-                  <CircleChevronDown
-                    className={cn(
-                      "size-5 mr-2",
-                      showMeaning ? "rotate-180" : ""
-                    )}
-                  />
-                  {showMeaning ? "Ẩn ý nghĩa" : "Hiện ý nghĩa"}
-                </Button>
 
                 <div className="flex gap-1">
                   <div className="border-t mx-1 h-[1px] border-muted-foreground border-dashed w-full"></div>
@@ -212,6 +189,8 @@ export const VnToJpMeaningSection = memo(
                 </div>
               </>
             ) : null}
+
+            <MeaningSectionTips hidden={!!lexemeToSearch} />
           </CardContent>
 
           <AddNewFlashcardModal
