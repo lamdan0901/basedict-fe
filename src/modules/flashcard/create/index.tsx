@@ -31,9 +31,10 @@ export function FlashcardCreation() {
   const searchParams = useSearchParams();
   const userId = useAppStore((state) => state.profile?.id);
 
-  const defaultFlashcard = JSON.parse(
-    searchParams.get("defaultFlashcard") ?? ""
-  );
+  const forwardedFlashcardParam = searchParams.get("defaultFlashcard");
+  const defaultFlashcard = forwardedFlashcardParam
+    ? JSON.parse(forwardedFlashcardParam)
+    : null;
 
   const form = useForm<TFlashCardSetForm>({
     mode: "onSubmit",

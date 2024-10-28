@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { DEFAULT_AVATAR_URL } from "@/constants";
+import { useIsVipUser } from "@/hooks/useIsVipUser";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
 import { getRequest } from "@/service/data";
@@ -26,6 +27,7 @@ export function MyFlashcard() {
     }),
     shallow
   );
+  const isVip = useIsVipUser();
 
   const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
     `/v1/flash-card-sets/my-flash-card`,
@@ -37,7 +39,7 @@ export function MyFlashcard() {
   const total = (myFlashCards?.length ?? 0) + (learningFlashCards?.length ?? 0);
   const totalLearnedNumber = myFlashcardSet?.totalLearnedNumber ?? 0;
   const totalLearningNumber = myFlashcardSet?.totalLearningNumber ?? 0;
-  const limitReached = total === FLASHCARD_SETS_LIMIT;
+  const limitReached = isVip ? false : total === FLASHCARD_SETS_LIMIT;
 
   return (
     <TooltipProvider delayDuration={200} skipDelayDuration={0}>
@@ -79,9 +81,11 @@ export function MyFlashcard() {
         </div>
 
         <div className="flex justify-end gap-3 items-center">
-          <span>
-            {total}/{FLASHCARD_SETS_LIMIT}
-          </span>
+          {!isVip && (
+            <span>
+              {total}/{FLASHCARD_SETS_LIMIT}
+            </span>
+          )}
           <Link
             className={limitReached ? "pointer-events-none" : ""}
             href="/flashcard/create"
@@ -95,12 +99,15 @@ export function MyFlashcard() {
         <div>
           <div className="flex items-center mb-2  justify-between">
             <h2 className="text-lg font-semibold">Flashcard của tôi</h2>
-            <div className="flex text-muted-foreground items-center ">
-              <i>
-                Bạn chỉ có thể tạo và theo học tối đa {FLASHCARD_SETS_LIMIT} bộ
-              </i>
-              <CircleHelp className="size-5 ml-2" />
-            </div>
+            {!isVip && (
+              <div className="flex text-muted-foreground items-center ">
+                <i>
+                  Bạn chỉ có thể tạo và theo học tối đa {FLASHCARD_SETS_LIMIT}{" "}
+                  bộ
+                </i>
+                <CircleHelp className="size-5 ml-2" />
+              </div>
+            )}
           </div>
           <div className="grid gap-4 xl:grid-cols-2">
             {isLoading ? (

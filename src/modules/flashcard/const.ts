@@ -7,7 +7,7 @@ export const flashcardSortMap = {
 export const matchingOptions = ["6", "8", "10", "12"];
 
 export const FLASHCARD_SETS_LIMIT = 5;
-export const FLASHCARD_LIMIT = 50;
+export const FLASHCARD_LIMIT = 100;
 export const MAX_TAGS = 3;
 export const MIN_CARDS_TO_MATCH = 6;
 export const MAX_TAG_CHARS = 15;
