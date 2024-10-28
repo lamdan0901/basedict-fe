@@ -15,16 +15,17 @@ import {
 import {
   MAX_CHARS_LENGTH,
   MAX_PARAGRAPH_TRANS_TIMES,
+  PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY,
   PARAGRAPH_MIN_LENGTH,
-  PARAGRAPH_TRANS_COUNT_KEY,
 } from "@/modules/home/const";
-import { LexemeSuggestion } from "@/modules/home/TranslationSection/LexemeSearch/LexemeSuggestion";
+import { LexemeSuggestion } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch/LexemeSuggestion";
+import { ParagraphControls } from "@/modules/home/TranslationSection/ParagraphControls";
 import { setExpireDate } from "@/modules/home/utils";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
-import { Pencil, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import {
   forwardRef,
@@ -57,7 +58,7 @@ type ForwardedRefProps = {
   translateParagraph(): Promise<void>;
 };
 
-export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
+export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
   (
     {
       lexemeSearch,
@@ -191,7 +192,9 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
 
         setIsTranslatingParagraph(true);
 
-        const transTimes = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
+        const transTimes = Number(
+          getCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY) ?? 0
+        );
         if (transTimes === MAX_PARAGRAPH_TRANS_TIMES) {
           setTranslatedParagraph(null);
           return;
@@ -199,7 +202,7 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
 
         const data = await translateParagraph({ text });
 
-        setCookie(PARAGRAPH_TRANS_COUNT_KEY, String(data.usedCount), {
+        setCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY, String(data.usedCount), {
           expires: setExpireDate(),
         });
         setTranslatedParagraph(data);
@@ -312,33 +315,18 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
 
     return (
       <div>
-        <div
-          className={cn(
-            "flex-wrap  h-8 items-center w-full justify-end sm:justify-between px-3",
-            isParagraphMode ? "sm:flex hidden" : "hidden"
-          )}
-        >
-          <div className={cn("text-muted-foreground  text-sm italic")}>
-            Nhấn Shift + Enter để dịch
-          </div>
-          <Button
-            onClick={() => {
-              setIsTranslatingParagraph(false);
-              setTimeout(() => {
-                textareaRef.current?.focus();
-              });
-            }}
-            className={cn(
-              "gap-1 h-8 p-0",
-              isTranslatingParagraph ? "flex" : "hidden"
-            )}
-            variant={"link"}
-          >
-            <Pencil className="size-5" /> <span>Chỉnh sửa</span>
-          </Button>
-        </div>
+        <ParagraphControls
+          show={isParagraphMode}
+          showEditButton={isTranslatingParagraph}
+          onEdit={() => {
+            setIsTranslatingParagraph(false);
+            setTimeout(() => {
+              textareaRef.current?.focus();
+            });
+          }}
+        />
 
-        <Card id="top" className="relative rounded-2xl">
+        <Card className="relative rounded-2xl">
           <CardContent
             className={cn(
               "!p-4 h-fit !pr-8",
@@ -380,7 +368,7 @@ export const LexemeSearch = forwardRef<ForwardedRefProps, Props>(
 
             <p
               className={cn(
-                "text-xl pt-2 h-full whitespace-pre-line",
+                "text-xl h-full whitespace-pre-line",
                 isTranslatingParagraph ? "block" : "hidden"
               )}
             >

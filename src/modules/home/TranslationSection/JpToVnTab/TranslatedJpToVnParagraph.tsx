@@ -2,7 +2,7 @@ import { useLexemeStore } from "@/store/useLexemeStore";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   MAX_PARAGRAPH_TRANS_TIMES,
-  PARAGRAPH_TRANS_COUNT_KEY,
+  PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY,
 } from "@/modules/home/const";
 import { CircleHelp } from "lucide-react";
 import {
@@ -22,7 +22,7 @@ type Props = {
   onTranslateParagraph: (() => void) | undefined;
 };
 
-export const TranslatedParagraph = memo<Props>(
+export const TranslatedJpToVnParagraph = memo<Props>(
   ({ isLoading, error, onTranslateParagraph }) => {
     const { usedCount, translatedParagraph } = useLexemeStore(
       (state) => ({
@@ -32,7 +32,7 @@ export const TranslatedParagraph = memo<Props>(
       shallow
     );
 
-    const useCount = Number(getCookie(PARAGRAPH_TRANS_COUNT_KEY) ?? 0);
+    const useCount = Number(getCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY) ?? 0);
     const shouldShowPlaceholder = !translatedParagraph || error === "FORBIDDEN";
     const shouldShowCounter = usedCount || error === "FORBIDDEN";
     const shouldShowUsedUpMsg =
