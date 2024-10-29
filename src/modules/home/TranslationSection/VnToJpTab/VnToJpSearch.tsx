@@ -46,11 +46,7 @@ export function VnToJpSearch({
     if (!(e.key === "Enter" && e.shiftKey && input)) return;
     e.preventDefault();
 
-    setSearchParam(input);
-    if (input.trim()) {
-      console.log("onTranslateParagraphVnToJp: ", onTranslateParagraphVnToJp);
-      onTranslateParagraphVnToJp();
-    }
+    if (input.trim()) onTranslateParagraphVnToJp();
   }
 
   // Initially fill input text with search param
