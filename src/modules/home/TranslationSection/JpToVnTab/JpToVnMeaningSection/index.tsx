@@ -12,7 +12,9 @@ import {
 import { HistoryItemType } from "@/constants";
 import { cn, getLocalStorageItem } from "@/lib";
 import { MeaningReportModal } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnMeaningSection/MeaningReportModal";
+import { useJpToVnMeaningStore } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnMeaningSection/store";
 import { MeaningSectionTips } from "@/modules/home/TranslationSection/components/MeaningSectionTips";
+import { TipsPopup } from "@/modules/home/TranslationSection/components/TipsPopup";
 import { isDifferenceGreaterSpecifiedDay } from "@/modules/home/utils";
 import { postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
@@ -23,7 +25,6 @@ import { memo, useEffect, useState } from "react";
 import { type KeyedMutator } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
-import { shallow } from "zustand/shallow";
 
 type MeaningSectionProps = {
   lexemeSearch: TLexeme | null | undefined;
@@ -45,15 +46,7 @@ export const JpToVnMeaningSection = memo<MeaningSectionProps>(
       canShowMeaningTips,
       hideFlashcardTips,
       hideMeaningTips,
-    } = useAppStore(
-      (state) => ({
-        canShowFlashcardTips: state.canShowFlashcardTips,
-        canShowMeaningTips: state.canShowMeaningTips,
-        hideFlashcardTips: state.hideFlashcardTips,
-        hideMeaningTips: state.hideMeaningTips,
-      }),
-      shallow
-    );
+    } = useJpToVnMeaningStore();
     const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
       useFavoriteStore();
     const vocabMeaningErrMsg = useLexemeStore(
@@ -178,7 +171,7 @@ export const JpToVnMeaningSection = memo<MeaningSectionProps>(
                     </PopoverContent>
                   </Popover>
                   {canShowMeaningTips && (
-                    <Popover
+                    <TipsPopup
                       open={shouldShowMeaningTips}
                       onOpenChange={(open) => {
                         toggleMeaningTips(open);
@@ -188,31 +181,11 @@ export const JpToVnMeaningSection = memo<MeaningSectionProps>(
                           }
                         }
                       }}
-                    >
-                      <PopoverTrigger asChild>
-                        <button className="h-2"></button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-1.5 bg-red-100 w-[195px]"
-                        side="top"
-                        align="start"
-                      >
-                        <div className="text-sm">
-                          Tips: Bấm vào nghĩa của từ để xem các nghĩa khác
-                        </div>
-                        <div className="flex items-center mt-1 space-x-2">
-                          <Checkbox
-                            onCheckedChange={() =>
-                              setTimeout(() => hideMeaningTips(), 800)
-                            }
-                            id="meaning-tips"
-                          />
-                          <label htmlFor="meaning-tips" className="text-xs">
-                            Không hiện tips này nữa
-                          </label>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                      tipTitle="Tips: Bấm vào nghĩa của từ để xem các nghĩa khác"
+                      onHideTips={() =>
+                        setTimeout(() => hideMeaningTips(), 800)
+                      }
+                    />
                   )}
                   {lexemeSearch.approved && (
                     <CircleCheckBig className="text-green-500 w-4 h-4 mb-1" />
@@ -237,34 +210,17 @@ export const JpToVnMeaningSection = memo<MeaningSectionProps>(
                     </Button>
                   )}
                   {profile && canShowFlashcardTips && (
-                    <Popover
+                    <TipsPopup
                       open={shouldShowFlashcardTips}
                       onOpenChange={toggleFlashcardTips}
-                    >
-                      <PopoverTrigger asChild>
-                        <button className="size-1 absolute top-2"></button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="p-1.5 bg-red-100 w-[210px]"
-                        side="top"
-                        align="center"
-                      >
-                        <div className="text-sm">
-                          Tips: Bạn có thể thêm từ này vào bộ flash card của bạn
-                        </div>
-                        <div className="flex items-center mt-1 space-x-2">
-                          <Checkbox
-                            onCheckedChange={() =>
-                              setTimeout(() => hideFlashcardTips(), 800)
-                            }
-                            id="flashcard-tips"
-                          />
-                          <label htmlFor="flashcard-tips" className="text-xs">
-                            Không hiện tips này nữa
-                          </label>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                      tipTitle="Tips: Bạn có thể thêm từ này vào bộ flash card của bạn"
+                      onHideTips={() =>
+                        setTimeout(() => hideFlashcardTips(), 800)
+                      }
+                      popContentClassName="w-[210px]"
+                      popTriggerClassName="size-1 absolute top-2"
+                      align="center"
+                    />
                   )}
                   <Button
                     onClick={toggleFavorite}

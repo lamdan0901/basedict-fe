@@ -6,10 +6,6 @@ interface AppState {
   isLoading: boolean;
   profile: TUser | null;
   seasonRank: TJlptLevel;
-  canShowMeaningTips: boolean;
-  canShowFlashcardTips: boolean;
-  hideMeaningTips: () => void;
-  hideFlashcardTips: () => void;
   setProfile: (profile: TUser) => void;
   clearProfile: () => void;
   setSeasonRank: (rank: TJlptLevel) => void;
@@ -21,18 +17,6 @@ export const useAppStore = create<AppState>()(
       isLoading: true as boolean,
       profile: null as TUser | null,
       seasonRank: "N3" as TJlptLevel,
-      canShowMeaningTips: true as boolean,
-      canShowFlashcardTips: true as boolean,
-      hideMeaningTips() {
-        set((state) => {
-          state.canShowMeaningTips = false;
-        });
-      },
-      hideFlashcardTips() {
-        set((state) => {
-          state.canShowFlashcardTips = false;
-        });
-      },
       setProfile: (profile) => {
         set((state) => {
           state.profile = profile;

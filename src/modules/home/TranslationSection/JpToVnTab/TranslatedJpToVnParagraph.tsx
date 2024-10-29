@@ -12,24 +12,98 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { cn, getCookie } from "@/lib";
-import { memo } from "react";
+import { cn, getCookie, setCookie } from "@/lib";
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { shallow } from "zustand/shallow";
+import useSWRMutation from "swr/mutation";
+import { postRequest } from "@/service/data";
+import { useAppStore } from "@/store/useAppStore";
+import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
+import { useHistoryStore } from "@/store/useHistoryStore";
+import { setExpireDate } from "@/modules/home/utils";
+import { v4 as uuid } from "uuid";
+import { HistoryItemType } from "@/constants";
 
-type Props = {
-  isLoading: boolean;
-  error: string;
-  onTranslateParagraph: (() => void) | undefined;
+export type JpToVnParagraphSectionRef = {
+  translateParagraphJpToVn(): Promise<void>;
 };
 
-export const TranslatedJpToVnParagraph = memo<Props>(
-  ({ isLoading, error, onTranslateParagraph }) => {
-    const { usedCount, translatedParagraph } = useLexemeStore(
+export const TranslatedJpToVnParagraph = memo(
+  forwardRef<JpToVnParagraphSectionRef>((_, ref) => {
+    const profile = useAppStore((state) => state.profile);
+    const addHistoryItem = useHistoryStore((state) => state.addHistoryItem);
+    const {
+      setIsTranslatingParagraph,
+      usedCount,
+      translatedParagraph,
+      setTranslatedParagraph,
+    } = useLexemeStore(
       (state) => ({
         translatedParagraph: state.translatedParagraph?.translated,
         usedCount: state.translatedParagraph?.usedCount,
+        setTranslatedParagraph: state.setTranslatedParagraph,
+        setIsTranslatingParagraph: state.setIsTranslatingParagraph,
       }),
       shallow
+    );
+
+    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+
+    const {
+      trigger: translateParagraph,
+      isMutating: translatingParagraph,
+      error,
+    } = useSWRMutation("/v1/paragraphs/translate", postRequest);
+
+    const handleTranslateParagraph = useCallback(async () => {
+      if (!profile) {
+        setLoginPromptOpen(true);
+        return;
+      }
+
+      const transTimes = Number(
+        getCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY) ?? 0
+      );
+      if (transTimes === MAX_PARAGRAPH_TRANS_TIMES) {
+        setTranslatedParagraph(null);
+        return;
+      }
+
+      setIsTranslatingParagraph(true);
+
+      const text = useLexemeStore.getState().text;
+      const data = await translateParagraph({ text });
+
+      setCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY, String(data.usedCount), {
+        expires: setExpireDate(),
+      });
+      setTranslatedParagraph(data);
+      addHistoryItem({
+        rawParagraph: text,
+        translatedParagraph: data.translated,
+        uid: uuid(),
+        type: HistoryItemType.Paragraph,
+      });
+    }, [
+      addHistoryItem,
+      profile,
+      setIsTranslatingParagraph,
+      setTranslatedParagraph,
+      translateParagraph,
+    ]);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        translateParagraphJpToVn: () => handleTranslateParagraph(),
+      }),
+      [handleTranslateParagraph]
     );
 
     const useCount = Number(getCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY) ?? 0);
@@ -44,7 +118,7 @@ export const TranslatedJpToVnParagraph = memo<Props>(
         <div className="mx-auto sm:hidden">
           <Button
             className="w-fit"
-            onClick={onTranslateParagraph}
+            onClick={handleTranslateParagraph}
             variant={"outline"}
           >
             Dịch đoạn văn
@@ -53,7 +127,7 @@ export const TranslatedJpToVnParagraph = memo<Props>(
 
         <Card className="rounded-2xl w-full lg:mt-0 sm:mt-8 mt-0  h-fit min-h-[328px] relative ">
           <CardContent id="translated-paragraph" className="!p-4 space-y-2">
-            {isLoading ? (
+            {translatingParagraph ? (
               "Đang dịch..."
             ) : shouldShowPlaceholder ? null : error ? (
               <p className="text-destructive">
@@ -128,7 +202,9 @@ export const TranslatedJpToVnParagraph = memo<Props>(
             </TooltipProvider>
           </div>
         </Card>
+
+        <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       </>
     );
-  }
+  })
 );
