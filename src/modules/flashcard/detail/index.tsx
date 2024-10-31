@@ -186,7 +186,7 @@ export function FlashcardDetail() {
           asHeading
         />
 
-        <div className="flex gap-2 pt-4 border-t border-muted-foreground justify-center">
+        <div className="flex gap-2 pt-4 border-t border-muted-foreground flex-wrap justify-center">
           <Button onClick={handleStartLearning}>Bắt đầu học</Button>
           <Button onClick={handleFlashcardMatching}>Flashcard Matching</Button>
           {!isMyFlashcard && (

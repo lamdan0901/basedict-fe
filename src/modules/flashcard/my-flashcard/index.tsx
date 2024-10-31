@@ -1,20 +1,12 @@
 import { AdSense } from "@/components/Ad";
-import { CardIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { DEFAULT_AVATAR_URL } from "@/constants";
 import { useIsVipUser } from "@/hooks/useIsVipUser";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
+import { UserFlashcardSetHeader } from "@/modules/flashcard/components/UserFlashcardSetHeader";
 import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
-import { CheckCheck, CircleHelp, GraduationCap, Plus } from "lucide-react";
-import Image from "next/image";
+import { CircleHelp, Plus } from "lucide-react";
 import Link from "next/link";
 import useSWR from "swr";
 import { shallow } from "zustand/shallow";
@@ -42,43 +34,15 @@ export function MyFlashcard() {
   const limitReached = isVip ? false : total === FLASHCARD_SETS_LIMIT;
 
   return (
-    <TooltipProvider delayDuration={200} skipDelayDuration={0}>
+    <div>
       <div className="space-y-4">
-        <div className="flex pb-4 border-b border-muted-foreground items-center gap-4">
-          <Image
-            src={profile?.avatar || DEFAULT_AVATAR_URL}
-            width={80}
-            height={80}
-            className="rounded-full size-20 object-cover shrink-0"
-            alt="owner-avatar"
-          />
-          <div className="space-y-4">
-            <span className="text-lg font-semibold">{profile?.name}</span>
-            <div className="flex gap-2">
-              <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
-                <CardIcon width={20} height={20} /> {total} bộ flashcard
-              </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
-                    <GraduationCap className="size-5" />
-                    <span>{totalLearningNumber} người</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Số người đang học</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
-                    <CheckCheck className="size-5" />
-                    <span>{totalLearnedNumber} lượt</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>Số người đã học</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
-        </div>
+        <UserFlashcardSetHeader
+          avatar={profile?.avatar}
+          name={profile?.name}
+          totalSet={total}
+          totalLearningNumber={totalLearningNumber}
+          totalLearnedNumber={totalLearnedNumber}
+        />
 
         <div className="flex justify-end gap-3 items-center">
           {!isVip && (
@@ -97,7 +61,7 @@ export function MyFlashcard() {
         </div>
 
         <div>
-          <div className="flex items-center mb-2  justify-between">
+          <div className="flex items-center mb-2 flex-wrap justify-between">
             <h2 className="text-lg font-semibold">Flashcard của tôi</h2>
             {!isVip && (
               <div className="flex text-muted-foreground items-center ">
@@ -139,6 +103,6 @@ export function MyFlashcard() {
       </div>
 
       <AdSense slot="horizontal" />
-    </TooltipProvider>
+    </div>
   );
 }

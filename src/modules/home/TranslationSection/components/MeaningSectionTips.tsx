@@ -8,7 +8,7 @@ export function MeaningSectionTips({ hidden }: Props) {
   return (
     <p
       className={cn(
-        "absolute top-1/2 left-5 w-[90%] sm:text-base text-sm text-muted-foreground -translate-y-1/2 pointer-events-none",
+        "absolute top-1/2 left-5 w-[90%] sm:text-sm lg:text-base text-xs  text-muted-foreground -translate-y-1/2 pointer-events-none",
         hidden ? "hidden" : "block"
       )}
     >
