@@ -23,7 +23,11 @@ export function ReadingList() {
   return (
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTitle></SheetTitle>
-      <SheetContent aria-describedby={undefined} side="left">
+      <SheetContent
+        className="bg-gray-50"
+        aria-describedby={undefined}
+        side="left"
+      >
         <InnerReadingList />
       </SheetContent>
     </Sheet>

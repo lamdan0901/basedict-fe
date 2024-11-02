@@ -44,7 +44,11 @@ export function VocabNavbar() {
         </Button>
       </SheetTrigger>
       <SheetTitle></SheetTitle>
-      <SheetContent aria-describedby={undefined} side="left">
+      <SheetContent
+        className="bg-gray-50"
+        aria-describedby={undefined}
+        side="left"
+      >
         <InnerVocabNavbar />
       </SheetContent>
     </Sheet>
