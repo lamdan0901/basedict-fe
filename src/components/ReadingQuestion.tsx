@@ -112,7 +112,7 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                   }}
                 />
                 <Label className="cursor-pointer" htmlFor={answerValue}>
-                  <Markdown markdown={answer} />
+                  {answer}
                 </Label>
                 {shouldShowTooltip && (
                   <Popover>
