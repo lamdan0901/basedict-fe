@@ -47,14 +47,18 @@ export function QuizNavbar() {
       <SheetTrigger asChild>
         <Button
           variant={"outline"}
-          className="p-2 gap-2 sm:absolute top-[234px] left-[12px] static lg:order-1 order-2 mt-1 text-primary"
+          className="p-2 sm:w-fit gap-2 lg:order-1 order-2 mt-1 text-primary"
         >
           <SquareMenu className="size-6" />{" "}
           <span className="text-lg">Menu</span>
         </Button>
       </SheetTrigger>
       <SheetTitle></SheetTitle>
-      <SheetContent aria-describedby={undefined} side="left">
+      <SheetContent
+        className="bg-gray-50"
+        aria-describedby={undefined}
+        side="left"
+      >
         <InnerQuizNavbar />
       </SheetContent>
     </Sheet>
@@ -65,7 +69,7 @@ function InnerQuizNavbar() {
   const pathname = usePathname();
 
   return (
-    <Card className="flex-1 mt-8 lg:mt-0">
+    <Card className="mt-8 lg:mt-0">
       <CardContent className="p-2 flex flex-col items-center gap-y-2">
         {menu.map((item, i) => (
           <a className="w-full" href={item.href} key={i}>

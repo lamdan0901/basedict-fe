@@ -1,30 +1,14 @@
-import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { HistoryItemType } from "@/constants";
 import { useDebounceFn } from "@/hooks/useDebounce";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import {
-  cn,
-  getCookie,
-  setCookie,
-  stringifyParams,
-  trimAllSpaces,
-} from "@/lib";
-import {
-  MAX_CHARS_LENGTH,
-  MAX_PARAGRAPH_TRANS_TIMES,
-  PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY,
-  PARAGRAPH_MIN_LENGTH,
-} from "@/modules/home/const";
-import { LexemeSuggestion } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch/LexemeSuggestion";
+import { cn, stringifyParams, trimAllSpaces } from "@/lib";
+import { MAX_CHARS_LENGTH, PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
 import { ParagraphControls } from "@/modules/home/TranslationSection/components/ParagraphControls";
 import { TranslationTips } from "@/modules/home/TranslationSection/components/TranslationTips";
-import { setExpireDate } from "@/modules/home/utils";
+import { LexemeSuggestion } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch/LexemeSuggestion";
 import { getRequest } from "@/service/data";
-import { useAppStore } from "@/store/useAppStore";
-import { useHistoryStore } from "@/store/useHistoryStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -38,35 +22,27 @@ import {
   useState,
 } from "react";
 import useSWRImmutable from "swr/immutable";
-import { TriggerWithOptionsArgs } from "swr/mutation";
-import { v4 as uuid } from "uuid";
 
 type Props = {
   initialText: string | undefined;
   lexemeSearch: TLexeme | undefined;
   onInputClear: () => void;
   onClearInitialText: () => void;
-  translateParagraph: TriggerWithOptionsArgs<
-    TTranslatedParagraph,
-    any,
-    "/v1/paragraphs/translate",
-    { text: string }
-  >;
+  onTranslateParagraph: () => void;
 };
 
-type ForwardedRefProps = {
+export type JpToVnSearchRef = {
   hideSuggestions: () => void;
-  translateParagraph(): Promise<void>;
 };
 
-export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
+export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
   (
     {
       lexemeSearch,
       initialText,
       onInputClear,
       onClearInitialText,
-      translateParagraph,
+      onTranslateParagraph,
     },
     ref
   ) => {
@@ -82,8 +58,6 @@ export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
       isTranslatingParagraph,
       setIsTranslatingParagraph,
     } = useLexemeStore();
-    const addHistoryItem = useHistoryStore((state) => state.addHistoryItem);
-    const profile = useAppStore((state) => state.profile?.id);
 
     const setSearchParam = useUrlSearchParams();
     const searchParams = useSearchParams();
@@ -95,7 +69,6 @@ export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
     const initTextSet = useRef(false);
     const cancelSuggestionRef = useRef(false);
 
-    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
 
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
@@ -179,50 +152,14 @@ export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
       setText(value);
     }
 
-    const handleTranslateParagraph = useCallback(
-      async (e?: KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e) {
-          if (!(e.key === "Enter" && e.shiftKey && text)) return;
-          e.preventDefault();
-        }
+    const handleTranslateParagraph = (
+      e?: KeyboardEvent<HTMLTextAreaElement>
+    ) => {
+      if (!(e?.key === "Enter" && e?.shiftKey && text)) return;
+      e?.preventDefault();
 
-        if (!profile) {
-          setLoginPromptOpen(true);
-          return;
-        }
-
-        setIsTranslatingParagraph(true);
-
-        const transTimes = Number(
-          getCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY) ?? 0
-        );
-        if (transTimes === MAX_PARAGRAPH_TRANS_TIMES) {
-          setTranslatedParagraph(null);
-          return;
-        }
-
-        const data = await translateParagraph({ text });
-
-        setCookie(PARAGRAPH_JP_TO_VN_TRANS_COUNT_KEY, String(data.usedCount), {
-          expires: setExpireDate(),
-        });
-        setTranslatedParagraph(data);
-        addHistoryItem({
-          rawParagraph: text,
-          translatedParagraph: data.translated,
-          uid: uuid(),
-          type: HistoryItemType.Paragraph,
-        });
-      },
-      [
-        addHistoryItem,
-        profile,
-        setIsTranslatingParagraph,
-        setTranslatedParagraph,
-        text,
-        translateParagraph,
-      ]
-    );
+      onTranslateParagraph();
+    };
 
     function handleSearchLexeme(e: KeyboardEvent<HTMLTextAreaElement>) {
       if (!(e.key === "Enter" && text)) return;
@@ -304,14 +241,8 @@ export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
           if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
           if (lexemeSearchParam) setLexemeSearchParam("");
         },
-        translateParagraph: () => handleTranslateParagraph(),
       }),
-      [
-        isDisplayingSuggestions,
-        lexemeSearchParam,
-        handleTranslateParagraph,
-        mutateLexemeVocab,
-      ]
+      [isDisplayingSuggestions, lexemeSearchParam, mutateLexemeVocab]
     );
 
     return (
@@ -431,8 +362,6 @@ export const JpToVnSearch = forwardRef<ForwardedRefProps, Props>(
             <TranslationTips hidden={!!(text || initialText)} />
           </CardContent>
         </Card>
-
-        <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       </div>
     );
   }

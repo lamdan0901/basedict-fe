@@ -3,32 +3,32 @@ import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
 import { useQueryParam } from "@/hooks/useQueryParam";
 import { trimAllSpaces } from "@/lib";
 import { PARAGRAPH_MIN_LENGTH, TransTab } from "@/modules/home/const";
+import { JpToVnMeaningSection } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnMeaningSection";
+import {
+  JpToVnSearch,
+  JpToVnSearchRef,
+} from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch";
+import { SimilarWords } from "@/modules/home/TranslationSection/JpToVnTab/SimilarWords";
+import {
+  JpToVnParagraphSectionRef,
+  TranslatedJpToVnParagraph,
+} from "@/modules/home/TranslationSection/JpToVnTab/TranslatedJpToVnParagraph";
 import {
   VnToJpMeaningSection,
   VnToJpMeaningSectionRef,
 } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpMeaningSection";
-import { JpToVnSearch } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch";
-import { JpToVnMeaningSection } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnMeaningSection";
-import { SimilarWords } from "@/modules/home/TranslationSection/JpToVnTab/SimilarWords";
-import { TranslatedJpToVnParagraph } from "@/modules/home/TranslationSection/JpToVnTab/TranslatedJpToVnParagraph";
 import { VnToJpSearch } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpSearch";
-import { getRequest, postRequest } from "@/service/data";
+import { getRequest } from "@/service/data";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
+import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 import {
   TranslatedVnToJpParagraph,
   VnToJpParagraphSectionRef,
 } from "./VnToJpTab/TranslatedVnToJpParagraph";
-import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
-
-type TLexemeRef = {
-  hideSuggestions: () => void;
-  translateParagraph: () => Promise<void>;
-};
 
 type Props = {
   _lexemeSearch: TLexeme | undefined;
@@ -38,22 +38,22 @@ export function TranslationSection({ _lexemeSearch }: Props) {
   const { text, word, selectedVocab, selectedGrammar, setVocabMeaningErrMsg } =
     useLexemeStore();
   const { addHistoryItem } = useHistoryStore();
+  const searchVnToJpText = useVnToJpTransStore((state) => state.searchText);
 
   const [tab, setTab] = useQueryParam("tab", TransTab.JPToVN);
 
-  const lexemeRef = useRef<TLexemeRef>(null);
   const [initialLexemeSearch, setInitialLexemeSearch] = useState(_lexemeSearch);
   const [initialLexemeText, setInitialLexemeText] = useState(
     _lexemeSearch?.standard ?? ""
   );
 
-  const searchVnToJpText = useVnToJpTransStore((state) => state.searchText);
+  const jpToVnSearchRef = useRef<JpToVnSearchRef>(null);
+  const jpToVnParagraphSectionRef = useRef<JpToVnParagraphSectionRef>(null);
   const vnToJpMeaningSectionRef = useRef<VnToJpMeaningSectionRef>(null);
   const vnToJpParagraphSectionRef = useRef<VnToJpParagraphSectionRef>(null);
 
   const isVnToJpParagraphMode = searchVnToJpText.length >= PARAGRAPH_MIN_LENGTH;
-  const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
-  const isVocabMode = !isParagraphMode;
+  const isJpToVnParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
 
   const {
     data: lexemeSearch,
@@ -79,16 +79,11 @@ export function TranslationSection({ _lexemeSearch }: Props) {
       },
     }
   );
-  const {
-    trigger: translateParagraph,
-    isMutating: translatingParagraph,
-    error,
-  } = useSWRMutation("/v1/paragraphs/translate", postRequest);
 
   const effectiveLexemeSearch = lexemeSearch || initialLexemeSearch;
 
   const onTranslateParagraph = useCallback(
-    () => lexemeRef.current?.translateParagraph(),
+    () => jpToVnParagraphSectionRef.current?.translateParagraphJpToVn(),
     []
   );
 
@@ -112,9 +107,9 @@ export function TranslationSection({ _lexemeSearch }: Props) {
         <TabsContent value={TransTab.JPToVN}>
           <div className="w-full space-y-4">
             <JpToVnSearch
-              ref={lexemeRef}
+              ref={jpToVnSearchRef}
               initialText={initialLexemeText}
-              translateParagraph={translateParagraph}
+              onTranslateParagraph={onTranslateParagraph}
               onClearInitialText={() => {
                 setInitialLexemeText("");
               }}
@@ -133,7 +128,7 @@ export function TranslationSection({ _lexemeSearch }: Props) {
                 selectedGrammar?.similars
               }
               onWordClick={() => {
-                lexemeRef.current?.hideSuggestions();
+                jpToVnSearchRef.current?.hideSuggestions();
               }}
             />
           </div>
@@ -150,33 +145,26 @@ export function TranslationSection({ _lexemeSearch }: Props) {
         </TabsContent>
       </Tabs>
 
-      {tab === TransTab.VNToJP ? (
-        isVnToJpParagraphMode ? (
+      {tab === TransTab.VNToJP &&
+        (isVnToJpParagraphMode ? (
           <TranslatedVnToJpParagraph ref={vnToJpParagraphSectionRef} />
         ) : (
           <VnToJpMeaningSection ref={vnToJpMeaningSectionRef} />
-        )
-      ) : (
-        <>
-          {isVocabMode && (
-            <JpToVnMeaningSection
-              lexemeSearch={effectiveLexemeSearch || selectedVocab}
-              loadingLexemeSearch={loadingLexemeSearch}
-              retryLexemeSearch={retryLexemeSearch}
-              wordIdToReport={
-                effectiveLexemeSearch?.id || selectedVocab?.id || ""
-              }
-            />
-          )}
-          {isParagraphMode && (
-            <TranslatedJpToVnParagraph
-              error={error}
-              isLoading={translatingParagraph}
-              onTranslateParagraph={onTranslateParagraph}
-            />
-          )}
-        </>
-      )}
+        ))}
+
+      {tab === TransTab.JPToVN &&
+        (isJpToVnParagraphMode ? (
+          <TranslatedJpToVnParagraph ref={jpToVnParagraphSectionRef} />
+        ) : (
+          <JpToVnMeaningSection
+            lexemeSearch={effectiveLexemeSearch || selectedVocab}
+            loadingLexemeSearch={loadingLexemeSearch}
+            retryLexemeSearch={retryLexemeSearch}
+            wordIdToReport={
+              effectiveLexemeSearch?.id || selectedVocab?.id || ""
+            }
+          />
+        ))}
     </div>
   );
 }

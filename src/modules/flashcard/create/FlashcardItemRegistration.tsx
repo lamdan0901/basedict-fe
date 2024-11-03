@@ -94,7 +94,7 @@ export function FlashcardItemRegistration({
         })}
       </div>
 
-      <div className="flex justify-center gap-3 items-center">
+      <div className="flex justify-center flex-wrap gap-3 items-center">
         <span>
           {total}/{FLASHCARD_LIMIT}
         </span>

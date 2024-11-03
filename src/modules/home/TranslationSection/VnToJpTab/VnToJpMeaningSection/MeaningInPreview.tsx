@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandItem, CommandList } from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useQueryParam } from "@/hooks/useQueryParam";
+import { TipsPopup } from "@/modules/home/TranslationSection/components/TipsPopup";
 import { useVnToJpMeaningStore } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpMeaningSection/store";
 import { CircleCheckBig } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -69,29 +68,12 @@ export function MeaningInPreview({
       </Popover>
 
       {canShowMeaningTips && (
-        <Popover open={shouldShowMeaningTips} onOpenChange={toggleMeaningTips}>
-          <PopoverTrigger asChild>
-            <button className="h-2"></button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="p-1.5 bg-red-100 w-[195px]"
-            side="top"
-            align="start"
-          >
-            <div className="text-sm">
-              Tips: Bấm vào nghĩa của từ để xem các nghĩa khác
-            </div>
-            <div className="flex items-center mt-1 space-x-2">
-              <Checkbox
-                onCheckedChange={() => setTimeout(() => hideMeaningTips(), 800)}
-                id="meaning-tips"
-              />
-              <label htmlFor="meaning-tips" className="text-xs">
-                Không hiện tips này nữa
-              </label>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <TipsPopup
+          open={shouldShowMeaningTips}
+          onOpenChange={toggleMeaningTips}
+          tipTitle="Tips: Bấm vào nghĩa của từ để xem các nghĩa khác"
+          onHideTips={() => setTimeout(() => hideMeaningTips(), 800)}
+        />
       )}
 
       <div className="space-x-2 text-sm">
