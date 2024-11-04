@@ -28,7 +28,7 @@ const menu = [
   {
     title: "Tìm kiếm Flashcard",
     href: "/flashcard/search",
-    icon: <Search className="size-5" />,
+    icon: <Search className="size-6" />,
   },
   {
     title: "Flashcard của tôi",
@@ -39,7 +39,7 @@ const menu = [
   {
     title: "Flashcard đang học",
     href: "/flashcard/my-flashcard",
-    icon: <GraduationCap className="size-5" />,
+    icon: <GraduationCap className="size-6" />,
     withSubItems: true,
   },
 ];

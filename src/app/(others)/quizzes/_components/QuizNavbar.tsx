@@ -10,29 +10,62 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { SquareMenu } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib";
+import { ExploreIcon } from "@/components/icons";
+import {
+  BookText,
+  GraduationCap,
+  ScrollText,
+  Search,
+  SquareMenu,
+} from "lucide-react";
+import { QuizIcon } from "@/components/icons/QuizIcon";
+import Link from "next/link";
 
 const menu = [
   // {
   //   title: "Thông tin chung",
   //   href: "/quizzes/general-info",
   // },
-  {
-    title: "Luyện thi BaseDict",
-    href: "/quizzes/basedict-test",
-  },
-  {
-    title: "Làm đề JLPT",
-    href: "/quizzes/jlpt-test",
-  },
+  // {
+  //   title: "Luyện thi BaseDict",
+  //   href: "/quizzes/basedict-test",
+  // },
   // {
   //   title: "Bảng xếp hạng",
   //   href: "/quizzes/ranking",
   // },
   {
+    title: "Khám phá",
+    href: "/quizzes",
+    icon: <ExploreIcon />,
+  },
+  {
+    title: "Tìm kiếm đề thi",
+    href: "/quizzes/search",
+    icon: <Search className="size-6" />,
+  },
+  {
+    title: "Làm đề JLPT",
+    href: "/quizzes/jlpt-test",
+    icon: <QuizIcon />,
+  },
+  {
+    title: "Đề thi của tôi",
+    href: "/quizzes/my-quizzes",
+    icon: <BookText className="size-6" />,
+    withSubItems: true,
+  },
+  {
+    title: "Đề thi đang làm",
+    href: "/quizzes/my-quizzes",
+    icon: <GraduationCap className="size-6" />,
+    withSubItems: true,
+  },
+  {
     title: "Các dạng bài đề thi JLPT",
+    icon: <ScrollText className="size-6" />,
     href: "/quizzes/jlpt-question-types",
   },
 ];
@@ -72,19 +105,21 @@ function InnerQuizNavbar() {
     <Card className="mt-8 lg:mt-0">
       <CardContent className="p-2 flex flex-col items-center gap-y-2">
         {menu.map((item, i) => (
-          <a className="w-full" href={item.href} key={i}>
+          <Link className="w-full" href={item.href} key={i}>
             <Button
               className={cn(
-                "w-full hover:text-blue-500 ",
-                i !== menu.length - 1 && "mb-2",
-                item.href === pathname && "text-blue-500 font-semibold"
+                "w-full justify-start gap-2 hover:text-blue-500 ",
+                item.href === pathname && "text-blue-500 font-semibold",
+                item.withSubItems && "font-semibold",
+                i !== menu.length - 1 && "mb-2"
               )}
               variant={"ghost"}
             >
+              {item.icon}
               {item.title}
             </Button>
             {i !== menu.length - 1 && <Separator />}
-          </a>
+          </Link>
         ))}
       </CardContent>
     </Card>

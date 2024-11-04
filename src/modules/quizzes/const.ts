@@ -38,3 +38,8 @@ export const questionTypesWithExplanation: TQuestionType[] = [
   "Lexeme",
   "GrammarAlign",
 ];
+
+export const quizSortMap = {
+  popular: "Độ phổ biến",
+  updatedAt: "Mới nhất",
+};

@@ -12,5 +12,6 @@ export async function generateMetadata(_: any, parent: ResolvingMetadata) {
 }
 
 export default function BasedictTestPage() {
-  return <QuizBasedictTest />;
+  return null
+  // return <QuizBasedictTest />;
 }

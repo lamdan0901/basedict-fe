@@ -40,3 +40,15 @@ type TSeasonHistory = {
   rankPoint: number;
   createdAt: string;
 };
+
+type TQuizTag = {
+  id: number;
+  count: number;
+  name: string;
+};
+
+type TQuizCreator = TUser & {
+  examNumber: number;
+  totalLearnedNumber: number;
+  totalLearningNumber: number;
+};

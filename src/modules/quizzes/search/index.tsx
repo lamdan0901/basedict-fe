@@ -16,37 +16,62 @@ import {
   scrollToTop,
   stringifyParams,
 } from "@/lib";
-import { flashcardSortMap } from "@/modules/flashcard/const";
-import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { Searchbar } from "@/modules/flashcard/components/Searchbar";
 import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/Ad";
+import { QuizItem } from "@/modules/quizzes/components/QuizItem";
+import { quizSortMap } from "@/modules/quizzes/const";
+import { useAppStore } from "@/store/useAppStore";
+import { shallow } from "zustand/shallow";
+import { jlptLevels } from "@/constants";
 
-const TOP_EL_ID = "top-of-flashcard-search";
+const TOP_EL_ID = "top-of-quiz-search";
 
-export function FlashcardSearch() {
+export function QuizzesSearch() {
+  const { jlptLevel, isLoading: isLoadingProfile } = useAppStore(
+    (state) => ({
+      jlptLevel: state.profile?.jlptLevel,
+      isLoading: state.isLoading,
+    }),
+    shallow
+  );
+  const defaultJlptLevel = isLoadingProfile ? undefined : jlptLevel;
+
   const [searchParams, setSearchParams] = useQueryParams({
     search: "",
     sort: "popular",
+    jlptLevel: "all",
     offset: 1,
     limit: 20,
   });
   const [searchText, setSearchText] = useState(searchParams.search);
   const shouldSearchByTag = searchParams.search.startsWith("#");
 
-  const { data: flashcardSearch, isLoading: isSearching } = useSWR<{
+  const { data: quizSearch, isLoading: isSearching } = useSWR<{
     data: TFlashcardSet[];
     total: number;
   }>(
-    `/v1/flash-card-sets/discover?${stringifyParams(
-      formatQuizNFlashcardSearchParams(searchParams, shouldSearchByTag)
-    )}`,
+    !isLoadingProfile
+      ? `/v1/exams/discover?${stringifyParams(
+          formatQuizNFlashcardSearchParams(
+            {
+              ...searchParams,
+              jlptLevel:
+                searchParams.jlptLevel === "all"
+                  ? undefined
+                  : searchParams.jlptLevel,
+            },
+            shouldSearchByTag
+          )
+        )}`
+      : null,
     getRequest
   );
-  const flashcards = flashcardSearch?.data ?? [];
-  const total = flashcardSearch?.total ?? 0;
+
+  const quizzes = quizSearch?.data ?? [];
+  const total = quizSearch?.total ?? 0;
 
   const debouncedSearch = useDebounceFn((value: string) => {
     setSearchParams({ search: value });
@@ -61,26 +86,57 @@ export function FlashcardSearch() {
     setSearchText(searchParams.search);
   }, [searchParams.search]);
 
+  useEffect(() => {
+    if (
+      !isLoadingProfile &&
+      searchParams.jlptLevel === "all" &&
+      defaultJlptLevel
+    ) {
+      setSearchParams({ jlptLevel: defaultJlptLevel });
+    }
+  }, [
+    defaultJlptLevel,
+    isLoadingProfile,
+    searchParams.jlptLevel,
+    setSearchParams,
+  ]);
+
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <div className="flex sm:flex-nowrap flex-wrap gap-2">
         <Searchbar
           id={TOP_EL_ID}
           value={searchText}
           onSearch={handleSearch}
-          placeholder="Tìm flashcard..."
+          placeholder="Tìm bộ đề..."
         />
         <Select
           value={searchParams.sort}
           onValueChange={(sort) => setSearchParams({ sort })}
         >
-          <SelectTrigger className="shrink-0 basis-[135px]">
+          <SelectTrigger className="sm:shrink-0 basis-[135px]">
             <SelectValue placeholder="" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(flashcardSortMap).map(([key, value]) => (
+            {Object.entries(quizSortMap).map(([key, value]) => (
               <SelectItem key={key} value={key}>
                 {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={searchParams.jlptLevel}
+          onValueChange={(jlptLevel) => setSearchParams({ jlptLevel })}
+        >
+          <SelectTrigger className="sm:shrink-0 basis-[135px]">
+            <SelectValue placeholder="" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={"all"}>Tất cả</SelectItem>
+            {jlptLevels.map(({ title, value }) => (
+              <SelectItem key={value} value={value}>
+                {title}
               </SelectItem>
             ))}
           </SelectContent>
@@ -89,13 +145,13 @@ export function FlashcardSearch() {
 
       {isSearching ? (
         <span>Đang tìm kiếm...</span>
-      ) : flashcards.length === 0 ? (
+      ) : quizzes.length === 0 ? (
         <span>Không có kết quả tìm kiếm</span>
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-2">
-        {flashcards.map((card) => (
-          <FlashcardItem key={card.id} card={card} />
+        {quizzes.map((card) => (
+          <QuizItem key={card.id} card={card} />
         ))}
       </div>
 
