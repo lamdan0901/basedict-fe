@@ -18,7 +18,7 @@ import {
 } from "@/lib";
 import { flashcardSortMap } from "@/modules/flashcard/const";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { Searchbar } from "@/modules/flashcard/components/Searchbar";
+import { Searchbar } from "@/components/Searchbar";
 import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";

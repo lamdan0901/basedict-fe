@@ -17,6 +17,7 @@ export const defaultFlashcardItem = (uid: string) => ({
   backSide: "",
   uid,
 });
+
 export const defaultFlashcardSet = {
   title: "",
   description: "",

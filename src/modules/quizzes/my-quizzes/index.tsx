@@ -3,9 +3,10 @@
 import { AdSense } from "@/components/Ad";
 import { Button } from "@/components/ui/button";
 import { useIsVipUser } from "@/hooks/useIsVipUser";
-import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { UserFlashcardSetHeader } from "@/modules/flashcard/components/UserFlashcardSetHeader";
 import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
+import { QuizItem } from "@/modules/quizzes/components/QuizItem";
+import { UserQuizHeader } from "@/modules/quizzes/components/UserFlashcardSetHeader";
+import { QUIZ_LIMIT } from "@/modules/quizzes/const";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { CircleHelp, Plus } from "lucide-react";
@@ -38,7 +39,7 @@ export function MyQuizzes() {
   return (
     <div>
       <div className="space-y-4">
-        <UserFlashcardSetHeader
+        <UserQuizHeader
           avatar={profile?.avatar}
           name={profile?.name}
           totalSet={total}
@@ -49,7 +50,7 @@ export function MyQuizzes() {
         <div className="flex justify-end gap-3 items-center">
           {!isVip && (
             <span>
-              {total}/{FLASHCARD_SETS_LIMIT}
+              {total}/{QUIZ_LIMIT}
             </span>
           )}
           <Link
@@ -82,7 +83,7 @@ export function MyQuizzes() {
               <span>Bạn chưa tạo bộ đề nào</span>
             ) : null}
             {myFlashCards.map((card) => (
-              <FlashcardItem key={card.id} card={card} />
+              <QuizItem key={card.id} card={card} />
             ))}
           </div>
         </div>
@@ -98,7 +99,7 @@ export function MyQuizzes() {
               <span>Bạn chưa có bộ đề nào đang theo học</span>
             ) : null}
             {learningFlashCards.map((card) => (
-              <FlashcardItem key={card.id} card={card} />
+              <QuizItem key={card.id} card={card} />
             ))}
           </div>
         </div>
