@@ -36,33 +36,33 @@ const menu = [
   //   title: "Bảng xếp hạng",
   //   href: "/quizzes/ranking",
   // },
-  {
-    title: "Khám phá",
-    href: "/quizzes",
-    icon: <ExploreIcon />,
-  },
-  {
-    title: "Tìm kiếm đề thi",
-    href: "/quizzes/search",
-    icon: <Search className="size-6" />,
-  },
+  // {
+  //   title: "Khám phá",
+  //   href: "/quizzes",
+  //   icon: <ExploreIcon />,
+  // },
+  // {
+  //   title: "Tìm kiếm đề thi",
+  //   href: "/quizzes/search",
+  //   icon: <Search className="size-6" />,
+  // },
   {
     title: "Làm đề JLPT",
     href: "/quizzes/jlpt-test",
     icon: <QuizIcon />,
   },
-  {
-    title: "Đề thi của tôi",
-    href: "/quizzes/my-quizzes",
-    icon: <BookText className="size-6" />,
-    withSubItems: true,
-  },
-  {
-    title: "Đề thi đang làm",
-    href: "/quizzes/my-quizzes",
-    icon: <GraduationCap className="size-6" />,
-    withSubItems: true,
-  },
+  // {
+  //   title: "Đề thi của tôi",
+  //   href: "/quizzes/my-quizzes",
+  //   icon: <BookText className="size-6" />,
+  //   withSubItems: true,
+  // },
+  // {
+  //   title: "Đề thi đang làm",
+  //   href: "/quizzes/my-quizzes",
+  //   icon: <GraduationCap className="size-6" />,
+  //   withSubItems: true,
+  // },
   {
     title: "Các dạng bài đề thi JLPT",
     icon: <ScrollText className="size-6" />,
@@ -110,7 +110,7 @@ function InnerQuizNavbar() {
               className={cn(
                 "w-full justify-start gap-2 hover:text-blue-500 ",
                 item.href === pathname && "text-blue-500 font-semibold",
-                item.withSubItems && "font-semibold",
+                // item.withSubItems && "font-semibold",
                 i !== menu.length - 1 && "mb-2"
               )}
               variant={"ghost"}

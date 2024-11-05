@@ -16,7 +16,7 @@ import {
   scrollToTop,
   stringifyParams,
 } from "@/lib";
-import { Searchbar } from "@/modules/flashcard/components/Searchbar";
+import { Searchbar } from "@/components/Searchbar";
 import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -101,6 +101,8 @@ export function QuizzesSearch() {
     setSearchParams,
   ]);
 
+  const isLoading = isLoadingProfile || isSearching;
+
   return (
     <div className="space-y-4">
       <div className="flex sm:flex-nowrap flex-wrap gap-2">
@@ -143,7 +145,7 @@ export function QuizzesSearch() {
         </Select>
       </div>
 
-      {isSearching ? (
+      {isLoading ? (
         <span>Đang tìm kiếm...</span>
       ) : quizzes.length === 0 ? (
         <span>Không có kết quả tìm kiếm</span>
