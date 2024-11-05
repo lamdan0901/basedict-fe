@@ -72,6 +72,16 @@ export function QuizCreation() {
       const formattedData = {
         ...data,
         tags: data.tags.map((tag) => tag.label.split("(")[0].trim()),
+        questions: data.questions.map((question) => {
+          // ex: questions.1.answers.1 -> index == 1
+          const correctAnsIndex = Number(
+            question.correctAnswer.split(".").at(-1)
+          );
+          return {
+            ...question,
+            correctAnswer: question.answers[correctAnsIndex],
+          };
+        }),
       };
 
       const { id } = await (flashcardId

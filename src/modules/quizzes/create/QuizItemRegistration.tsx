@@ -34,6 +34,8 @@ export function QuizItemRegistration({
   const {
     control,
     register,
+    watch,
+    setValue,
     formState: { errors },
   } = useFormContext<TQuizForm>();
 
@@ -45,12 +47,15 @@ export function QuizItemRegistration({
   const total = fields.length;
   const limitReached = total === QUIZ_ITEM_LIMIT;
 
+  // TODO: show error message if no correct answer is selected
+
   return (
     <div className="pt-2 space-y-4 border-t border-muted-foreground">
       <h2 className="text-lg mb-2 font-semibold">Tạo câu hỏi cho bộ đề</h2>
 
       <div className="space-y-6">
         {fields.map((item, i) => {
+          const correctAnswer = watch(`questions.${i}.correctAnswer`);
           return (
             <Card className="relative " key={item.uid}>
               <CardContent className="space-y-4">
@@ -102,24 +107,26 @@ export function QuizItemRegistration({
                 />
 
                 <RadioGroup
-                  // value={'c'}
-                  // onValueChange={setSelectedSet}
+                  value={correctAnswer}
+                  onValueChange={(val) =>
+                    setValue(`questions.${i}.correctAnswer`, val)
+                  }
                   className="space-y-4"
                 >
                   {Array.from({ length: 4 }).map((_, quesIndex) => {
                     const name = `questions.${i}.answers.${quesIndex}` as const;
                     return (
-                      <div
-                        key={name}
-                        className="flex items-center w-full gap-x-2"
-                      >
-                        <RadioGroupItem value={name} id={name} />
-                        <label htmlFor={name}>bruh</label>
+                      <div key={name} className="flex items-end gap-x-2">
+                        <RadioGroupItem
+                          className="size-5 mb-3"
+                          value={name}
+                          id={name}
+                        />
                         <FormField
                           control={control}
                           name={name}
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex-1">
                               <FormLabel>Đáp án {quesIndex + 1}</FormLabel>
                               <Input
                                 value={field.value}
@@ -134,7 +141,7 @@ export function QuizItemRegistration({
                         />
                       </div>
                     );
-                  })}{" "}
+                  })}
                 </RadioGroup>
 
                 <FormField
