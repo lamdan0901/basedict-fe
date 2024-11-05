@@ -17,6 +17,7 @@ import { CircleHelp } from "lucide-react";
 import { memo, useState } from "react";
 import useSWRMutation from "swr/mutation";
 import { getRequest } from "../service/data";
+import DOMPurify from "dompurify";
 
 interface ReadingQuestionProps {
   question: TReadingQuestion;
@@ -111,9 +112,15 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                     }
                   }}
                 />
-                <Label className="cursor-pointer" htmlFor={answerValue}>
-                  {answer}
-                </Label>
+                <Label
+                  className="cursor-pointer"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(answer, {
+                      USE_PROFILES: { html: true },
+                    }),
+                  }}
+                  htmlFor={answerValue}
+                ></Label>
                 {shouldShowTooltip && (
                   <Popover>
                     <PopoverTrigger
