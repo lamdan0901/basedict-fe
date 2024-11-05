@@ -1,15 +1,21 @@
 "use client";
 
+import { MeaningPopup } from "@/components/TranslationPopup/MeaningPopup";
 import { Badge } from "@/components/ui/badge";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
-import { useLexemeStore } from "@/store/useLexemeStore";
+import { MouseEvent, useRef, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import { shallow } from "zustand/shallow";
 
 export function TodaysTopic() {
-  const { setText, setVocabMeaningErrMsg, setSelectedVocab, setWord } =
-    useLexemeStore();
+  const meaningPopupRef = useRef<HTMLDivElement>(null);
+  const [selection, setSelection] = useState("");
+  const [showMeaningPopup, setShowMeaningPopup] = useState(false);
+  const [popupTriggerPosition, setPopupTriggerPosition] = useState({
+    top: 0,
+    left: 0,
+  });
 
   const { profileJlptLevel, isLoading } = useAppStore(
     (state) => ({
@@ -26,14 +32,13 @@ export function TodaysTopic() {
       getRequest
     );
 
-  function handleWordClick(word: string) {
-    setText(word);
-    setWord(word);
-    setVocabMeaningErrMsg("");
-    setSelectedVocab(null);
-
-    const topEl = document.querySelector("#top");
-    topEl?.scrollIntoView({ behavior: "smooth", block: "end" });
+  function handleWordClick(word: string, e: MouseEvent<HTMLDivElement>) {
+    setShowMeaningPopup(true);
+    setSelection(word);
+    setPopupTriggerPosition({
+      top: e.clientY,
+      left: e.clientX,
+    });
   }
 
   return (
@@ -60,13 +65,23 @@ export function TodaysTopic() {
           {todaysTopic?.lexemes?.map((word, i) => (
             <Badge
               className="cursor-pointer text-sm sm:text-base"
-              onClick={() => handleWordClick(word)}
+              onClick={(e) => handleWordClick(word, e)}
               key={i}
             >
               {word}
             </Badge>
           ))}
         </div>
+      )}
+
+      {showMeaningPopup && (
+        <MeaningPopup
+          ref={meaningPopupRef}
+          selection={selection}
+          popupTriggerPosition={popupTriggerPosition}
+          showPopup={showMeaningPopup}
+          setShowPopup={setShowMeaningPopup}
+        />
       )}
     </div>
   );

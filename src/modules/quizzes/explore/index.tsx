@@ -3,49 +3,48 @@
 import { AdSense } from "@/components/Ad";
 import { BadgeList } from "@/components/BadgeList";
 import { Input } from "@/components/ui/input";
-import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreator";
-import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
+import { QuizCreator } from "@/modules/quizzes/components/QuizCreator";
+import { QuizItem } from "@/modules/quizzes/components/QuizItem";
 import { getRequest } from "@/service/data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 
-export function FlashcardExploring() {
+export function QuizzesExplore() {
   const router = useRouter();
 
-  const { data: flashcardTags, isLoading: isLoadingTags } = useSWR<
-    TFlashcardTag[]
-  >("/v1/flash-card-sets/tags", getRequest);
+  const { data: quizTags, isLoading: isLoadingTags } = useSWR<TQuizTag[]>(
+    "/v1/exams/tags",
+    getRequest
+  );
 
-  const { data: flashcardDiscover, isLoading: isLoadingDiscover } = useSWR<{
+  const { data: quizDiscover, isLoading: isLoadingDiscover } = useSWR<{
     data: TFlashcardSet[];
     total: number;
-  }>("/v1/flash-card-sets/discover", getRequest);
+  }>("/v1/exams/discover", getRequest);
 
   const { data: topCreators = [], isLoading: isLoadingTopCreators } = useSWR<
-    TFlashcardCreator[]
-  >("/v1/flash-card-sets/top-creator", getRequest);
+    TQuizCreator[]
+  >("/v1/exams/top-creator", getRequest);
 
-  const flashcards = flashcardDiscover?.data ?? [];
+  const quizzes = quizDiscover?.data ?? [];
 
   return (
     <div className="space-y-2">
       <div>
-        <Link href="/flashcard/search">
-          <Input type="text" placeholder="Tìm flashcard..." />
+        <Link href="/quizzes/search">
+          <Input type="text" placeholder="Tìm bộ đề..." />
         </Link>
-        <h2 className="text-lg mb-2 mt-4 font-semibold">
-          Các bộ Flashcard phổ biến
-        </h2>
+        <h2 className="text-lg mb-2 mt-4 font-semibold">Khám phá bộ đề</h2>
         {isLoadingDiscover && "Đang tải..."}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {flashcards.map((card) => (
-            <FlashcardItem key={card.id} hiddenDate card={card} />
+          {quizzes.map((card) => (
+            <QuizItem key={card.id} hiddenDate card={card} />
           ))}
         </div>
         <Link
           className="text-blue-500 hover:underline block w-fit ml-auto mt-2"
-          href="/flashcard/search"
+          href="/quizzes/search"
         >
           Tìm kiếm thêm
         </Link>
@@ -56,19 +55,19 @@ export function FlashcardExploring() {
         className="px-0 pb-4"
         titleClassName="font-semibold w-full"
         title="Các tag phổ biến"
-        words={flashcardTags?.map((tag) => `${tag.name} (${tag.count})`)}
+        words={quizTags?.map((tag) => `${tag.name} (${tag.count})`)}
         onWordClick={(tag) => {
           tag = `q=~%28search~%27*23${tag.split("(")[0].trim()}%29`;
-          router.push(`/flashcard/search?${tag}`);
+          router.push(`/quizzes/search?${tag}`);
         }}
       />
 
       <div>
-        <h2 className="text-lg mb-2 font-semibold">Top 5 người đóng góp</h2>
+        <h2 className="text-lg mb-2 font-semibold">Top người đóng góp</h2>
         {isLoadingTopCreators && "Đang tải..."}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {topCreators.map((creator, i) => (
-            <FlashcardCreator key={i} creator={creator} />
+            <QuizCreator key={i} creator={creator} />
           ))}
         </div>
       </div>
