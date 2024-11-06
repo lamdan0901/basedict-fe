@@ -3,7 +3,6 @@
 import { AdSense } from "@/components/Ad";
 import { Button } from "@/components/ui/button";
 import { useIsVipUser } from "@/hooks/useIsVipUser";
-import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
 import { UserQuizHeader } from "@/modules/quizzes/components/UserFlashcardSetHeader";
 import { QUIZ_LIMIT } from "@/modules/quizzes/const";
@@ -24,17 +23,17 @@ export function MyQuizzes() {
   );
   const isVip = useIsVipUser();
 
-  const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
+  const { data: myQuiz, isLoading } = useSWR<TMyQuiz>(
     `/v1/exams/my-exams`,
     getRequest
   );
 
-  const myFlashCards = myFlashcardSet?.myFlashCards ?? [];
-  const learningFlashCards = myFlashcardSet?.learningFlashCards ?? [];
-  const total = (myFlashCards?.length ?? 0) + (learningFlashCards?.length ?? 0);
-  const totalLearnedNumber = myFlashcardSet?.totalLearnedNumber ?? 0;
-  const totalLearningNumber = myFlashcardSet?.totalLearningNumber ?? 0;
-  const limitReached = isVip ? false : total === FLASHCARD_SETS_LIMIT;
+  const myExams = myQuiz?.myExams ?? [];
+  const learningExams = myQuiz?.learningExams ?? [];
+  const total = (myExams?.length ?? 0) + (learningExams?.length ?? 0);
+  const totalLearnedNumber = myQuiz?.totalLearnedNumber ?? 0;
+  const totalLearningNumber = myQuiz?.totalLearningNumber ?? 0;
+  const limitReached = isVip ? false : total === QUIZ_LIMIT;
 
   return (
     <div>
@@ -58,20 +57,17 @@ export function MyQuizzes() {
             href="/quizzes/create"
           >
             <Button size={"sm"} disabled={limitReached}>
-              <Plus className="size-5 mr-2" /> Tạo bộ đề
+              <Plus className="size-5 mr-2" /> Tạo đề thi
             </Button>
           </Link>
         </div>
 
         <div>
           <div className="flex items-center mb-2 flex-wrap justify-between">
-            <h2 className="text-lg font-semibold">Bộ đề của tôi</h2>
+            <h2 className="text-lg font-semibold">Đề thi của tôi</h2>
             {!isVip && (
               <div className="flex text-muted-foreground items-center ">
-                <i>
-                  Bạn chỉ có thể tạo và theo học tối đa {FLASHCARD_SETS_LIMIT}{" "}
-                  bộ
-                </i>
+                <i>Bạn chỉ có thể tạo và làm tối đa {QUIZ_LIMIT} đề</i>
                 <CircleHelp className="size-5 ml-2" />
               </div>
             )}
@@ -79,27 +75,25 @@ export function MyQuizzes() {
           <div className="grid gap-4 xl:grid-cols-2">
             {isLoading ? (
               <span>Đang tải...</span>
-            ) : !myFlashCards.length ? (
-              <span>Bạn chưa tạo bộ đề nào</span>
+            ) : !myExams.length ? (
+              <span>Bạn chưa tạo đề thi nào</span>
             ) : null}
-            {myFlashCards.map((card) => (
-              <QuizItem key={card.id} card={card} />
+            {myExams.map((quiz) => (
+              <QuizItem key={quiz.id} quiz={quiz} />
             ))}
           </div>
         </div>
 
         <div>
-          <h2 className="text-lg mb-2 pt-4 font-semibold">
-            Flashcard đang theo học
-          </h2>
+          <h2 className="text-lg mb-2 pt-4 font-semibold">Đề thi đang làm</h2>
           <div className="grid gap-4 xl:grid-cols-2">
             {isLoading ? (
               <span>Đang tải...</span>
-            ) : !learningFlashCards.length ? (
-              <span>Bạn chưa có bộ đề nào đang theo học</span>
+            ) : !learningExams.length ? (
+              <span>Bạn chưa có đề thi nào đang làm</span>
             ) : null}
-            {learningFlashCards.map((card) => (
-              <QuizItem key={card.id} card={card} />
+            {learningExams.map((quiz) => (
+              <QuizItem key={quiz.id} quiz={quiz} />
             ))}
           </div>
         </div>

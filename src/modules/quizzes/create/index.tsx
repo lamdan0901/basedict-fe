@@ -23,14 +23,16 @@ import { useAppStore } from "@/store/useAppStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
+import { v4 as uuid } from "uuid";
 
 export function QuizCreation() {
   const { toast } = useToast();
   const router = useRouter();
-  const { flashcardId } = useParams();
+  const { quizId } = useParams();
   const userId = useAppStore((state) => state.profile?.id);
 
   const form = useForm<TQuizForm>({
@@ -40,23 +42,23 @@ export function QuizCreation() {
   });
   const {
     reset,
+    setError,
     register,
     handleSubmit,
     formState: { errors },
   } = form;
 
-  const { data: quiz, isLoading: isLoadingQuiz } = useSWR<TFlashcardSet>(
-    flashcardId ? `exams/${flashcardId}/get-one` : null,
-    () => getRequest(`/v1/exams/${flashcardId}`)
+  const { data: quiz, isLoading: isLoadingQuiz } = useSWR<TQuiz>(
+    quizId ? `exams/${quizId}/get-one` : null,
+    () => getRequest(`/v1/exams/${quizId}`)
   );
   const { trigger: addQuiz, isMutating: isAddingQuiz } = useSWRMutation(
     "/v1/exams",
     postRequest
   );
   const { trigger: updateQuiz, isMutating: isUpdatingQuiz } = useSWRMutation(
-    `exams/${flashcardId}/update`,
-    (_, { arg }: { arg: any }) =>
-      patchRequest(`/v1/exams/${flashcardId}`, { arg })
+    `exams/${quizId}/update`,
+    (_, { arg }: { arg: any }) => patchRequest(`/v1/exams/${quizId}`, { arg })
   );
 
   const isLoading = isLoadingQuiz;
@@ -65,6 +67,17 @@ export function QuizCreation() {
 
   async function submitForm(data: TQuizForm) {
     try {
+      let hasCorrectAnsError = false;
+      data.questions.forEach((question, index) => {
+        if (!question.correctAnswer) {
+          setError(`questions.${index}.correctAnswer`, {
+            message: "Vui lòng chọn đáp án đúng cho câu hỏi này",
+          });
+          hasCorrectAnsError = true;
+        }
+      });
+      if (hasCorrectAnsError) return;
+
       data.questions.forEach((item) => {
         delete item.uid;
         if (item.id === "") delete item.id;
@@ -72,9 +85,19 @@ export function QuizCreation() {
       const formattedData = {
         ...data,
         tags: data.tags.map((tag) => tag.label.split("(")[0].trim()),
+        questions: data.questions.map((question) => {
+          // ex: questions.1.answers.1 -> index == 1
+          const correctAnsIndex = Number(
+            question.correctAnswer.split(".").at(-1)
+          );
+          return {
+            ...question,
+            correctAnswer: question.answers[correctAnsIndex],
+          };
+        }),
       };
 
-      const { id } = await (flashcardId
+      const { id } = await (quizId
         ? updateQuiz(formattedData)
         : addQuiz(formattedData));
 
@@ -83,7 +106,7 @@ export function QuizCreation() {
         title: `Lưu thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
       });
-      router.push(`/flashcard/${id}`);
+      router.push(`/quizzes/${id}`);
     } catch (err) {
       console.log("err", err);
       toast({
@@ -96,24 +119,29 @@ export function QuizCreation() {
     }
   }
 
-  // useEffect(() => {
-  //   if (flashcardSet)
-  //     reset({
-  //       ...flashcardSet,
-  //       flashCards: flashcardSet.flashCards?.map((item) => ({
-  //         ...item,
-  //         uid: uuid(),
-  //       })),
-  //       tags:
-  //         flashcardSet.tags?.map((tag) => ({ label: tag, value: uuid() })) ??
-  //         [],
-  //     });
-  // }, [flashcardSet, reset]);
+  useEffect(() => {
+    if (!quiz) return;
 
-  if (isLoading) return <div>Đang tải bộ đề...</div>;
-  if (flashcardId && !quiz) return <div>Không tìm thấy bộ đề</div>;
-  if (flashcardId && !isMyQuiz)
-    return <div>Bạn không có quyền chỉnh sửa bộ đề này</div>;
+    reset({
+      ...quiz,
+      questions: quiz.questions?.map((question, i) => {
+        const correctAnsIndex = question.answers.findIndex(
+          (answer) => answer === question.correctAnswer
+        );
+        return {
+          ...question,
+          correctAnswer: `questions.${i}.answers.${correctAnsIndex}`,
+          uid: uuid(),
+        };
+      }),
+      tags: quiz.tags?.map((tag) => ({ label: tag, value: uuid() })) ?? [],
+    });
+  }, [quiz, reset]);
+
+  if (isLoading) return <div>Đang tải đề thi...</div>;
+  if (quizId && !quiz) return <div>Không tìm thấy đề thi</div>;
+  if (quizId && !isMyQuiz)
+    return <div>Bạn không có quyền chỉnh sửa đề thi này</div>;
 
   return (
     <div className="space-y-4">

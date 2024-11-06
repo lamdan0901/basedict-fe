@@ -21,7 +21,7 @@ import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
 import {
   StateSwitcher,
   TStateSwitcherRef,
-} from "@/modules/quizzes/JlptTestModule/StateSwitcher";
+} from "@/modules/quizzes/components/JlptTestModule/StateSwitcher";
 import { postRequest } from "@/service/data";
 import { useAnswerStore } from "@/store/useAnswerStore";
 import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
@@ -32,7 +32,7 @@ export function JlptTestQuestions({
   data,
   isDailyTest,
 }: {
-  data: TJlptTestItem | undefined;
+  data: TQuiz | undefined;
   isDailyTest?: boolean;
 }) {
   const { userAnswers } = useAnswerStore();

@@ -1,27 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import {
-  defaultQuizItem,
-  questionTypes,
-  QUIZ_ITEM_LIMIT,
-} from "@/modules/quizzes/const";
+import { defaultQuizItem, QUIZ_ITEM_LIMIT } from "@/modules/quizzes/const";
 import { TQuizForm, TQuizItem } from "@/modules/quizzes/schema";
-import { ChevronRight, Plus, Trash } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 as uuid } from "uuid";
-import { FormField, FormItem, FormLabel } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export function QuizItemRegistration({
   onSubmit,
@@ -34,6 +23,8 @@ export function QuizItemRegistration({
   const {
     control,
     register,
+    watch,
+    setValue,
     formState: { errors },
   } = useFormContext<TQuizForm>();
 
@@ -47,41 +38,17 @@ export function QuizItemRegistration({
 
   return (
     <div className="pt-2 space-y-4 border-t border-muted-foreground">
-      <h2 className="text-lg mb-2 font-semibold">Tạo câu hỏi cho bộ đề</h2>
+      <h2 className="text-lg mb-2 font-semibold">Tạo câu hỏi cho đề thi</h2>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {fields.map((item, i) => {
+          const correctAnswer = watch(`questions.${i}.correctAnswer`);
           return (
             <Card className="relative " key={item.uid}>
               <CardContent className="space-y-4">
                 {item.id && (
                   <input type="hidden" {...register(`questions.${i}.id`)} />
                 )}
-
-                <FormField
-                  control={control}
-                  name={`questions.${i}.type`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Loại câu hỏi</FormLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="w-[160px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {questionTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
 
                 <FormField
                   control={control}
@@ -92,7 +59,10 @@ export function QuizItemRegistration({
                       <Input
                         value={field.value}
                         onChange={field.onChange}
-                        error={errors.questions?.[i]?.question?.message}
+                        error={
+                          errors.questions?.[i]?.question?.message ||
+                          errors.questions?.[i]?.correctAnswer?.message
+                        }
                       />
                       <i className="text-muted-foreground text-xs">
                         Bạn hãy chọn đáp án đúng
@@ -102,39 +72,44 @@ export function QuizItemRegistration({
                 />
 
                 <RadioGroup
-                  // value={'c'}
-                  // onValueChange={setSelectedSet}
-                  className="space-y-4"
+                  value={correctAnswer}
+                  onValueChange={(val) =>
+                    setValue(`questions.${i}.correctAnswer`, val)
+                  }
+                  className="space-y-2"
                 >
-                  {Array.from({ length: 4 }).map((_, quesIndex) => {
-                    const name = `questions.${i}.answers.${quesIndex}` as const;
+                  {Array.from({ length: 4 }).map((_, ansIndex) => {
+                    const name = `questions.${i}.answers.${ansIndex}` as const;
                     return (
-                      <div
+                      <FormField
                         key={name}
-                        className="flex items-center w-full gap-x-2"
-                      >
-                        <RadioGroupItem value={name} id={name} />
-                        <label htmlFor={name}>bruh</label>
-                        <FormField
-                          control={control}
-                          name={name}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Đáp án {quesIndex + 1}</FormLabel>
+                        control={control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel className="ml-7">
+                              Đáp án {ansIndex + 1}
+                            </FormLabel>
+                            <div className="flex gap-x-2">
+                              <RadioGroupItem
+                                className="size-5 mt-3"
+                                value={name}
+                                id={name}
+                              />
                               <Input
                                 value={field.value}
                                 onChange={field.onChange}
                                 error={
-                                  errors.questions?.[i]?.answers?.[quesIndex]
+                                  errors.questions?.[i]?.answers?.[ansIndex]
                                     ?.message
                                 }
                               />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
                     );
-                  })}{" "}
+                  })}
                 </RadioGroup>
 
                 <FormField
@@ -155,7 +130,7 @@ export function QuizItemRegistration({
                 {total > 1 && (
                   <Button
                     type="button"
-                    className={"absolute z-10 top-0 right-2"}
+                    className={"absolute z-10 -top-3 right-1"}
                     size={"icon"}
                     variant={"ghost"}
                     title="Xoá câu hỏi này"
@@ -195,7 +170,7 @@ export function QuizItemRegistration({
           <Plus className="size-5 mr-2" /> Thêm câu hỏi
         </Button>
         <Button disabled={isMutating} onClick={onSubmit} size={"sm"}>
-          Lưu bộ đề
+          Lưu đề thi
         </Button>
         <Button
           variant={"destructive"}

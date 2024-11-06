@@ -50,7 +50,6 @@ export const quizSortMap = {
 };
 
 export const defaultQuizItem = (uid: string) => ({
-  type: "KanjiToHiragara",
   question: "",
   answers: ["", "", "", ""],
   correctAnswer: "",
@@ -64,14 +63,3 @@ export const defaultQuizFormValue = {
   jlptLevel: "N3",
   questions: [defaultQuizItem(uuid())],
 };
-
-export const questionTypes = [
-  "KanjiToHiragara",
-  "HiraganaToKanji",
-  "SuffixPrefix",
-  "Lexeme",
-  "Synonym",
-  "ContextLexeme",
-  "Grammar",
-  "GrammarAlign",
-];

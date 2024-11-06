@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 const quizItemSchema = z.object({
-  type: z.string(),
   question: z
     .string()
     .min(1, "Câu hỏi không được để trống")
