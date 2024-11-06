@@ -20,7 +20,7 @@ type TReadingMaterial = {
 };
 
 type TReadingQuestion = {
-  id: number;
+  id?: number;
   question: string;
   answers: string[];
   correctAnswer: string;

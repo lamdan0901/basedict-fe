@@ -48,6 +48,6 @@ export async function generateMetadata(
   };
 }
 
-export default function FlashcardViewPage() {
+export default function FlashcardDetailPage() {
   return <FlashcardDetail />;
 }

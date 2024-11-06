@@ -38,7 +38,7 @@ export function UserQuizHeader({
           <span className="text-lg font-semibold">{name}</span>
           <div className="flex flex-wrap gap-2">
             <div className="bg-slate-50 gap-1 flex rounded-full px-2 text-sm border">
-              <CardIcon width={20} height={20} /> {totalSet} bộ đề
+              <CardIcon width={20} height={20} /> {totalSet} đề thi
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -47,7 +47,7 @@ export function UserQuizHeader({
                   <span>{totalLearningNumber} người</span>
                 </div>
               </TooltipTrigger>
-              <TooltipContent>Số người đang học</TooltipContent>
+              <TooltipContent>Số người đang làm</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -56,7 +56,7 @@ export function UserQuizHeader({
                   <span>{totalLearnedNumber} lượt</span>
                 </div>
               </TooltipTrigger>
-              <TooltipContent>Số người đã học</TooltipContent>
+              <TooltipContent>Số người đã làm</TooltipContent>
             </Tooltip>
           </div>
         </div>

@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import { QuizIcon } from "@/components/icons/QuizIcon";
 import Link from "next/link";
+import { getRequest } from "@/service/data";
+import useSWR from "swr";
+import { useState } from "react";
 
 const menu = [
   // {
@@ -71,12 +74,13 @@ const menu = [
 ];
 
 export function QuizNavbar() {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const isLgScreen = useMediaQuery("(min-width: 1024px)");
 
   if (isLgScreen) return <InnerQuizNavbar />;
 
   return (
-    <Sheet>
+    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
         <Button
           variant={"outline"}
@@ -92,14 +96,28 @@ export function QuizNavbar() {
         aria-describedby={undefined}
         side="left"
       >
-        <InnerQuizNavbar />
+        <InnerQuizNavbar onMenuItemClick={() => setSheetOpen(false)} />
       </SheetContent>
     </Sheet>
   );
 }
 
-function InnerQuizNavbar() {
+function InnerQuizNavbar({
+  onMenuItemClick,
+}: {
+  onMenuItemClick?: () => void;
+}) {
   const pathname = usePathname();
+
+  const { data: myQuiz } = useSWR<TMyQuiz>(`/v1/exams/my-exams`, getRequest);
+
+  const myExams = myQuiz?.myExams ?? [];
+  const learningExams = myQuiz?.learningExams ?? [];
+
+  const quizMap: Record<string, TQuiz[]> = {
+    "Đề thi của tôi": myExams,
+    "Đề thi đang làm": learningExams,
+  };
 
   return (
     <Card className="mt-8 lg:mt-0">
@@ -114,10 +132,30 @@ function InnerQuizNavbar() {
                 i !== menu.length - 1 && "mb-2"
               )}
               variant={"ghost"}
+              onClick={onMenuItemClick}
             >
               {item.icon}
               {item.title}
             </Button>
+            {item.withSubItems &&
+              quizMap[item.title].map((item) => (
+                <Link
+                  className="w-full"
+                  key={item.id}
+                  href={`/quizzes/${item.id}`}
+                >
+                  <Button
+                    className={cn(
+                      "w-full block truncate font-normal hover:text-blue-500 ",
+                      `/quizzes/${item.id}` === pathname && "text-blue-500"
+                    )}
+                    variant={"ghost"}
+                    onClick={onMenuItemClick}
+                  >
+                    {item.title} - {item.jlptLevel}
+                  </Button>
+                </Link>
+              ))}
             {i !== menu.length - 1 && <Separator />}
           </Link>
         ))}

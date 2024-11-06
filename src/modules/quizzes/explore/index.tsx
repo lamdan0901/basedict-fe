@@ -19,7 +19,7 @@ export function QuizzesExplore() {
   );
 
   const { data: quizDiscover, isLoading: isLoadingDiscover } = useSWR<{
-    data: TFlashcardSet[];
+    data: TQuiz[];
     total: number;
   }>("/v1/exams/discover", getRequest);
 
@@ -33,13 +33,13 @@ export function QuizzesExplore() {
     <div className="space-y-2">
       <div>
         <Link href="/quizzes/search">
-          <Input type="text" placeholder="Tìm bộ đề..." />
+          <Input type="text" placeholder="Tìm đề thi..." />
         </Link>
-        <h2 className="text-lg mb-2 mt-4 font-semibold">Khám phá bộ đề</h2>
+        <h2 className="text-lg mb-2 mt-4 font-semibold">Khám phá đề thi</h2>
         {isLoadingDiscover && "Đang tải..."}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {quizzes.map((card) => (
-            <QuizItem key={card.id} hiddenDate card={card} />
+          {quizzes.map((quiz) => (
+            <QuizItem key={quiz.id} hiddenDate quiz={quiz} />
           ))}
         </div>
         <Link

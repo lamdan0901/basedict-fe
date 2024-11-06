@@ -1,17 +1,3 @@
-type TTestReading = {
-  japanese: string;
-  questions: TReadingQuestion[];
-};
-
-type TJlptTestItem = {
-  id: number;
-  title: string;
-  jlptLevel: TJlptLevel;
-  questions: TReadingQuestion[];
-  readings: TTestReading[];
-  isDone?: boolean;
-};
-
 type TSeason = {
   name: string;
   startDate: string;
@@ -49,6 +35,51 @@ type TQuizTag = {
 
 type TQuizCreator = TUser & {
   examNumber: number;
+  totalLearnedNumber: number;
+  totalLearningNumber: number;
+  exams: TQuiz[];
+};
+
+type TQuizQuestion = {
+  id: number;
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  explanation: string;
+};
+
+type TQuizReadingQuestion = {
+  question: string;
+  answers: string[];
+  correctAnswer: string;
+  explanation?: string;
+};
+
+type TQuizReading = {
+  japanese: string;
+  questions: TQuizReadingQuestion[];
+};
+
+type TQuiz = {
+  id: number;
+  jlptLevel: string;
+  title: string;
+  description: string;
+  owner: TUser;
+  tags: string[];
+  updatedAt: string;
+  learnedNumber: number;
+  learningNumber: number;
+  questionNumber: number;
+  questions: TQuizQuestion[];
+  readings: TQuizReading[];
+  isLearning: boolean;
+  isDone?: boolean;
+};
+
+type TMyQuiz = {
+  myExams: TQuiz[];
+  learningExams: TQuiz[];
   totalLearnedNumber: number;
   totalLearningNumber: number;
 };
