@@ -121,6 +121,12 @@ export function QuizDetail() {
     router.push(`/quizzes/jlpt-test/${quizId}`);
   }
 
+  function handleStartQuickTest() {
+    if (!canGoToLearning()) return;
+
+    router.push(`/quizzes/${quizId}/quick-test`);
+  }
+
   async function handleRegisterQuiz() {
     try {
       await startLearning();
@@ -159,6 +165,9 @@ export function QuizDetail() {
         <div className="flex gap-2 pt-4 border-t border-muted-foreground flex-wrap justify-center">
           <Button disabled={isTogglingLearning} onClick={handleStartLearning}>
             Bắt đầu làm
+          </Button>
+          <Button disabled={isTogglingLearning} onClick={handleStartQuickTest}>
+            Vào thi nhanh
           </Button>
           {!isMyQuiz && (
             <Button
