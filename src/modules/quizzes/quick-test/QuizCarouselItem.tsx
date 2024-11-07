@@ -1,16 +1,16 @@
 import { Markdown } from "@/components/Markdown";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib";
-import { memo, useEffect, useState } from "react";
 import DOMPurify from "dompurify";
-import { Button } from "@/components/ui/button";
+import { memo, useEffect, useRef, useState } from "react";
 
 type Props = {
   item: TQuizQuestion;
   showingCorrectAns: boolean;
   userSelectedAns: string;
-  onShowExplanation: () => void;
+  onShowExplanation: (explanation: string) => void;
   onSelectAns: (id: number, ans: string) => void;
 };
 
@@ -22,29 +22,33 @@ export const QuizCarouselItem = memo<Props>(
     onSelectAns,
     onShowExplanation,
   }) => {
+    const carouselItemRef = useRef<HTMLDivElement>(null);
     const [showingItemCorrectAns, setShowingItemCorrectAns] = useState(false);
-    // const [selectedAns, setSelectedAns] = useState("");
 
     useEffect(() => {
+      const carouselEl = carouselItemRef.current;
+
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.code === "Space") {
           event.preventDefault();
-          setShowingItemCorrectAns((prev) => !prev);
+          if (!userSelectedAns) return;
+          setShowingItemCorrectAns(true);
         }
       };
-      window.addEventListener("keydown", handleKeyDown);
+      carouselEl?.addEventListener("keydown", handleKeyDown);
+
       return () => {
-        window.removeEventListener("keydown", handleKeyDown);
+        carouselEl?.removeEventListener("keydown", handleKeyDown);
       };
-    }, []);
+    }, [userSelectedAns]);
 
     function handleAnswerSelect(ans: string) {
-      // setSelectedAns(ans);
+      if (showingItemCorrectAns) return;
       onSelectAns(item.id, ans);
     }
     console.log("render", item.id);
     return (
-      <CarouselItem>
+      <CarouselItem ref={carouselItemRef}>
         <Card>
           <CardContent className="flex aspect-square flex-col gap-4 sm:aspect-video items-center justify-center p-6">
             <Markdown
@@ -68,7 +72,8 @@ export const QuizCarouselItem = memo<Props>(
                       selectedAns &&
                         "border bg-blue-100 border-muted-foreground",
                       isCorrectAnswer && "bg-green-100",
-                      isWrongAnswer && "bg-red-100"
+                      isWrongAnswer && "bg-red-100",
+                      showingItemCorrectAns && "pointer-events-none"
                     )}
                     onClick={() => handleAnswerSelect(ans)}
                   >
@@ -86,21 +91,20 @@ export const QuizCarouselItem = memo<Props>(
             </div>
 
             <div className="flex gap-2 justify-center items-center flex-wrap">
-              <Button>Xem đáp án</Button>
+              <Button
+                disabled={showingItemCorrectAns || !userSelectedAns}
+                onClick={() => setShowingItemCorrectAns(true)}
+              >
+                Xem đáp án
+              </Button>
               <Button
                 variant={"outline"}
-                disabled={!item.explanation}
-                onClick={onShowExplanation}
+                disabled={!item.explanation || !showingItemCorrectAns}
+                onClick={() => onShowExplanation(item.explanation ?? "")}
               >
                 {item.explanation ? "Xem giải thích" : "Không có giải thích"}
               </Button>
             </div>
-
-            {(showingCorrectAns || showingItemCorrectAns) && (
-              <span className={cn("text-sm whitespace-pre-line sm:text-base")}>
-                {item.correctAnswer}
-              </span>
-            )}
           </CardContent>
         </Card>
       </CarouselItem>
@@ -109,10 +113,8 @@ export const QuizCarouselItem = memo<Props>(
   (prev, next) => {
     return (
       prev.showingCorrectAns === next.showingCorrectAns &&
-        prev.item.id === next.item.id &&
-        prev.userSelectedAns === next.userSelectedAns,
-      prev.onSelectAns === next.onSelectAns &&
-        prev.onShowExplanation === next.onShowExplanation
+      prev.item.id === next.item.id &&
+      prev.userSelectedAns === next.userSelectedAns
     );
   }
 );

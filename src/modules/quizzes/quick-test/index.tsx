@@ -1,52 +1,51 @@
 "use client";
 
 import { AdSense } from "@/components/Ad";
-import { ShuffleIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
+  CarouselItem,
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import {
-  DialogClose,
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogTitle,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { shuffleArray } from "@/lib";
 import { RegisterRequiredWrapper } from "@/modules/quizzes/components/RegisterRequiredWrapper";
 import { QuizCarouselItem } from "@/modules/quizzes/quick-test/QuizCarouselItem";
+import { QuizQuickTestResult } from "@/modules/quizzes/quick-test/QuizQuickTestResult";
+import { QuizQuickTestTopBar } from "@/modules/quizzes/quick-test/QuizQuickTestTopbar";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
-import { Check, CircleHelp } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
 export function QuizQuickTest() {
-  const { toast } = useToast();
   const isSmScreen = useMediaQuery("(max-width: 640px)");
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
   const [count, setCount] = useState(0);
   const [currentExplanation, setCurrentExplanation] = useState("");
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-  console.log("userAnswers: ", userAnswers);
 
   const { quizId } = useParams();
   const userId = useAppStore((state) => state.profile?.id);
@@ -65,6 +64,17 @@ export function QuizQuickTest() {
 
   const isMyQuiz = userId === quiz?.owner?.id;
 
+  const correctAnswers = useMemo(
+    () =>
+      questions?.reduce((acc, question) => {
+        if (question.correctAnswer === userAnswers[question.id]) {
+          return acc + 1;
+        }
+        return acc;
+      }, 0),
+    [questions, userAnswers]
+  );
+
   useEffect(() => {
     if (!isLoading && !isMyQuiz && !quiz?.isLearning) {
       setQuizRegisterPromptOpen(true);
@@ -75,10 +85,10 @@ export function QuizQuickTest() {
     if (!api) return;
 
     setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
+    setCurrentCarouselIndex(api.selectedScrollSnap() + 1);
 
     api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
+      setCurrentCarouselIndex(api.selectedScrollSnap() + 1);
     });
   }, [api]);
 
@@ -98,12 +108,11 @@ export function QuizQuickTest() {
     };
   }, [api]);
 
-  const showExplanation = useCallback((item: TQuizQuestion) => {
-    setCurrentExplanation(item.explanation);
+  const handleShowExplanation = useCallback((explanation: string) => {
+    setCurrentExplanation(explanation);
   }, []);
 
   const handleSelectAnswer = useCallback((id: number, ans: string) => {
-    console.log("handleSelectAnswer", id, ans);
     setUserAnswers((prev) => ({ ...prev, [id]: ans }));
   }, []);
 
@@ -117,42 +126,12 @@ export function QuizQuickTest() {
     >
       <div className="flex sm:flex-row flex-col gap-2">
         <div className="max-w-[calc(100%-76px)] w-full sm:max-w-lg md:max-w-xl xl:max-w-3xl ml-9 sm:ml-12 space-y-4">
-          <div className="flex relative items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={showingCorrectAns}
-                onCheckedChange={setShowingCorrectAns}
-                id="airplane-mode"
-              />
-              <Label htmlFor="airplane-mode">Hiện đáp án ngay</Label>
-            </div>
-            <div className="text-sm absolute left-1/2 -translate-x-1/2 top-7 sm:top-[unset] text-muted-foreground">
-              {current} / {count}
-            </div>
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button size={"sm"} className="rounded-full" variant="ghost">
-                    <CircleHelp className="size-5 text-muted-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs sm:max-w-sm">
-                    Các câu hỏi trong bộ đề sẽ được trộn ngẫu nhiên thứ tự mỗi
-                    lần bạn bắt đầu. <br />
-                    Sử dụng các nút trên màn hình để di chuyển giữa các thẻ: nút
-                    'Back' để quay lại câu hỏi trước trước và nút 'Next' để
-                    chuyển sang câu hỏi tiếp theo. <br />
-                    Nếu sử dụng bàn phím, bạn có thể ấn phím sang trái để quay
-                    lại thẻ trước, phím sang phải để chuyển sang câu hỏi tiếp
-                    theo, và phím dấu cách để xem đáp án. <br />
-                    Nếu bạn bật chế độ <i>Hiện đáp án ngay</i> thì ngay khi bạn
-                    chọn đáp án, bạn sẽ biết đáp án của bạn là đúng hay sai.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <QuizQuickTestTopBar
+            showingCorrectAns={showingCorrectAns}
+            onShowingCorrectAns={setShowingCorrectAns}
+            count={count}
+            currentCarouselIndex={currentCarouselIndex}
+          />
 
           <Carousel setApi={setApi} className="w-full">
             <CarouselContent>
@@ -161,11 +140,17 @@ export function QuizQuickTest() {
                   key={index}
                   item={item}
                   showingCorrectAns={showingCorrectAns}
-                  onShowExplanation={() => showExplanation(item)}
-                  onSelectAns={handleSelectAnswer}
                   userSelectedAns={userAnswers[item.id]}
+                  onSelectAns={handleSelectAnswer}
+                  onShowExplanation={handleShowExplanation}
                 />
               ))}
+              <QuizQuickTestResult
+                title={quiz?.title}
+                level={quiz.jlptLevel}
+                quesLength={questions.length}
+                correctAnswers={correctAnswers}
+              />
             </CarouselContent>
             <CarouselPrevious
               className="sm:size-14 sm:-left-16"
@@ -191,7 +176,7 @@ export function QuizQuickTest() {
                 Giải thích đáp án
               </DialogTitle>
             </DialogHeader>
-            <div className="">{currentExplanation}</div>
+            <div className="whitespace-pre-line">{currentExplanation}</div>
             <DialogFooter>
               <DialogClose>Đóng</DialogClose>
             </DialogFooter>
