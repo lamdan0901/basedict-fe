@@ -4,7 +4,7 @@ import { AdSense } from "@/components/Ad";
 import { Button } from "@/components/ui/button";
 import { useIsVipUser } from "@/hooks/useIsVipUser";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
-import { UserQuizHeader } from "@/modules/quizzes/components/UserFlashcardSetHeader";
+import { UserQuizHeader } from "@/modules/quizzes/components/UserQuizHeader";
 import { QUIZ_LIMIT } from "@/modules/quizzes/const";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";

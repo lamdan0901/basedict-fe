@@ -40,5 +40,7 @@ type TTestPeriod = {
   id: number;
   jlptLevel: TJlptLevel;
   source: string;
+  learnedNumber: number;
+  learningNumber: number;
   title: string;
 };

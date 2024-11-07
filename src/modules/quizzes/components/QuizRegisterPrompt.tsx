@@ -49,9 +49,7 @@ export function QuizRegisterPrompt({
           <Button
             disabled={disabled}
             onClick={() => {
-              isForbidden
-                ? router.push("/flashcard/my-flashcard")
-                : onRegister();
+              isForbidden ? router.push("/quizzes/my-quizzes") : onRegister();
             }}
           >
             {isForbidden ? "OK" : "Đăng kí làm"}
@@ -61,7 +59,7 @@ export function QuizRegisterPrompt({
               onClick={(e) => {
                 if (fromLearningPage) {
                   e.preventDefault();
-                  router.push("/flashcard/my-flashcard");
+                  router.push("/quizzes/my-quizzes");
                 }
               }}
               className="w-fit"

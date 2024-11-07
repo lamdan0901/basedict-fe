@@ -34,6 +34,7 @@ export function JLPTTest() {
   }, [data?.jlptLevel, data?.title]);
 
   useEffect(() => {
+    if (isMixedTest) return;
     if (!isLoading && !isMyFlashcard && !data?.isLearning) {
       setFlashcardRegisterPromptOpen(true);
     }

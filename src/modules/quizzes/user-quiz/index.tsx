@@ -2,7 +2,7 @@
 
 import { AdSense } from "@/components/Ad";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
-import { UserQuizHeader } from "@/modules/quizzes/components/UserFlashcardSetHeader";
+import { UserQuizHeader } from "@/modules/quizzes/components/UserQuizHeader";
 
 export function UserQuiz({ owner }: { owner: TQuizCreator | undefined }) {
   const exams = owner?.exams ?? [];

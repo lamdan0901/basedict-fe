@@ -47,11 +47,14 @@ export function QuizItem({
         >
           <div>
             <div className="flex justify-between items-center gap-2">
-              <h2 className="font-semibold truncate text-lg">
-                {quiz.title} - {quiz.jlptLevel}
-              </h2>
-              <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">
-                {quiz.questionNumber ?? quizNumber} câu hỏi
+              <h2 className="font-semibold truncate text-lg">{quiz.title}</h2>
+              <div className="flex items-center gap-2">
+                <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">
+                  {quiz.jlptLevel}
+                </div>
+                <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">
+                  {quiz.questionNumber ?? quizNumber} câu hỏi
+                </div>
               </div>
             </div>
             <div className="flex gap-2 items-center">
