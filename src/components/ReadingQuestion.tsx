@@ -26,6 +26,8 @@ interface ReadingQuestionProps {
   index: string;
 }
 
+const MIN_NUM_OF_CHARS_TO_EXPAND_EXPLANATION = 150;
+
 export const ReadingQuestion = memo<ReadingQuestionProps>(
   ({
     question,
@@ -59,8 +61,12 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
             const answerValue = answer + index;
             const isUserSelectedAns = value === answerValue;
             const isCorrectAnswer = answer === question.correctAnswer;
-            const shouldShowTooltip =
+            const hasExplanation =
               shouldShowAns && isCorrectAnswer && question.explanation;
+            const explanationExpanded = hasExplanation
+              ? (question.explanation?.length ?? 0) >
+                MIN_NUM_OF_CHARS_TO_EXPAND_EXPLANATION
+              : false;
 
             return (
               <div
@@ -98,7 +104,8 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                   }}
                   htmlFor={answerValue}
                 ></Label>
-                {shouldShowTooltip && (
+
+                {hasExplanation && (
                   <Popover>
                     <PopoverTrigger asChild>
                       <div className="flex items-center cursor-pointer hover:underline text-muted-foreground gap-1">
@@ -108,8 +115,8 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                     </PopoverTrigger>
                     <PopoverContent
                       className={cn(
-                        "p-1",
-                        "w-80 text-sm sm:w-[480px] lg:w-[768px]"
+                        "p-2 text-sm",
+                        explanationExpanded && "max-w-[768px] w-full"
                       )}
                     >
                       <Markdown markdown={question.explanation} />

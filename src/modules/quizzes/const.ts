@@ -35,7 +35,7 @@ export const DAYS_PER_WEEK = 7;
 export const MAX_POINT = 180;
 export const QUIZ_LIMIT = 5;
 export const QUIZ_ITEM_LIMIT = 50;
-export const QUIZ_LIMIT_MSG = `Bạn chỉ có thể tạo và theo học tối đa ${QUIZ_LIMIT} bộ`;
+export const QUIZ_LIMIT_MSG = `Bạn chỉ có thể tạo và theo học tối đa ${QUIZ_LIMIT} đề`;
 
 export const questionTypesWithExplanation: TQuestionType[] = [
   "ContextLexeme",

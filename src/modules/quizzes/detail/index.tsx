@@ -2,6 +2,7 @@
 
 import { AdSense } from "@/components/Ad";
 import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
+import { Markdown } from "@/components/Markdown";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,8 +35,7 @@ export function QuizDetail() {
 
   const [alertOpen, setAlertOpen] = useState(false);
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
-  const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
-    useState(false);
+  const [quizRegisterPromptOpen, setQuizRegisterPromptOpen] = useState(false);
   const [isForbidden, setIsForbidden] = useState(false);
 
   const {
@@ -109,7 +109,7 @@ export function QuizDetail() {
       return false;
     }
     if (!isMyQuiz && !quiz?.isLearning) {
-      setFlashcardRegisterPromptOpen(true);
+      setQuizRegisterPromptOpen(true);
       return false;
     }
     return true;
@@ -121,12 +121,14 @@ export function QuizDetail() {
     router.push(`/quizzes/jlpt-test/${quizId}`);
   }
 
-  async function handleRegisterFlashcardSet() {
+  async function handleRegisterQuiz() {
     try {
       await startLearning();
 
-      setFlashcardRegisterPromptOpen(false);
-      mutate("/v1/exams/my-exams");
+      setQuizRegisterPromptOpen(false);
+
+      await Promise.all([mutate("/v1/exams/my-exams"), mutateFlashcardSet()]);
+
       router.push(`/quizzes/jlpt-test/${quizId}`);
 
       toast({
@@ -155,7 +157,9 @@ export function QuizDetail() {
         <QuizItem quiz={quiz} asHeading />
 
         <div className="flex gap-2 pt-4 border-t border-muted-foreground flex-wrap justify-center">
-          <Button onClick={handleStartLearning}>Bắt đầu làm</Button>
+          <Button disabled={isTogglingLearning} onClick={handleStartLearning}>
+            Bắt đầu làm
+          </Button>
           {!isMyQuiz && (
             <Button
               disabled={isTogglingLearning}
@@ -187,7 +191,7 @@ export function QuizDetail() {
               return (
                 <Card key={question.id}>
                   <CardContent className="sm:p-4 p-2">
-                    {i + 1}. {question.question}
+                    <Markdown markdown={`${i + 1}\\. ${question.question}`} />
                   </CardContent>
                 </Card>
               );
@@ -215,9 +219,9 @@ export function QuizDetail() {
       <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
       <QuizRegisterPrompt
         isForbidden={isForbidden}
-        open={flashcardRegisterPromptOpen}
-        onOpenChange={setFlashcardRegisterPromptOpen}
-        onRegister={handleRegisterFlashcardSet}
+        open={quizRegisterPromptOpen}
+        onOpenChange={setQuizRegisterPromptOpen}
+        onRegister={handleRegisterQuiz}
         disabled={isMutatingStartLearning}
       />
     </div>
