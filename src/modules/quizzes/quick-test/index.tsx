@@ -1,11 +1,9 @@
 "use client";
 
 import { AdSense } from "@/components/Ad";
-import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
@@ -18,56 +16,52 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { shuffleArray } from "@/lib";
 import { RegisterRequiredWrapper } from "@/modules/quizzes/components/RegisterRequiredWrapper";
 import { QuizCarouselItem } from "@/modules/quizzes/quick-test/QuizCarouselItem";
 import { QuizQuickTestResult } from "@/modules/quizzes/quick-test/QuizQuickTestResult";
-import { QuizQuickTestTopBar } from "@/modules/quizzes/quick-test/QuizQuickTestTopbar";
+import { QuizQuickTestTopBar } from "@/modules/quizzes/quick-test/QuizQuickTestTopBar";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
-import { CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
 export function QuizQuickTest() {
   const isSmScreen = useMediaQuery("(max-width: 640px)");
-  const [api, setApi] = useState<CarouselApi>();
-  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
-  const [count, setCount] = useState(0);
-  const [currentExplanation, setCurrentExplanation] = useState("");
-  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [carouselCount, setCarouselCount] = useState(0);
 
   const { quizId } = useParams();
   const userId = useAppStore((state) => state.profile?.id);
 
-  const [showingCorrectAns, setShowingCorrectAns] = useState(false);
+  const [currentExplanation, setCurrentExplanation] = useState("");
+  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
+  const [carouselItemCorrectAnswers, setCarouselItemCorrectAnswers] = useState<
+    Record<number, boolean>
+  >({});
+  const [showingCorrectAnsOfAllQuestions, setShowingCorrectAnsOfAllQuestions] =
+    useState(false);
   const [quizRegisterPromptOpen, setQuizRegisterPromptOpen] = useState(false);
+  const [
+    shouldShowCorrectAnsAfterSelection,
+    setShouldShowCorrectAnsAfterSelection,
+  ] = useState(false);
+  const [questions, setQuestions] = useState<TQuizQuestion[]>([]);
 
   const { data: quiz, isLoading } = useSWR<TQuiz>(
     userId && quizId ? `/v1/exams/${quizId}` : null,
     getRequest
   );
 
-  const questions = useMemo(() => {
-    return shuffleArray(quiz?.questions ?? []);
-  }, [quiz?.questions]);
-
   const isMyQuiz = userId === quiz?.owner?.id;
 
   const correctAnswers = useMemo(
     () =>
-      questions?.reduce((acc, question) => {
-        if (question.correctAnswer === userAnswers[question.id]) {
+      questions?.reduce((acc, question, i) => {
+        if (question.correctAnswer === userAnswers[i]) {
           return acc + 1;
         }
         return acc;
@@ -76,44 +70,65 @@ export function QuizQuickTest() {
   );
 
   useEffect(() => {
+    if (!isLoading && quiz) setQuestions(shuffleArray(quiz.questions));
+  }, [isLoading, quiz]);
+
+  useEffect(() => {
     if (!isLoading && !isMyQuiz && !quiz?.isLearning) {
       setQuizRegisterPromptOpen(true);
     }
   }, [isLoading, quiz?.isLearning, isMyQuiz]);
 
   useEffect(() => {
-    if (!api) return;
+    if (!carouselApi) return;
 
-    setCount(api.scrollSnapList().length);
-    setCurrentCarouselIndex(api.selectedScrollSnap() + 1);
+    setCarouselCount(carouselApi.scrollSnapList().length);
+    setCarouselIndex(carouselApi.selectedScrollSnap() + 1);
 
-    api.on("select", () => {
-      setCurrentCarouselIndex(api.selectedScrollSnap() + 1);
+    carouselApi.on("select", () => {
+      setCarouselIndex(carouselApi.selectedScrollSnap() + 1);
     });
-  }, [api]);
+  }, [carouselApi]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        api?.scrollPrev();
+        carouselApi?.scrollPrev();
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
-        api?.scrollNext();
+        carouselApi?.scrollNext();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [api]);
+  }, [carouselApi]);
+
+  const handleRetakeTest = () => {
+    setCarouselItemCorrectAnswers({});
+    setUserAnswers({});
+    setQuestions(shuffleArray(quiz?.questions ?? []));
+    setShowingCorrectAnsOfAllQuestions(false);
+    carouselApi?.scrollTo(0, true);
+  };
+
+  const handleShowCorrectAns = () => {
+    setShowingCorrectAnsOfAllQuestions(true);
+    carouselApi?.scrollTo(0, true);
+  };
 
   const handleShowExplanation = useCallback((explanation: string) => {
     setCurrentExplanation(explanation);
   }, []);
 
-  const handleSelectAnswer = useCallback((id: number, ans: string) => {
-    setUserAnswers((prev) => ({ ...prev, [id]: ans }));
+  const handleSelectAnswer = useCallback((index: number, ans: string) => {
+    setUserAnswers((prev) => ({ ...prev, [index]: ans }));
+  }, []);
+
+  const handleShowItemCorrectAns = useCallback((index: number) => {
+    setCarouselItemCorrectAnswers((prev) => ({ ...prev, [index]: true }));
   }, []);
 
   if (isLoading) return <div>Đang tải đề thi...</div>;
@@ -127,30 +142,47 @@ export function QuizQuickTest() {
       <div className="flex sm:flex-row flex-col gap-2">
         <div className="max-w-[calc(100%-76px)] w-full sm:max-w-lg md:max-w-xl xl:max-w-3xl ml-9 sm:ml-12 space-y-4">
           <QuizQuickTestTopBar
-            showingCorrectAns={showingCorrectAns}
-            onShowingCorrectAns={setShowingCorrectAns}
-            count={count}
-            currentCarouselIndex={currentCarouselIndex}
+            shouldShowCorrectAnsAfterSelection={
+              shouldShowCorrectAnsAfterSelection
+            }
+            onShowCorrectAnsAfterSelection={
+              setShouldShowCorrectAnsAfterSelection
+            }
+            carouselCount={carouselCount}
+            carouselIndex={carouselIndex}
           />
 
-          <Carousel setApi={setApi} className="w-full">
+          <Carousel setApi={setCarouselApi} className="w-full">
             <CarouselContent>
               {questions.map((item, index) => (
                 <QuizCarouselItem
                   key={index}
+                  index={index}
+                  isActive={index === carouselIndex}
                   item={item}
-                  showingCorrectAns={showingCorrectAns}
-                  userSelectedAns={userAnswers[item.id]}
+                  shouldShowCorrectAnsAfterSelection={
+                    shouldShowCorrectAnsAfterSelection
+                  }
+                  showingCorrectAnsOfAllQuestions={
+                    showingCorrectAnsOfAllQuestions
+                  }
+                  userSelectedAns={userAnswers[index]}
+                  showingItemCorrectAns={carouselItemCorrectAnswers[index]}
+                  onShowingItemCorrectAns={handleShowItemCorrectAns}
                   onSelectAns={handleSelectAnswer}
                   onShowExplanation={handleShowExplanation}
                 />
               ))}
-              <QuizQuickTestResult
-                title={quiz?.title}
-                level={quiz.jlptLevel}
-                quesLength={questions.length}
-                correctAnswers={correctAnswers}
-              />
+              {!isLoading && quiz && (
+                <QuizQuickTestResult
+                  title={quiz.title}
+                  level={quiz.jlptLevel}
+                  quesLength={questions.length}
+                  correctAnswers={correctAnswers}
+                  onShowCorrectAns={handleShowCorrectAns}
+                  onRetake={handleRetakeTest}
+                />
+              )}
             </CarouselContent>
             <CarouselPrevious
               className="sm:size-14 sm:-left-16"

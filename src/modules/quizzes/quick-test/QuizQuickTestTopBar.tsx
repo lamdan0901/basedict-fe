@@ -10,30 +10,30 @@ import {
 } from "@/components/ui/tooltip";
 
 type Props = {
-  showingCorrectAns: boolean;
-  onShowingCorrectAns: (checked: boolean) => void;
-  currentCarouselIndex: number;
-  count: number;
+  shouldShowCorrectAnsAfterSelection: boolean;
+  onShowCorrectAnsAfterSelection: (checked: boolean) => void;
+  carouselIndex: number;
+  carouselCount: number;
 };
 
 export function QuizQuickTestTopBar({
-  showingCorrectAns,
-  onShowingCorrectAns,
-  currentCarouselIndex,
-  count,
+  shouldShowCorrectAnsAfterSelection,
+  onShowCorrectAnsAfterSelection,
+  carouselIndex,
+  carouselCount,
 }: Props) {
   return (
     <div className="flex relative items-center justify-between">
       <div className="flex items-center space-x-2">
         <Switch
-          checked={showingCorrectAns}
-          onCheckedChange={onShowingCorrectAns}
+          checked={shouldShowCorrectAnsAfterSelection}
+          onCheckedChange={onShowCorrectAnsAfterSelection}
           id="change-quick-test-mode"
         />
         <Label htmlFor="change-quick-test-mode">Hiện đáp án ngay</Label>
       </div>
       <div className="text-sm absolute left-1/2 -translate-x-1/2 top-7 sm:top-[unset] text-muted-foreground">
-        {currentCarouselIndex} / {count}
+        {carouselIndex} / {carouselCount}
       </div>
       <TooltipProvider>
         <Tooltip delayDuration={0}>

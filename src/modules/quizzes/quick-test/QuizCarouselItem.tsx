@@ -4,51 +4,67 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib";
 import DOMPurify from "dompurify";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect } from "react";
 
 type Props = {
   item: TQuizQuestion;
-  showingCorrectAns: boolean;
+  index: number;
+  isActive: boolean;
+  shouldShowCorrectAnsAfterSelection: boolean;
   userSelectedAns: string;
+  showingCorrectAnsOfAllQuestions: boolean;
+  showingItemCorrectAns: boolean;
   onShowExplanation: (explanation: string) => void;
   onSelectAns: (id: number, ans: string) => void;
+  onShowingItemCorrectAns: (id: number) => void;
 };
 
 export const QuizCarouselItem = memo<Props>(
   ({
     item,
-    showingCorrectAns,
+    index,
+    isActive,
+    shouldShowCorrectAnsAfterSelection,
+    showingCorrectAnsOfAllQuestions,
+    showingItemCorrectAns,
     userSelectedAns,
     onSelectAns,
     onShowExplanation,
+    onShowingItemCorrectAns,
   }) => {
-    const carouselItemRef = useRef<HTMLDivElement>(null);
-    const [showingItemCorrectAns, setShowingItemCorrectAns] = useState(false);
+    const _showingCorrectAns =
+      showingItemCorrectAns || showingCorrectAnsOfAllQuestions;
+    const canViewExplanation = item.explanation && _showingCorrectAns;
+    const showCorrectAnsBtnDisabled =
+      _showingCorrectAns ||
+      !userSelectedAns ||
+      shouldShowCorrectAnsAfterSelection;
 
     useEffect(() => {
-      const carouselEl = carouselItemRef.current;
-
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.code === "Space") {
           event.preventDefault();
-          if (!userSelectedAns) return;
-          setShowingItemCorrectAns(true);
+
+          if (showCorrectAnsBtnDisabled || isActive) return;
+          onShowingItemCorrectAns(index);
         }
       };
-      carouselEl?.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keydown", handleKeyDown);
 
       return () => {
-        carouselEl?.removeEventListener("keydown", handleKeyDown);
+        window.removeEventListener("keydown", handleKeyDown);
       };
-    }, [userSelectedAns]);
+    }, [isActive, index, onShowingItemCorrectAns, showCorrectAnsBtnDisabled]);
 
     function handleAnswerSelect(ans: string) {
       if (showingItemCorrectAns) return;
-      onSelectAns(item.id, ans);
+
+      onSelectAns(index, ans);
+      if (shouldShowCorrectAnsAfterSelection) onShowingItemCorrectAns(index);
     }
-    console.log("render", item.id);
+
     return (
-      <CarouselItem ref={carouselItemRef}>
+      <CarouselItem>
         <Card>
           <CardContent className="flex aspect-square flex-col gap-4 sm:aspect-video items-center justify-center p-6">
             <Markdown
@@ -60,9 +76,9 @@ export const QuizCarouselItem = memo<Props>(
               {item.answers.map((ans, i) => {
                 const selectedAns = userSelectedAns === ans;
                 const isCorrectAnswer =
-                  showingItemCorrectAns && ans === item.correctAnswer;
+                  _showingCorrectAns && ans === item.correctAnswer;
                 const isWrongAnswer =
-                  showingItemCorrectAns && selectedAns && !isCorrectAnswer;
+                  _showingCorrectAns && selectedAns && !isCorrectAnswer;
                 return (
                   <Button
                     key={i}
@@ -73,7 +89,7 @@ export const QuizCarouselItem = memo<Props>(
                         "border bg-blue-100 border-muted-foreground",
                       isCorrectAnswer && "bg-green-100",
                       isWrongAnswer && "bg-red-100",
-                      showingItemCorrectAns && "pointer-events-none"
+                      _showingCorrectAns && "pointer-events-none"
                     )}
                     onClick={() => handleAnswerSelect(ans)}
                   >
@@ -92,14 +108,14 @@ export const QuizCarouselItem = memo<Props>(
 
             <div className="flex gap-2 justify-center items-center flex-wrap">
               <Button
-                disabled={showingItemCorrectAns || !userSelectedAns}
-                onClick={() => setShowingItemCorrectAns(true)}
+                disabled={showCorrectAnsBtnDisabled}
+                onClick={() => onShowingItemCorrectAns(index)}
               >
                 Xem đáp án
               </Button>
               <Button
                 variant={"outline"}
-                disabled={!item.explanation || !showingItemCorrectAns}
+                disabled={!canViewExplanation}
                 onClick={() => onShowExplanation(item.explanation ?? "")}
               >
                 {item.explanation ? "Xem giải thích" : "Không có giải thích"}
@@ -110,11 +126,16 @@ export const QuizCarouselItem = memo<Props>(
       </CarouselItem>
     );
   },
-  (prev, next) => {
+  (p, n) => {
     return (
-      prev.showingCorrectAns === next.showingCorrectAns &&
-      prev.item.id === next.item.id &&
-      prev.userSelectedAns === next.userSelectedAns
+      p.index === n.index &&
+      p.item.id === n.item.id &&
+      p.isActive === n.isActive &&
+      p.userSelectedAns === n.userSelectedAns &&
+      p.showingItemCorrectAns === n.showingItemCorrectAns &&
+      p.showingCorrectAnsOfAllQuestions === n.showingCorrectAnsOfAllQuestions &&
+      p.shouldShowCorrectAnsAfterSelection ===
+        n.shouldShowCorrectAnsAfterSelection
     );
   }
 );

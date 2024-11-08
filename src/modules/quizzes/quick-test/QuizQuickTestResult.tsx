@@ -8,6 +8,8 @@ type Props = {
   level: string;
   quesLength: number;
   correctAnswers: number;
+  onShowCorrectAns: () => void;
+  onRetake: () => void;
 };
 
 export function QuizQuickTestResult({
@@ -15,6 +17,8 @@ export function QuizQuickTestResult({
   level,
   quesLength,
   correctAnswers,
+  onShowCorrectAns,
+  onRetake,
 }: Props) {
   return (
     <CarouselItem>
@@ -45,8 +49,12 @@ export function QuizQuickTestResult({
           </div>
 
           <div className="flex items-center justify-center flex-wrap gap-3">
-            <Button variant={"outline"}>Xem đáp án</Button>
-            <Button variant={"outline"}>Bắt đầu lại</Button>
+            <Button onClick={onShowCorrectAns} variant={"outline"}>
+              Xem đáp án
+            </Button>
+            <Button onClick={onRetake} variant={"outline"}>
+              Bắt đầu lại
+            </Button>
             <Link href="/quizzes/search">
               <Button variant={"outline"}>Tìm kiếm bộ đề khác</Button>
             </Link>
