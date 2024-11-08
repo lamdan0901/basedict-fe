@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
-import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
+import { JLPTTestDescLink } from "@/modules/quizzes/components/JLPTTestDescLink";
 import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { CheckCheck, GraduationCap } from "lucide-react";

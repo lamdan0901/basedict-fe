@@ -96,7 +96,7 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                   }}
                 />
                 <Label
-                  className="cursor-pointer"
+                  className="cursor-pointer whitespace-pre-line"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(answer, {
                       USE_PROFILES: { html: true },

@@ -25,7 +25,7 @@ export const menu = [
     title: "Luyện đọc",
   },
   {
-    href: "/quizzes/jlpt-test",
+    href: "/quizzes",
     icon: "/quiz.svg",
     title: "Luyện thi",
   },
