@@ -19,7 +19,7 @@ export function Markdown({
   return (
     <div
       className={cn("markdown-body", className)}
-      style={{ color: "inherit !important" }}
+      style={{ color: "inherit !important", whiteSpace: "pre-line !important" }}
       dangerouslySetInnerHTML={{
         __html: markdownToHtml(markdown),
       }}
