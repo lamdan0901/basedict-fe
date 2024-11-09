@@ -52,7 +52,7 @@ export const QuizCarouselItem = memo<Props>(
     }, [isActive, index, onShowingItemCorrectAns, showingCorrectAns]);
 
     function handleAnswerSelect(ans: string) {
-      if (showingItemCorrectAns) return;
+      // if (showingItemCorrectAns) return;
 
       onSelectAns(index, ans);
 
@@ -64,13 +64,13 @@ export const QuizCarouselItem = memo<Props>(
     return (
       <CarouselItem>
         <Card>
-          <CardContent className="grid md:grid-rows-2 grid-rows-3  gap-4 md:aspect-video p-6">
+          <CardContent className="grid lg:grid-rows-2 grid-rows-3  gap-4 xl:aspect-video p-6">
             <Markdown
-              className="text-xl row-span-1 text-center self-end md:self-center sm:text-2xl"
+              className="text-xl row-span-1 text-center self-end lg:self-center sm:text-2xl"
               markdown={item.question}
             />
 
-            <div className="flex md:row-span-1 row-span-2 flex-col gap-4 items-center justify-end">
+            <div className="flex lg:row-span-1 row-span-2 flex-col gap-4 items-center justify-end">
               <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-4">
                 {item.answers.map((ans, i) => {
                   const selectedAns = userSelectedAns === ans;
@@ -94,8 +94,7 @@ export const QuizCarouselItem = memo<Props>(
                         selectedAns &&
                           "border bg-blue-100 border-muted-foreground",
                         isCorrectAnswer && "hover:bg-green-100 bg-green-100",
-                        isWrongAnswer && "hover:bg-red-100 bg-red-100",
-                        showingCorrectAns && "pointer-events-none"
+                        isWrongAnswer && "hover:bg-red-100 bg-red-100"
                       )}
                       onClick={() => handleAnswerSelect(ans)}
                     >

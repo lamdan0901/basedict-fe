@@ -128,7 +128,10 @@ export function QuizQuickTest() {
   }, []);
 
   const handleShowItemCorrectAns = useCallback((index: number) => {
-    setCarouselItemCorrectAnswers((prev) => ({ ...prev, [index]: true }));
+    setCarouselItemCorrectAnswers((prev) => ({
+      ...prev,
+      [index]: true,
+    }));
   }, []);
 
   if (isLoading) return <div>Đang tải đề thi...</div>;

@@ -10,6 +10,10 @@
   --fontStack-monospace: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
     Liberation Mono, monospace;
   --fgColor-accent: Highlight;
+
+  p {
+    white-space: pre-line;
+  }
 }
 .markdown-body,
 [data-theme="light"] {

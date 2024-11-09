@@ -56,7 +56,7 @@ export function QuizItemRegistration({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Câu hỏi {i + 1}</FormLabel>
-                      <Input
+                      <Textarea
                         value={field.value}
                         onChange={field.onChange}
                         error={
