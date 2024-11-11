@@ -20,7 +20,7 @@ type TReadingMaterial = {
 };
 
 type TReadingQuestion = {
-  id: number;
+  id?: number;
   question: string;
   answers: string[];
   correctAnswer: string;
@@ -40,5 +40,7 @@ type TTestPeriod = {
   id: number;
   jlptLevel: TJlptLevel;
   source: string;
+  learnedNumber: number;
+  learningNumber: number;
   title: string;
 };

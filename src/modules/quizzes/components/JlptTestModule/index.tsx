@@ -1,11 +1,11 @@
 import { AdSense } from "@/components/Ad";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { Card, CardContent } from "@/components/ui/card";
-import { JLPTTestDescLink } from "@/modules/quizzes/JLPTTestDescLink";
-import { JlptTestQuestions } from "@/modules/quizzes/JlptTestModule/JlptTestQuestions";
+import { JLPTTestDescLink } from "@/modules/quizzes/components/JLPTTestDescLink";
+import { JlptTestQuestions } from "@/modules/quizzes/components/JlptTestModule/JlptTestQuestions";
 
 type Props = {
-  data: TJlptTestItem | undefined;
+  data: TQuiz | undefined;
   title: string | undefined;
   isDailyTest?: boolean;
 };

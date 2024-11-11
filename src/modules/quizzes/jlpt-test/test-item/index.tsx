@@ -1,17 +1,23 @@
 "use client";
 
-import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
+import { RegisterRequiredWrapper } from "@/modules/quizzes/components/RegisterRequiredWrapper";
+import { JlptTestModule } from "@/modules/quizzes/components/JlptTestModule";
 import { getRequest } from "@/service/data";
+import { useAppStore } from "@/store/useAppStore";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 export function JLPTTest() {
   const { id } = useParams();
-  const searchParams = useSearchParams();
   const isMixedTest = id === "mixed";
+  const searchParams = useSearchParams();
+  const userId = useAppStore((state) => state.profile?.id);
 
-  const { data, isLoading, error } = useSWR<TJlptTestItem>(
+  const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
+    useState(false);
+
+  const { data, isLoading, error } = useSWR<TQuiz>(
     id
       ? isMixedTest
         ? `v1/exams/jlpt/random?jlptLevel=${searchParams.get("jlptLevel")}`
@@ -20,12 +26,21 @@ export function JLPTTest() {
     getRequest
   );
 
+  const isMyFlashcard = userId === data?.owner?.id;
+
   useEffect(() => {
     if (data?.title)
       document.title = `${data?.title} - ${data?.jlptLevel} | BaseDict`;
   }, [data?.jlptLevel, data?.title]);
 
-  if (isLoading) return <div>Đang tải bài thi...</div>;
+  useEffect(() => {
+    if (isMixedTest) return;
+    if (!isLoading && !isMyFlashcard && !data?.isLearning) {
+      setFlashcardRegisterPromptOpen(true);
+    }
+  }, [isLoading, data?.isLearning, isMyFlashcard]);
+
+  if (isLoading) return <div>Đang tải đề thi...</div>;
   if (!data && error)
     return (
       <div className="text-destructive">
@@ -38,9 +53,14 @@ export function JLPTTest() {
     );
 
   return (
-    <JlptTestModule
-      title={`${data?.title ?? "Đề trộn"} - ${data?.jlptLevel}`}
-      data={data}
-    />
+    <RegisterRequiredWrapper
+      open={flashcardRegisterPromptOpen}
+      onOpenChange={setFlashcardRegisterPromptOpen}
+    >
+      <JlptTestModule
+        title={`${data?.title ?? "Đề trộn"} - ${data?.jlptLevel}`}
+        data={data}
+      />
+    </RegisterRequiredWrapper>
   );
 }

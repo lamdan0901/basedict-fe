@@ -1,5 +1,6 @@
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { cn } from "@/lib";
 
 function markdownToHtml(markdown?: string) {
   if (!markdown) return "";
@@ -8,10 +9,16 @@ function markdownToHtml(markdown?: string) {
   return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
 }
 
-export function Markdown({ markdown }: { markdown?: string }) {
+export function Markdown({
+  markdown,
+  className,
+}: {
+  markdown?: string;
+  className?: string;
+}) {
   return (
     <div
-      className="markdown-body"
+      className={cn("markdown-body", className)}
       style={{ color: "inherit !important" }}
       dangerouslySetInnerHTML={{
         __html: markdownToHtml(markdown),

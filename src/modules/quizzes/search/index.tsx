@@ -50,7 +50,7 @@ export function QuizzesSearch() {
   const shouldSearchByTag = searchParams.search.startsWith("#");
 
   const { data: quizSearch, isLoading: isSearching } = useSWR<{
-    data: TFlashcardSet[];
+    data: TQuiz[];
     total: number;
   }>(
     !isLoadingProfile
@@ -110,7 +110,7 @@ export function QuizzesSearch() {
           id={TOP_EL_ID}
           value={searchText}
           onSearch={handleSearch}
-          placeholder="Tìm bộ đề..."
+          placeholder="Tìm đề thi..."
         />
         <Select
           value={searchParams.sort}
@@ -152,8 +152,8 @@ export function QuizzesSearch() {
       ) : null}
 
       <div className="grid gap-4 xl:grid-cols-2">
-        {quizzes.map((card) => (
-          <QuizItem key={card.id} card={card} />
+        {quizzes.map((quiz) => (
+          <QuizItem key={quiz.id} quiz={quiz} />
         ))}
       </div>
 

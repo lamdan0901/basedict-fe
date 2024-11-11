@@ -8,16 +8,11 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib";
-import {
-  questionTypesWithExplanation,
-  TestState,
-} from "@/modules/quizzes/const";
+import { TestState } from "@/modules/quizzes/const";
 import { useAnswerStore } from "@/store/useAnswerStore";
-import { CircleHelp } from "lucide-react";
-import { memo, useState } from "react";
-import useSWRMutation from "swr/mutation";
-import { getRequest } from "../service/data";
 import DOMPurify from "dompurify";
+import { CircleHelp } from "lucide-react";
+import { memo } from "react";
 
 interface ReadingQuestionProps {
   question: TReadingQuestion;
@@ -30,6 +25,8 @@ interface ReadingQuestionProps {
   testState?: TestState;
   index: string;
 }
+
+const MIN_NUM_OF_CHARS_TO_EXPAND_EXPLANATION = 150;
 
 export const ReadingQuestion = memo<ReadingQuestionProps>(
   ({
@@ -44,21 +41,6 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
     onValueChange,
   }) => {
     const setUserAnswers = useAnswerStore((state) => state.setUserAnswers);
-    const [explanation, setExplanation] = useState("");
-
-    const { trigger, isMutating } = useSWRMutation(
-      `/v1/question-masters/${question.id}/explanation`,
-      (key) => getRequest(key)
-    );
-
-    async function handleGetExplanation() {
-      try {
-        const { explanation } = await trigger();
-        setExplanation(explanation);
-      } catch (err) {
-        console.log("err: ", err);
-      }
-    }
 
     const handleAnswerChange = (answer: string) => {
       if (selectionDisabled) return;
@@ -79,11 +61,12 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
             const answerValue = answer + index;
             const isUserSelectedAns = value === answerValue;
             const isCorrectAnswer = answer === question.correctAnswer;
-            const shouldShowTooltip =
-              shouldShowAns &&
-              isCorrectAnswer &&
-              question.type &&
-              questionTypesWithExplanation.includes(question.type);
+            const hasExplanation =
+              shouldShowAns && isCorrectAnswer && question.explanation;
+            const explanationExpanded = hasExplanation
+              ? (question.explanation?.length ?? 0) >
+                MIN_NUM_OF_CHARS_TO_EXPAND_EXPLANATION
+              : false;
 
             return (
               <div
@@ -113,7 +96,7 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                   }}
                 />
                 <Label
-                  className="cursor-pointer"
+                  className="cursor-pointer whitespace-pre-line"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(answer, {
                       USE_PROFILES: { html: true },
@@ -121,12 +104,10 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                   }}
                   htmlFor={answerValue}
                 ></Label>
-                {shouldShowTooltip && (
+
+                {hasExplanation && (
                   <Popover>
-                    <PopoverTrigger
-                      onClick={() => handleGetExplanation()}
-                      asChild
-                    >
+                    <PopoverTrigger asChild>
                       <div className="flex items-center cursor-pointer hover:underline text-muted-foreground gap-1">
                         <CircleHelp className={"size-4 "} />
                         <span className="text-xs italic">xem giải thích</span>
@@ -134,17 +115,11 @@ export const ReadingQuestion = memo<ReadingQuestionProps>(
                     </PopoverTrigger>
                     <PopoverContent
                       className={cn(
-                        "p-1",
-                        !isMutating && "w-80 text-sm sm:w-[480px] lg:w-[768px]"
+                        "p-2 text-sm",
+                        explanationExpanded && "max-w-[768px] w-full"
                       )}
                     >
-                      <Markdown
-                        markdown={
-                          isMutating
-                            ? "Đang tải giải thích..."
-                            : question.explanation || explanation
-                        }
-                      />
+                      <Markdown markdown={question.explanation} />
                     </PopoverContent>
                   </Popover>
                 )}

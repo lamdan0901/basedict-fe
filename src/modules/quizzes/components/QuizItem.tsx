@@ -15,16 +15,16 @@ import { useRouter } from "next/navigation";
 import { HTMLAttributes } from "react";
 
 export function QuizItem({
-  card,
+  quiz,
   hiddenDate,
   asHeading,
-  flashCardNumber = 0,
+  quizNumber = 0,
   className,
 }: {
-  card: TFlashcardSet;
+  quiz: TQuiz;
   hiddenDate?: boolean;
   asHeading?: boolean;
-  flashCardNumber?: number;
+  quizNumber?: number;
   className?: HTMLAttributes<HTMLDivElement>["className"];
 }) {
   const router = useRouter();
@@ -39,7 +39,7 @@ export function QuizItem({
           className
         )}
         onClick={() => {
-          !asHeading && router.push(`/quizzes/${card.id}`);
+          !asHeading && router.push(`/quizzes/${quiz.id}`);
         }}
       >
         <CardContent
@@ -47,13 +47,18 @@ export function QuizItem({
         >
           <div>
             <div className="flex justify-between items-center gap-2">
-              <h2 className="font-semibold truncate text-lg">{card.title}</h2>
-              <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">
-                {card.flashCardNumber ?? flashCardNumber} câu hỏi
+              <h2 className="font-semibold truncate text-lg">{quiz.title}</h2>
+              <div className="flex items-center gap-2">
+                <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">
+                  {quiz.jlptLevel}
+                </div>
+                <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">
+                  {quiz.questionNumber ?? quizNumber} câu hỏi
+                </div>
               </div>
             </div>
             <div className="flex gap-2 items-center">
-              {card.tags?.map((tag) => (
+              {quiz.tags?.map((tag) => (
                 <Link
                   href={`/quizzes/search?q=~%28search~%27*23${tag}%29`}
                   onClick={(e) => e.stopPropagation()}
@@ -70,28 +75,28 @@ export function QuizItem({
                 !asHeading && "line-clamp-2"
               )}
             >
-              {card.description}
+              {quiz.description}
             </p>
           </div>
 
           <div className="flex justify-between gap-2 flex-wrap">
-            {card.owner && (
+            {quiz.owner && (
               <Button
                 className="overflow-hidden hover:text-[#8b0000] gap-2 px-2 py-1 -ml-2 items-center"
                 variant={"ghost"}
                 onClick={(e) => {
                   e.stopPropagation();
-                  router.push(`/quizzes/user/${card.owner?.id}`);
+                  router.push(`/quizzes/user/${quiz.owner?.id}`);
                 }}
               >
                 <Image
-                  src={card.owner.avatar || DEFAULT_AVATAR_URL}
+                  src={quiz.owner.avatar || DEFAULT_AVATAR_URL}
                   width={40}
                   height={40}
                   className="rounded-full size-10 object-cover shrink-0"
                   alt="owner-avatar"
                 />
-                <span className="truncate">{card.owner.name}</span>
+                <span className="truncate">{quiz.owner.name}</span>
               </Button>
             )}
             <div className="flex gap-3">
@@ -99,7 +104,7 @@ export function QuizItem({
                 <TooltipTrigger asChild>
                   <div className="flex gap-1 items-center text-xs">
                     <GraduationCap className="size-5" />
-                    <span>{card.learningNumber} người</span>
+                    <span>{quiz.learningNumber} người</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>Số người đang làm</TooltipContent>
@@ -108,7 +113,7 @@ export function QuizItem({
                 <TooltipTrigger asChild>
                   <div className="flex gap-1 items-center text-xs">
                     <CheckCheck className="size-5" />
-                    <span>{card.learnedNumber} lượt</span>
+                    <span>{quiz.learnedNumber} lượt</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>Số người đã làm</TooltipContent>
@@ -116,7 +121,7 @@ export function QuizItem({
               {!hiddenDate && (
                 <div className="flex gap-1 items-center text-xs">
                   <Clock className="size-5" />
-                  <span>{new Date(card.updatedAt).toLocaleDateString()}</span>
+                  <span>{new Date(quiz.updatedAt).toLocaleDateString()}</span>
                 </div>
               )}
             </div>

@@ -4,12 +4,12 @@ import { getRequest } from "@/service/data";
 import useSWR from "swr";
 import { useAppStore } from "@/store/useAppStore";
 import { useEffect } from "react";
-import { JlptTestModule } from "@/modules/quizzes/JlptTestModule";
+import { JlptTestModule } from "@/modules/quizzes/components/JlptTestModule";
 
 export function DailyTest() {
   const { seasonRank } = useAppStore();
 
-  const { data, isLoading, error } = useSWR<TJlptTestItem>(
+  const { data, isLoading, error } = useSWR<TQuiz>(
     `/v1/exams/daily-exam?rank=${seasonRank}`,
     getRequest
   );
@@ -18,7 +18,7 @@ export function DailyTest() {
     document.title = `${seasonRank} - Daily exam | BaseDict`;
   }, [seasonRank]);
 
-  if (isLoading) return <div>Đang tải bài thi...</div>;
+  if (isLoading) return <div>Đang tải đề thi...</div>;
   if (!data && error)
     return <div>Đã xảy ra lỗi, hãy thử tải lại trang hoặc liên hệ hỗ trợ</div>;
 
