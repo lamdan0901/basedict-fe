@@ -22,7 +22,8 @@ import { deleteRequest, getRequest, postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck } from "lucide-react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
@@ -225,7 +226,9 @@ export function QuizDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
       <LoginPrompt open={loginPromptOpen} onOpenChange={setLoginPromptOpen} />
+
       <QuizRegisterPrompt
         isForbidden={isForbidden}
         open={quizRegisterPromptOpen}

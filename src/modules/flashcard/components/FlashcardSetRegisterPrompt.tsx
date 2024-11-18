@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 type Props = {
   open: boolean;

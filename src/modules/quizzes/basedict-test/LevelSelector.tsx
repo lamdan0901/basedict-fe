@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { jlptLevels } from "@/constants";
 import { cn } from "@/lib";
 import { useAppStore } from "@/store/useAppStore";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 
 export function LevelSelector() {
