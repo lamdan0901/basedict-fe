@@ -48,6 +48,7 @@ export default function RootLayout({
           color="#3b82f6"
           height={4}
           speed={300}
+          showSpinner={false}
           crawlSpeed={300}
         />
         <Script
