@@ -23,7 +23,7 @@ import {
 } from "@/modules/quizzes/general/utils";
 import { WeekdayCarouselItem } from "@/modules/quizzes/general/WeekdayCarouselItem";
 import dayjs from "dayjs";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState } from "react";
 
 type Props = {

@@ -7,7 +7,7 @@ import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreato
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { getRequest } from "@/service/data";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import useSWR from "swr";
 
 export function FlashcardExploring() {

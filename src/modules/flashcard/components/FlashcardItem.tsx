@@ -11,7 +11,7 @@ import { cn } from "@/lib";
 import { CheckCheck, GraduationCap, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { HTMLAttributes } from "react";
 
 export function FlashcardItem({

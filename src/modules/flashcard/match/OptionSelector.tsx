@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { matchingOptions } from "@/modules/flashcard/const";
 import { CircleArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
 
 type Props = {

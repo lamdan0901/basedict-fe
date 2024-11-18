@@ -8,7 +8,7 @@ import { toast } from "@/components/ui/use-toast";
 import { defaultQuizItem, QUIZ_ITEM_LIMIT } from "@/modules/quizzes/const";
 import { TQuizForm, TQuizItem } from "@/modules/quizzes/schema";
 import { Plus, Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 
