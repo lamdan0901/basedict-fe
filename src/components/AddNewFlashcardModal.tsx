@@ -23,7 +23,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoginPrompt } from "@/components/AuthWrapper/LoginPrompt";
 import { useAppStore } from "@/store/useAppStore";
 import Link from "next/link";
-import { stringifyParams } from "@/lib";
 
 type Props = {
   open: boolean;

@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DEFAULT_AVATAR_URL } from "@/constants";
 import { CheckCheck, GraduationCap } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'nextjs-toploader/app';
 import {
   Tooltip,
   TooltipContent,

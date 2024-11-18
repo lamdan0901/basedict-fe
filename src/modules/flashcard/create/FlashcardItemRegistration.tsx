@@ -9,7 +9,7 @@ import {
 } from "@/modules/flashcard/const";
 import { TFlashCardItem, TFlashCardSetForm } from "@/modules/flashcard/schema";
 import { ChevronRight, Plus, Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { v4 as uuid } from "uuid";
 
