@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
 import "./markdown.css";
@@ -43,6 +44,12 @@ export default function RootLayout({
     <html lang="vi">
       <body className={inter.className}>
         {children} <Toaster />
+        <NextTopLoader
+          color="#3b82f6"
+          height={4}
+          speed={300}
+          crawlSpeed={300}
+        />
         <Script
           id="Adsense-id"
           data-ad-client="ca-pub-9085997021434962"

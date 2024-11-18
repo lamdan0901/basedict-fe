@@ -18,6 +18,7 @@ interface AdSenseProps {
 }
 
 export function AdSense({ slot = "square", style, className }: AdSenseProps) {
+  return null;
   return (
     <ReactAdsense
       client="ca-pub-9085997021434962"
