@@ -40,7 +40,6 @@ export const QUIZ_LIMIT_MSG = `Bạn chỉ có thể tạo và theo học tối 
 export const questionTypesWithExplanation: TQuestionType[] = [
   "ContextLexeme",
   "Grammar",
-  "Lexeme",
   "GrammarAlign",
 ];
 
