@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -10,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { getRequest, postRequest } from "@/service/data";
-import { DialogDescription } from "@radix-ui/react-dialog";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
