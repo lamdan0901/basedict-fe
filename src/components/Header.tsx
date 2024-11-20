@@ -29,7 +29,7 @@ import { Check } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { menu } from "@/components/const";
 
-const Header = () => {
+export const Header = () => {
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
@@ -171,5 +171,3 @@ function LoginButton() {
     </Button>
   );
 }
-
-export default Header;

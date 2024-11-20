@@ -1,4 +1,5 @@
 import { menu } from "@/components/const";
+import { DownloadApp } from "@/components/Footer/DownloadApp";
 import { cn } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +10,7 @@ export function Footer() {
       className={cn("bg-[#e7e7e7] border-t sm:mt-16 mt-10 border-[#b4b4b4]")}
     >
       <div className="grid max-w-[1440px] mx-auto px-4 gap-y-6 py-6 w-full grid-flow-row-dense gap-3 md:grid-cols-12">
-        <div className="col-span-5 sm:max-w-[400px]">
+        <div className="col-span-4 sm:max-w-[400px]">
           <div className="flex gap-5">
             <Image
               className="object-contain size-[60px]"
@@ -33,7 +34,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="col-span-4">
+        <div className="col-span-3">
           <h2 className="font-semibold text-xl">Sản phẩm </h2>
           <div className="ml-4 mt-2 grid grid-cols-2 gap-y-2 gap-x-6 w-fit ">
             {menu.map((item) => (
@@ -68,11 +69,14 @@ export function Footer() {
             </Link>
           </div>
         </div>
+
+        <DownloadApp />
       </div>
 
       <div className="bg-[#616161]">
         <p className="sm:ml-auto mx-auto py-2 px-2 text-white w-fit">
-          Copyright © 2024 basedict.com. All rights reserved.
+          Copyright © {new Date().getFullYear()} basedict.com. All rights
+          reserved.
         </p>
       </div>
     </div>
