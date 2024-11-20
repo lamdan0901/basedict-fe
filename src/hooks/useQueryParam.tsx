@@ -1,6 +1,5 @@
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import JSURL from "jsurl";
-import { useRouter } from "nextjs-toploader/app";
 import { omit, pick } from "lodash";
 
 // Utility Types
