@@ -46,7 +46,7 @@ export function QuizItem({
           className={cn("p-2 flex flex-col justify-between h-full sm:p-4")}
         >
           <div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex justify-between flex-wrap items-center gap-2">
               <h2 className="font-semibold truncate text-lg">{quiz.title}</h2>
               <div className="flex items-center gap-2">
                 <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-3 text-sm">

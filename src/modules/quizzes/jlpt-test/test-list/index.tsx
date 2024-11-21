@@ -42,7 +42,6 @@ export function JLPTTests() {
     <TooltipProvider delayDuration={200} skipDelayDuration={0}>
       <Card>
         <CardContent className="space-y-6 mt-4">
-          <h2 className="font-semibold text-2xl mx-auto w-fit">Làm đề JLPT</h2>
           <div className="flex flex-wrap items-end gap-2 w-full justify-between">
             <LevelSelector jlptLevel={jlptLevel} />
             <Link

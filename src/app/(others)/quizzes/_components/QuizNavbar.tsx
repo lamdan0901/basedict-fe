@@ -24,7 +24,7 @@ import { QuizIcon } from "@/components/icons/QuizIcon";
 import Link from "next/link";
 import { getRequest } from "@/service/data";
 import useSWR from "swr";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const menu = [
   // {
@@ -123,20 +123,22 @@ function InnerQuizNavbar({
     <Card className="mt-8 lg:mt-0">
       <CardContent className="p-2 flex flex-col items-center gap-y-2">
         {menu.map((item, i) => (
-          <Link className="w-full" href={item.href} key={i}>
-            <Button
-              className={cn(
-                "w-full justify-start gap-2 hover:text-blue-500 ",
-                item.href === pathname && "text-blue-500 font-semibold",
-                item.withSubItems && "font-semibold",
-                i !== menu.length - 1 && "mb-2"
-              )}
-              variant={"ghost"}
-              onClick={onMenuItemClick}
-            >
-              {item.icon}
-              {item.title}
-            </Button>
+          <Fragment key={i}>
+            <Link className="w-full" href={item.href}>
+              <Button
+                className={cn(
+                  "w-full justify-start gap-2 hover:text-blue-500 ",
+                  item.href === pathname && "text-blue-500 font-semibold",
+                  item.withSubItems && "font-semibold",
+                  i !== menu.length - 1 && "mb-2"
+                )}
+                variant={"ghost"}
+                onClick={onMenuItemClick}
+              >
+                {item.icon}
+                {item.title}
+              </Button>
+            </Link>
             {item.withSubItems &&
               quizMap[item.title].map((item) => (
                 <Link
@@ -157,7 +159,7 @@ function InnerQuizNavbar({
                 </Link>
               ))}
             {i !== menu.length - 1 && <Separator />}
-          </Link>
+          </Fragment>
         ))}
       </CardContent>
     </Card>
