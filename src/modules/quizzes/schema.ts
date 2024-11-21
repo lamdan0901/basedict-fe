@@ -15,6 +15,7 @@ const quizItemSchema = z.object({
   explanation: z
     .string()
     .max(2000, "Giải thích không được quá 2000 ký tự")
+    .nullable()
     .optional(),
   uid: z.string().optional(),
   id: z.any().optional(),
@@ -33,9 +34,10 @@ export const quizSchema = z.object({
   description: z
     .string()
     .max(1000, "Mô tả không được quá 1000 ký tự")
+    .nullable()
     .optional(),
   jlptLevel: z.string(),
-  tags: z.array(quizTagSchema),
+  tags: z.array(quizTagSchema).nullable(),
   questions: z.array(quizItemSchema),
 });
 
