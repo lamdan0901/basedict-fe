@@ -119,7 +119,7 @@ export function QuizItemRegistration({
                     <FormItem>
                       <FormLabel>Giải thích đáp án</FormLabel>
                       <Textarea
-                        value={field.value}
+                        value={field.value ?? ""}
                         onChange={field.onChange}
                         error={errors.questions?.[i]?.explanation?.message}
                       />
