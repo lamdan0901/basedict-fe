@@ -1,4 +1,4 @@
-import { QuizCreation } from "@/modules/quizzes/create";
+import { QuizCreation } from "@/features/quizzes/create";
 
 export default function QuizCreationPage() {
   return <QuizCreation />;

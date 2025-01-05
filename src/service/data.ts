@@ -1,4 +1,4 @@
-import { axiosData } from "@/lib/axios";
+import { axiosData } from "@/shared/lib/axios";
 import { AxiosRequestConfig } from "axios";
 
 export const getRequest = async (url: string, config?: AxiosRequestConfig) => {

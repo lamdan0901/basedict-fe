@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ContentWrapper } from "@/components/ContentWrapper";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
+import { ContentWrapper } from "@/widgets/translation";
 
 const Layout = ({ children }: PropsWithChildren) => {
   return (

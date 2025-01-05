@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { FlashcardDetail } from "@/modules/flashcard/detail";
+import { FlashcardDetail } from "@/features/flashcard/detail";
 import { ResolvingMetadata } from "next";
 
 const fetchFlashcardSet = async (flashcardId?: string) => {

@@ -1,4 +1,4 @@
-import { HistoryItemType } from "@/constants";
+import { HistoryItemType } from "@/shared/constants";
 
 export type TFavoriteItem =
   | (TLexeme & { type: HistoryItemType.Lexeme; uid: string })

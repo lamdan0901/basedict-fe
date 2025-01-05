@@ -1,4 +1,4 @@
-import { MyQuizzes } from "@/modules/quizzes/my-quizzes";
+import { MyQuizzes } from "@/features/quizzes/my-quizzes";
 
 export default function MyQuizzesPage() {
   return <MyQuizzes />;

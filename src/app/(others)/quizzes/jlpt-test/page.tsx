@@ -1,4 +1,4 @@
-import { JLPTTests } from "@/modules/quizzes/jlpt-test/test-list";
+import { JLPTTests } from "@/features/quizzes/jlpt-test/test-list";
 import { ResolvingMetadata } from "next";
 import { Suspense } from "react";
 

@@ -1,4 +1,4 @@
-import { Profile } from "@/modules/profile";
+import { Profile } from "@/features/profile";
 
 export default function ProfilePage() {
   return <Profile />;

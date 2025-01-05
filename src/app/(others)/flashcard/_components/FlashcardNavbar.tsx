@@ -10,8 +10,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { cn } from "@/lib";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { cn } from "@/shared/lib";
 import { getRequest } from "@/service/data";
 import { GraduationCap, Search, SquareMenu } from "lucide-react";
 import Link from "next/link";

@@ -1,4 +1,4 @@
-import { AdSense } from "@/components/Ad";
+import { AdSense } from "@/components/ui/ad";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResolvingMetadata } from "next";
 

@@ -1,4 +1,4 @@
-import { MAX_FAVORITE_ITEMS } from "@/constants";
+import { MAX_FAVORITE_ITEMS } from "@/shared/constants";
 import { TFavoriteItem } from "@/interface/history";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";

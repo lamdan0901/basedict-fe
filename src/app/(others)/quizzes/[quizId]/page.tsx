@@ -1,5 +1,5 @@
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { QuizDetail } from "@/modules/quizzes/detail";
+import { AuthWrapper } from "@/widgets/auth";
+import { QuizDetail } from "@/features/quizzes/detail";
 
 export default function QuizDetailPage() {
   return (

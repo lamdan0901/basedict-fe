@@ -1,4 +1,4 @@
-import { Reading } from "@/modules/reading";
+import { Reading } from "@/features/reading";
 import { ResolvingMetadata } from "next";
 
 export async function generateMetadata(

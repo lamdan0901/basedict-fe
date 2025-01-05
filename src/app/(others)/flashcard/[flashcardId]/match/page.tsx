@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { FlashcardMatching } from "@/modules/flashcard/match";
+import { AuthWrapper } from "@/widgets/auth";
+import { FlashcardMatching } from "@/features/flashcard/match";
 import { Suspense } from "react";
 
 export default function FlashcardMatchingPage() {

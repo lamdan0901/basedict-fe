@@ -1,4 +1,4 @@
-import { UserQuiz } from "@/modules/quizzes/user-quiz";
+import { UserQuiz } from "@/features/quizzes/user-quiz";
 import { ResolvingMetadata } from "next";
 
 const fetchUserQuiz = async (userId?: string) => {

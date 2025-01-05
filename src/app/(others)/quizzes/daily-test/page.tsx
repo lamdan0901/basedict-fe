@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { DailyTest } from "@/modules/quizzes/daily-test";
+import { AuthWrapper } from "@/widgets/auth";
+import { DailyTest } from "@/features/quizzes/daily-test";
 
 export default function DailyTestPage() {
   return (

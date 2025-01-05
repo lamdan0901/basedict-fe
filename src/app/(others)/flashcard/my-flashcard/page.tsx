@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { MyFlashcard } from "@/modules/flashcard/my-flashcard";
+import { AuthWrapper } from "@/widgets/auth";
+import { MyFlashcard } from "@/features/flashcard/my-flashcard";
 
 export default function MyFlashcardPage() {
   return (

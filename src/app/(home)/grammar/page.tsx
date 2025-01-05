@@ -1,4 +1,4 @@
-import { Grammar } from "@/modules/grammar";
+import { Grammar } from "@/features/grammar";
 
 export default function GrammarPage() {
   return <Grammar />;

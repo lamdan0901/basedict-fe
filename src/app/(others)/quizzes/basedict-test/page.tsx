@@ -1,4 +1,4 @@
-import { QuizBasedictTest } from "@/modules/quizzes/basedict-test";
+import { QuizBasedictTest } from "@/features/quizzes/basedict-test";
 import { ResolvingMetadata } from "next";
 
 export async function generateMetadata(_: any, parent: ResolvingMetadata) {
@@ -12,6 +12,6 @@ export async function generateMetadata(_: any, parent: ResolvingMetadata) {
 }
 
 export default function BasedictTestPage() {
-  return null
+  return null;
   // return <QuizBasedictTest />;
 }

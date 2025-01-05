@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { FlashcardCreation } from "@/modules/flashcard/create";
+import { AuthWrapper } from "@/widgets/auth";
+import { FlashcardCreation } from "@/features/flashcard/create";
 
 export default function FlashcardCreationPage() {
   return (

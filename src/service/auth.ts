@@ -1,4 +1,4 @@
-import { axiosData } from "@/lib/axios";
+import { axiosData } from "@/shared/lib/axios";
 import { TAuthBody } from "@/service/types";
 
 export const login = (data: { email: string; password: string }) => {

@@ -1,4 +1,4 @@
-import { FlashcardExploring } from "@/modules/flashcard/explore";
+import { FlashcardExploring } from "@/features/flashcard/explore";
 import { ResolvingMetadata } from "next";
 
 export async function generateMetadata(_: any, parent: ResolvingMetadata) {

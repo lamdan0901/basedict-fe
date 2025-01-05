@@ -1,4 +1,4 @@
-import { UserFlashcard } from "@/modules/flashcard/user-flashcard";
+import { UserFlashcard } from "@/features/flashcard/user-flashcard";
 import { ResolvingMetadata } from "next";
 
 const fetchFlashcardSet = async (userId?: string) => {

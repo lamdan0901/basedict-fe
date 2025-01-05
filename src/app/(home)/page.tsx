@@ -1,5 +1,5 @@
 import { ResolvingMetadata } from "next";
-import { Home } from "@/modules/home";
+import { Home } from "@/features/home";
 import { cache } from "react";
 
 const fetchLexemeSearch = cache(

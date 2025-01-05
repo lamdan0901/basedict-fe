@@ -1,6 +1,6 @@
 import { QuizNavbar } from "@/app/(others)/quizzes/_components/QuizNavbar";
 import { QuizPageTitle } from "@/app/(others)/quizzes/_components/QuizPageTitle";
-import { AdSense } from "@/components/Ad";
+import { AdSense } from "@/components/ui/ad";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {

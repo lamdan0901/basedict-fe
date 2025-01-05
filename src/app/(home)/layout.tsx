@@ -1,9 +1,9 @@
 import { PropsWithChildren } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { ContentWrapper } from "@/components/ContentWrapper";
+import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
+import { ContentWrapper } from "@/widgets/translation";
 import Image from "next/image";
-import { DownloadAppButtons } from "@/components/DownloadAppButtons";
+import { DownloadAppButtons } from "@/widgets/download-app";
 
 const Layout = async ({ children }: PropsWithChildren) => {
   return (

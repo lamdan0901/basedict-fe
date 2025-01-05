@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { usePathname } from "next/navigation";
 import {
   Sheet,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib";
+import { cn } from "@/shared/lib";
 import { ExploreIcon } from "@/components/icons";
 import {
   BookText,

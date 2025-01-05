@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { QuizCreation } from "@/modules/quizzes/create";
+import { AuthWrapper } from "@/widgets/auth";
+import { QuizCreation } from "@/features/quizzes/create";
 
 export default function QuizUpdatePage() {
   return (

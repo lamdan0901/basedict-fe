@@ -1,4 +1,4 @@
-import { Vocabulary } from "@/modules/vocabulary";
+import { Vocabulary } from "@/features/vocabulary";
 import { ResolvingMetadata } from "next";
 
 export async function generateMetadata(

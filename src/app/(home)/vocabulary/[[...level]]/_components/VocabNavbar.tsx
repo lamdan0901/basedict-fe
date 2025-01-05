@@ -7,19 +7,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { jlptLevels } from "@/constants";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useQueryParam } from "@/hooks/useQueryParam";
-import { TabVal } from "@/modules/vocabulary/const";
+import { jlptLevels } from "@/shared/constants";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
+import { useQueryParam } from "@/shared/hooks/useQueryParam";
+import { TabVal } from "@/features/vocabulary/const";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib";
+import { cn } from "@/shared/lib";
 import { useParams } from "next/navigation";
 import { SquareMenu } from "lucide-react";
 import { useState } from "react";
-import { AdSense } from "@/components/Ad";
+import { AdSense } from "@/components/ui/ad";
 
 export function VocabNavbar() {
   const [sheetOpen, setSheetOpen] = useState(false);

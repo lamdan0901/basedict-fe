@@ -14,8 +14,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
-import { useDebounce } from "@/hooks/useDebounce";
+import { cn } from "@/shared/lib/utils";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 
 export type TMultiSelectOption = {
   value: string;

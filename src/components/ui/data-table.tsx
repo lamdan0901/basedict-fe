@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import { Table, flexRender } from "@tanstack/react-table";
 
 type TableProps<T> = {
@@ -56,7 +56,7 @@ const DataTable = <T,>({
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={colSpan} className="h-24">
-                  <SkeletonLoading numOfSkeletons={10} />
+                  Đang tải...
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (

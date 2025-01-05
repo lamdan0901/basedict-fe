@@ -1,4 +1,4 @@
-import { MAX_HISTORY_ITEMS } from "@/constants";
+import { MAX_HISTORY_ITEMS } from "@/shared/constants";
 import { THistoryItem } from "@/interface/history";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";

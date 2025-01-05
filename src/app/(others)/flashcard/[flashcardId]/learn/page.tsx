@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { FlashcardLearning } from "@/modules/flashcard/learn";
+import { AuthWrapper } from "@/widgets/auth";
+import { FlashcardLearning } from "@/features/flashcard/learn";
 
 export default function FlashcardLearningPage() {
   return (

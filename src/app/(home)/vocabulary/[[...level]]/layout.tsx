@@ -1,5 +1,5 @@
 import { VocabNavbar } from "@/app/(home)/vocabulary/[[...level]]/_components/VocabNavbar";
-import { AdSense } from "@/components/Ad";
+import { AdSense } from "@/components/ui/ad";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {

@@ -1,5 +1,5 @@
-import { AuthWrapper } from "@/components/AuthWrapper";
-import { QuizQuickTest } from "@/modules/quizzes/quick-test";
+import { AuthWrapper } from "@/widgets/auth";
+import { QuizQuickTest } from "@/features/quizzes/quick-test";
 
 export default function QuizQuickTestPage() {
   return (
