@@ -6,7 +6,7 @@ import { useIsVipUser } from "@/shared/hooks/useIsVipUser";
 import { QuizItem } from "@/features/quizzes/components/QuizItem";
 import { UserQuizHeader } from "@/features/quizzes/components/UserQuizHeader";
 import { QUIZ_LIMIT } from "@/features/quizzes/const";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { CircleHelp, Plus } from "lucide-react";
 import Link from "next/link";

@@ -1,4 +1,4 @@
-import { Reading } from "@/features/reading";
+import { ReadingList, ReadingDetail } from "@/app/(home)/reading/_features";
 import { ResolvingMetadata } from "next";
 
 export async function generateMetadata(
@@ -17,5 +17,10 @@ export async function generateMetadata(
 }
 
 export default function ReadingPage() {
-  return <Reading />;
+  return (
+    <div className="flex gap-4">
+      <ReadingList />
+      <ReadingDetail />
+    </div>
+  );
 }

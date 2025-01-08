@@ -2,7 +2,7 @@
 
 import { RegisterRequiredWrapper } from "@/features/quizzes/components/RegisterRequiredWrapper";
 import { JlptTestModule } from "@/features/quizzes/components/JlptTestModule";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

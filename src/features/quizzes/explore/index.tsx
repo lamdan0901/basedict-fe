@@ -1,11 +1,11 @@
 "use client";
 
 import { AdSense } from "@/components/ui/ad";
-import { BadgeList } from "@/shared/ui";
+import { BadgeList } from "@/entities/badge-list";
 import { Input } from "@/components/ui/input";
 import { QuizCreator } from "@/features/quizzes/components/QuizCreator";
 import { QuizItem } from "@/features/quizzes/components/QuizItem";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import Link from "next/link";
 import { useRouter } from "nextjs-toploader/app";
 import useSWR from "swr";

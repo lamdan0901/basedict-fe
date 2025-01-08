@@ -1,5 +1,5 @@
 import { AdSense } from "@/components/ui/ad";
-import { ShuffleIcon } from "@/components/icons";
+import { ShuffleIcon } from "@/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -29,7 +29,7 @@ import { shuffleArray } from "@/shared/lib";
 import { RegisterRequiredWrapper } from "@/features/flashcard/components/RegisterRequiredWrapper";
 import { DefaultFace } from "@/features/flashcard/const";
 import { FlashcardCarouselItem } from "@/features/flashcard/learn/FlashcardCarouselItem";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";

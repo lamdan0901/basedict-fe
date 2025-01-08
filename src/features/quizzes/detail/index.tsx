@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { FLASHCARD_SETS_LIMIT_MSG } from "@/features/flashcard/const";
 import { QuizItem } from "@/features/quizzes/components/QuizItem";
 import { QuizRegisterPrompt } from "@/features/quizzes/components/QuizRegisterPrompt";
-import { deleteRequest, getRequest, postRequest } from "@/service/data";
+import { deleteRequest, getRequest, postRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck } from "lucide-react";
 import Link from "next/link";

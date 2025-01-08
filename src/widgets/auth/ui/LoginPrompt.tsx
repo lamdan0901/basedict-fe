@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { login } from "@/service/actions";
+import { login } from "@/shared/api/login";
 import Image from "next/image";
 import { useFormStatus } from "react-dom";
 

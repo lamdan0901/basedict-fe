@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DEFAULT_AVATAR_URL } from "@/shared/constants";
 import { MAX_POINT } from "@/features/quizzes/const";
 import { WeekdayCarousel } from "@/features/quizzes/general/WeekdayCarousel";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import dayjs from "dayjs";
 import Image from "next/image";

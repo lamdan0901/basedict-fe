@@ -22,7 +22,7 @@ import { RegisterRequiredWrapper } from "@/features/quizzes/components/RegisterR
 import { QuizCarouselItem } from "@/features/quizzes/quick-test/QuizCarouselItem";
 import { QuizQuickTestResult } from "@/features/quizzes/quick-test/QuizQuickTestResult";
 import { QuizQuickTestTopBar } from "@/features/quizzes/quick-test/QuizQuickTestTopBar";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";

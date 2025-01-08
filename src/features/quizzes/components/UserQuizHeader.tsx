@@ -1,4 +1,4 @@
-import { CardIcon } from "@/components/icons";
+import { CardIcon } from "@/shared/icons";
 import {
   Tooltip,
   TooltipProvider,

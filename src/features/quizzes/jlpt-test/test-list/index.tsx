@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { LevelSelector } from "@/features/quizzes/jlpt-test/test-list/LevelSelector";
 import { JLPTTestDescLink } from "@/features/quizzes/components/JLPTTestDescLink";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { CheckCheck, GraduationCap } from "lucide-react";
 import Link from "next/link";

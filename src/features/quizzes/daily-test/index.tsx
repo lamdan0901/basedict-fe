@@ -1,6 +1,6 @@
 "use client";
 
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import useSWR from "swr";
 import { useAppStore } from "@/store/useAppStore";
 import { useEffect } from "react";

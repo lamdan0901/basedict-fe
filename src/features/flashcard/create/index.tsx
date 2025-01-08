@@ -13,7 +13,7 @@ import {
   flashCardSetSchema,
   TFlashCardSetForm,
 } from "@/features/flashcard/schema";
-import { getRequest, patchRequest, postRequest } from "@/service/data";
+import { getRequest, patchRequest, postRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";

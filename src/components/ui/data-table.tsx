@@ -1,6 +1,5 @@
 "use client";
 
-import { SkeletonLoading } from "@/components/SkeletonLoading";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import {
   Table as DataTableComponent,

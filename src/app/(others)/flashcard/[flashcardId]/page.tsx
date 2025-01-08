@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/shared/lib/supabase/server";
 import { FlashcardDetail } from "@/features/flashcard/detail";
 import { ResolvingMetadata } from "next";
 

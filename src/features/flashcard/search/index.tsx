@@ -19,7 +19,7 @@ import {
 import { flashcardSortMap } from "@/features/flashcard/const";
 import { FlashcardItem } from "@/features/flashcard/components/FlashcardItem";
 import { Searchbar } from "@/shared/ui";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/ui/ad";

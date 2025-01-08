@@ -1,7 +1,7 @@
 "use client";
 
 import { JlptTestModule } from "@/features/quizzes/components/JlptTestModule";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import useSWR from "swr";

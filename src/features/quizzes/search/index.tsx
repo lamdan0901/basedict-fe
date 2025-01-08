@@ -17,7 +17,7 @@ import {
   stringifyParams,
 } from "@/shared/lib";
 import { Searchbar } from "@/shared/ui";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/ui/ad";

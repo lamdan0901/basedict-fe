@@ -2,7 +2,7 @@
 
 import { androidAppLink, iosAppLink } from "@/shared/constants/app-links";
 import { DownloadAppPopup } from "@/widgets/download-app";
-import { AndroidIcon, IosIcon } from "@/components/icons";
+import { AndroidIcon, IosIcon } from "@/shared/icons";
 import { Button } from "@/components/ui/button";
 import { useIsMobileDevice } from "@/shared/hooks/useIsMobile";
 import { useState } from "react";

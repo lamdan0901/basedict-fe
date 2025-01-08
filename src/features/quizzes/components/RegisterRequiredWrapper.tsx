@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import { QuizRegisterPrompt } from "@/features/quizzes/components/QuizRegisterPrompt";
-import { postRequest } from "@/service/data";
+import { postRequest } from "@/shared/api/request";
 import { Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import { PropsWithChildren, useState } from "react";

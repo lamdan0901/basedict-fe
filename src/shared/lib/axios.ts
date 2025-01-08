@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/shared/lib/supabase/client";
 import axios, { AxiosError } from "axios";
 
 const axiosData = axios.create({

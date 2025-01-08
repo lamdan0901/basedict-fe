@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/shared/lib";
-import { ExploreIcon } from "@/components/icons";
+import { ExploreIcon } from "@/shared/icons";
 import {
   BookText,
   GraduationCap,
@@ -20,9 +20,9 @@ import {
   Search,
   SquareMenu,
 } from "lucide-react";
-import { QuizIcon } from "@/components/icons/QuizIcon";
+import { QuizIcon } from "@/shared/icons/QuizIcon";
 import Link from "next/link";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import useSWR from "swr";
 import { Fragment, useState } from "react";
 

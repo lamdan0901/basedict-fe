@@ -1,23 +1,20 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { combine } from "zustand/middleware";
 
-type TAnswerStore = {
-  userAnswers: Record<number, string>;
-  setUserAnswers: (questionIndex: number, answer: string) => void;
-  clearUserAnswers: () => void;
-};
-
-export const useAnswerStore = create<TAnswerStore>()(
-  immer((set) => ({
-    userAnswers: {},
-    setUserAnswers: (questionIndex, answer) =>
-      set((state) => {
-        state.userAnswers[questionIndex] = answer;
-      }),
-    clearUserAnswers: () => {
-      set((state) => {
-        state.userAnswers = {};
-      });
-    },
-  }))
+export const useAnswerStore = create(
+  immer(
+    combine(
+      {
+        userAnswers: {} as Record<number, string>,
+      },
+      (set) => ({
+        setUserAnswers: (questionIndex: number, answer: string) =>
+          set((state) => ({
+            userAnswers: { ...state.userAnswers, [questionIndex]: answer },
+          })),
+        clearUserAnswers: () => set({ userAnswers: {} }),
+      })
+    )
+  )
 );

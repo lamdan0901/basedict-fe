@@ -21,7 +21,7 @@ import {
   MIN_CARDS_TO_MATCH,
 } from "@/features/flashcard/const";
 import { MatchingOptionSelector } from "@/features/flashcard/detail/MatchingOptionSelector";
-import { deleteRequest, getRequest, postRequest } from "@/service/data";
+import { deleteRequest, getRequest, postRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";

@@ -4,7 +4,7 @@ import { useIsVipUser } from "@/shared/hooks/useIsVipUser";
 import { FlashcardItem } from "@/features/flashcard/components/FlashcardItem";
 import { UserFlashcardSetHeader } from "@/features/flashcard/components/UserFlashcardSetHeader";
 import { FLASHCARD_SETS_LIMIT } from "@/features/flashcard/const";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { CircleHelp, Plus } from "lucide-react";
 import Link from "next/link";

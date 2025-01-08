@@ -1,29 +1,28 @@
 import { MAX_HISTORY_ITEMS } from "@/shared/constants";
 import { THistoryItem } from "@/interface/history";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, combine } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-interface IHistoryState {
-  historyItems: THistoryItem[];
-  addHistoryItem: (item: THistoryItem) => void;
-  clearHistory: () => void;
-}
-
-export const useHistoryStore = create<IHistoryState>()(
+export const useHistoryStore = create(
   persist(
-    immer((set) => ({
-      historyItems: [] as THistoryItem[],
-      addHistoryItem: (item) => {
-        set((state) => {
-          if (state.historyItems.length >= MAX_HISTORY_ITEMS) {
-            state.historyItems.pop();
-          }
-          state.historyItems.unshift(item);
-        });
-      },
-      clearHistory: () => set({ historyItems: [] }),
-    })),
+    immer(
+      combine(
+        {
+          historyItems: [] as THistoryItem[],
+        },
+        (set) => ({
+          addHistoryItem: (item: THistoryItem) =>
+            set((state) => {
+              if (state.historyItems.length >= MAX_HISTORY_ITEMS) {
+                state.historyItems.pop();
+              }
+              state.historyItems.unshift(item);
+            }),
+          clearHistory: () => set({ historyItems: [] }),
+        })
+      )
+    ),
     {
       name: "history",
     }

@@ -7,7 +7,7 @@ import {
   MatchTimerRef,
 } from "@/features/flashcard/match/MatchTimer";
 import { OptionsSelector } from "@/features/flashcard/match/OptionSelector";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useAppStore } from "@/store/useAppStore";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

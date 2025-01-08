@@ -1,5 +1,5 @@
 import { Markdown } from "@/shared/ui";
-import { ReadingQuestion } from "@/widgets";
+import { ReadingQuestion } from "@/entities/reading-question";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +22,7 @@ import {
   StateSwitcher,
   TStateSwitcherRef,
 } from "@/features/quizzes/components/JlptTestModule/StateSwitcher";
-import { postRequest } from "@/service/data";
+import { postRequest } from "@/shared/api/request";
 import { useAnswerStore } from "@/store/useAnswerStore";
 import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";

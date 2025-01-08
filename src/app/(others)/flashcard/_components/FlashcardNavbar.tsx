@@ -1,6 +1,6 @@
 "use client";
 
-import { ExploreIcon, CardIcon } from "@/components/icons";
+import { ExploreIcon, CardIcon } from "@/shared/icons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { GraduationCap, Search, SquareMenu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

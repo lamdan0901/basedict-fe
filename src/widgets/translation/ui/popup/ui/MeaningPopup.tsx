@@ -1,10 +1,12 @@
-import { AddNewFlashcardModal } from "@/widgets/add-new-flashcard-modal";
-import { CardIcon } from "@/components/icons";
+"use client";
+
+import { AddNewFlashcardModal } from "@/entities/add-new-flashcard-modal";
+import { CardIcon } from "@/shared/icons";
 import { Button } from "@/components/ui/button";
 import { HistoryItemType, MEANING_ERR_MSG } from "@/shared/constants";
 import useOutsideClick from "@/shared/hooks/useOutsideClick";
 import { cn, trimAllSpaces } from "@/shared/lib";
-import { getRequest } from "@/service/data";
+import { getRequest } from "@/shared/api/request";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import {
   ChevronLeft,

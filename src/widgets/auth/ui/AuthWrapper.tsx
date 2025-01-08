@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginPrompt } from "@/widgets/auth";
-import { fetchUserProfile } from "@/service/user";
+import { fetchUserProfile } from "@/shared/api/user";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
