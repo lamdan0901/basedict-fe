@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./markdown.css";
 import "./globals.css";
 
@@ -43,7 +44,8 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={inter.className}>
-        {children} <Toaster />
+        <NuqsAdapter>{children}</NuqsAdapter>
+        <Toaster />
         <NextTopLoader
           color="#3b82f6"
           height={4}

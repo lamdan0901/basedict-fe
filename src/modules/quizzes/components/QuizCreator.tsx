@@ -15,7 +15,7 @@ export function QuizCreator({ creator }: { creator: TQuizCreator }) {
 
   return (
     <TooltipProvider delayDuration={200} skipDelayDuration={0}>
-      <Card className="cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300">
+      <Card className="cursor-pointer hover:border-b-tertiary border-b-4 transition duration-300">
         <CardContent
           onClick={() => router.push(`/quizzes/user/${creator.id}`)}
           className="p-2 space-y-4 sm:p-4"

@@ -2,7 +2,6 @@ import { AddNewFlashcardModal } from "@/components/AddNewFlashcardModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
-import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
 import { MeaningSectionTips } from "@/modules/home/TranslationSection/components/MeaningSectionTips";
 import { MeaningInDetail } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpMeaningSection/MeaningInDetail";
@@ -11,6 +10,7 @@ import { getRequest } from "@/service/data";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useQueryState } from "nuqs";
 import {
   forwardRef,
   memo,
@@ -30,7 +30,9 @@ export type VnToJpMeaningSectionRef = {
 export const VnToJpMeaningSection = memo(
   forwardRef((_, ref) => {
     const { searchText } = useVnToJpTransStore();
-    const [searchParam] = useQueryParam("searchVietnamese", "");
+    const [searchParam] = useQueryState("searchVietnamese", {
+      defaultValue: "",
+    });
     const { addFavoriteItem, removeFavoriteItem, isFavoriteItem } =
       useFavoriteStore();
 

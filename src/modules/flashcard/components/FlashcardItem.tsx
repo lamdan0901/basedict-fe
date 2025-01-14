@@ -35,7 +35,7 @@ export function FlashcardItem({
         className={cn(
           asHeading
             ? "border-2"
-            : "cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300 ",
+            : "cursor-pointer hover:border-b-tertiary border-b-4 transition duration-300 ",
           className
         )}
         onClick={() => {
@@ -48,14 +48,14 @@ export function FlashcardItem({
           <div>
             <div className="flex justify-between items-center gap-2">
               <h2 className="font-semibold truncate text-lg">{card.title}</h2>
-              <div className="bg-[#8b0000] text-white shrink-0 rounded-full px-6 text-sm">
+              <div className="bg-tertiary text-white shrink-0 rounded-full px-6 text-sm">
                 {card.flashCardNumber ?? flashCardNumber} thẻ
               </div>
             </div>
             <div className="flex gap-2 items-center">
               {card.tags?.map((tag) => (
                 <Link
-                  href={`/flashcard/search?q=~%28search~%27*23${tag}%29`}
+                  href={`/flashcard/search?search=%23${tag}`}
                   onClick={(e) => e.stopPropagation()}
                   key={tag}
                   className="italic hover:underline text-gray-700 hover:text-blue-500 text-xs"
@@ -77,7 +77,7 @@ export function FlashcardItem({
           <div className="flex justify-between gap-2 flex-wrap">
             {card.owner && (
               <Button
-                className="overflow-hidden hover:text-[#8b0000] gap-2 px-2 py-1 -ml-2 items-center"
+                className="overflow-hidden hover:text-tertiary gap-2 px-2 py-1 -ml-2 items-center"
                 variant={"ghost"}
                 onClick={(e) => {
                   e.stopPropagation();

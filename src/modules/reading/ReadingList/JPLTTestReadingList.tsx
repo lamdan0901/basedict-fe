@@ -1,20 +1,16 @@
-import { useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
-import { ReadingType, TabVal } from "@/modules/reading/const";
+import { TabVal } from "@/modules/reading/const";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
+import { parseQueryString } from "@/utils/parseQueryString";
+import {
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
 import { useRef } from "react";
 import useSWR from "swr";
-
-type THasReadFilter = {
-  hasReadJLPTTest: boolean;
-  selectedReadingItemId: number | null;
-};
-
-type TReadingParams = {
-  jlptTestLevel: TJlptLevel | undefined;
-  examId: string | undefined;
-};
 
 type Props = { jlptLevel?: TJlptLevel };
 
@@ -22,15 +18,14 @@ export function JPLTTestReadingList({ jlptLevel }: Props) {
   const hasSetInitialReading = useRef(false);
 
   const [{ hasReadJLPTTest, selectedReadingItemId }, setHasReadFilter] =
-    useQueryParams<THasReadFilter>({
-      hasReadJLPTTest: false,
-      selectedReadingItemId: null,
+    useQueryStates({
+      hasReadJLPTTest: parseAsBoolean.withDefault(false),
+      selectedReadingItemId: parseAsInteger,
     });
-  const [{ jlptTestLevel, examId }, setReadingParams] =
-    useQueryParams<TReadingParams>({
-      jlptTestLevel: jlptLevel,
-      examId: undefined,
-    });
+  const [{ jlptTestLevel, examId }, setReadingParams] = useQueryStates({
+    jlptTestLevel: parseQueryString(jlptLevel),
+    examId: parseAsString,
+  });
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     examId && jlptTestLevel
@@ -77,7 +72,7 @@ export function JPLTTestReadingList({ jlptLevel }: Props) {
       isLoadingTestPeriods={isLoadingTestPeriods}
       testPeriods={testPeriods}
       jlptTestLevel={jlptTestLevel}
-      examId={examId}
+      examId={examId || undefined}
       tab={TabVal.JLPT}
     />
   );

@@ -1,25 +1,25 @@
 "use client";
 
+import { AdSense } from "@/components/Ad";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { jlptLevels } from "@/constants";
+import { useEnumQueryState } from "@/hooks/useEnumQueryState";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useQueryParam } from "@/hooks/useQueryParam";
-import { TabVal } from "@/modules/vocabulary/const";
-import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib";
-import { useParams } from "next/navigation";
+import { TabVal } from "@/modules/vocabulary/const";
 import { SquareMenu } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
-import { AdSense } from "@/components/Ad";
 
 export function VocabNavbar() {
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -55,12 +55,16 @@ export function VocabNavbar() {
   );
 }
 
-function InnerVocabNavbar({
+export function InnerVocabNavbar({
   onMenuItemClick,
 }: {
   onMenuItemClick?: () => void;
 }) {
-  const [tab, setTab] = useQueryParam("tab", TabVal.Levels);
+  const [tab, setTab] = useEnumQueryState(
+    "tab",
+    Object.values(TabVal),
+    TabVal.Levels
+  );
 
   return (
     <div className="mt-8 lg:mt-0 mb-2 lg:w-[250px] lg:gap-y-6 lg:h-fit flex flex-col shrink-0">

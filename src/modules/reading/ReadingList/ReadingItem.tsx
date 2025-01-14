@@ -1,8 +1,8 @@
-import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
 import { readingTypeMap } from "@/modules/reading/const";
 import { useReadingStore } from "@/store/useReadingStore";
 import { Check } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 
 export function ReadingItem({
   id,
@@ -13,9 +13,10 @@ export function ReadingItem({
   createdAt,
 }: TReadingMaterial) {
   const { setSheetOpen } = useReadingStore();
-  const [selectedReadingItemId, setReadingItemId] = useQueryParam<
-    number | null
-  >("selectedReadingItemId", null);
+  const [selectedReadingItemId, setReadingItemId] = useQueryState(
+    "selectedReadingItemId",
+    parseAsInteger
+  );
 
   const readingTypeTitle = readingTypeMap[readingType];
   const isActive = selectedReadingItemId === id;

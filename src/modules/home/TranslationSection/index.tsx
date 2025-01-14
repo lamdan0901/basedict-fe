@@ -1,6 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
-import { useQueryParam } from "@/hooks/useQueryParam";
 import { trimAllSpaces } from "@/lib";
 import { PARAGRAPH_MIN_LENGTH, TransTab } from "@/modules/home/const";
 import { JpToVnMeaningSection } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnMeaningSection";
@@ -29,6 +28,7 @@ import {
   TranslatedVnToJpParagraph,
   VnToJpParagraphSectionRef,
 } from "./VnToJpTab/TranslatedVnToJpParagraph";
+import { useEnumQueryState } from "@/hooks/useEnumQueryState";
 
 type Props = {
   _lexemeSearch: TLexeme | undefined;
@@ -40,7 +40,11 @@ export function TranslationSection({ _lexemeSearch }: Props) {
   const { addHistoryItem } = useHistoryStore();
   const searchVnToJpText = useVnToJpTransStore((state) => state.searchText);
 
-  const [tab, setTab] = useQueryParam("tab", TransTab.JPToVN);
+  const [tab, setTab] = useEnumQueryState(
+    "tab",
+    Object.values(TransTab),
+    TransTab.JPToVN
+  );
 
   const [initialLexemeSearch, setInitialLexemeSearch] = useState(_lexemeSearch);
   const [initialLexemeText, setInitialLexemeText] = useState(

@@ -65,7 +65,7 @@ export const Header = () => {
   }, [profile, setProfile, user, toast]);
 
   return (
-    <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-[#8b0000] to-[#cd5c5c]">
+    <header className="flex w-full fixed z-10 gap-2 top-0 text-white items-center justify-end px-2 py-0.5 bg-gradient-to-r from-tertiary to-[#cd5c5c]">
       <Link
         className="mr-auto ml-2 sm:block hidden hover:bg-slate-300/40 transition rounded-sm px-2 py-1"
         href={"/"}

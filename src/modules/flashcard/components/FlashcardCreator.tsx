@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DEFAULT_AVATAR_URL } from "@/constants";
 import { CheckCheck, GraduationCap } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from 'nextjs-toploader/app';
+import { useRouter } from "nextjs-toploader/app";
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +15,7 @@ export function FlashcardCreator({ creator }: { creator: TFlashcardCreator }) {
 
   return (
     <TooltipProvider delayDuration={200} skipDelayDuration={0}>
-      <Card className="cursor-pointer hover:border-b-[#8b0000] border-b-4 transition duration-300">
+      <Card className="cursor-pointer hover:border-b-tertiary border-b-4 transition duration-300">
         <CardContent
           onClick={() => router.push(`/flashcard/user/${creator.id}`)}
           className="p-2 space-y-4 sm:p-4"

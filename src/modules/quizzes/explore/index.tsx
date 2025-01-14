@@ -57,8 +57,8 @@ export function QuizzesExplore() {
         title="Các tag phổ biến"
         words={quizTags?.map((tag) => `${tag.name} (${tag.count})`)}
         onWordClick={(tag) => {
-          tag = `q=~%28search~%27*23${tag.split("(")[0].trim()}%29`;
-          router.push(`/quizzes/search?${tag}`);
+          const q = `search=%23${tag.split("(")[0].trim()}`;
+          router.push(`/quizzes/search?${q}`);
         }}
       />
 

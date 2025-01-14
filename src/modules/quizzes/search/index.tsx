@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDebounceFn } from "@/hooks/useDebounce";
-import { useQueryParams } from "@/hooks/useQueryParam";
 import {
   formatQuizNFlashcardSearchParams,
   scrollToTop,
@@ -18,7 +17,7 @@ import {
 } from "@/lib";
 import { Searchbar } from "@/components/Searchbar";
 import { getRequest } from "@/service/data";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/Ad";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
@@ -26,10 +25,12 @@ import { quizSortMap } from "@/modules/quizzes/const";
 import { useAppStore } from "@/store/useAppStore";
 import { shallow } from "zustand/shallow";
 import { jlptLevels } from "@/constants";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 
 const TOP_EL_ID = "top-of-quiz-search";
 
 export function QuizzesSearch() {
+  const initialPageLoad = useRef(false);
   const { jlptLevel, isLoading: isLoadingProfile } = useAppStore(
     (state) => ({
       jlptLevel: state.profile?.jlptLevel,
@@ -39,12 +40,12 @@ export function QuizzesSearch() {
   );
   const defaultJlptLevel = isLoadingProfile ? undefined : jlptLevel;
 
-  const [searchParams, setSearchParams] = useQueryParams({
-    search: "",
-    sort: "popular",
-    jlptLevel: "all",
-    offset: 1,
-    limit: 20,
+  const [searchParams, setSearchParams] = useQueryStates({
+    jlptLevel: parseAsString.withDefault("all"),
+    search: parseAsString.withDefault(""),
+    sort: parseAsString.withDefault("popular"),
+    limit: parseAsInteger.withDefault(20),
+    offset: parseAsInteger.withDefault(1),
   });
   const [searchText, setSearchText] = useState(searchParams.search);
   const shouldSearchByTag = searchParams.search.startsWith("#");
@@ -90,9 +91,11 @@ export function QuizzesSearch() {
     if (
       !isLoadingProfile &&
       searchParams.jlptLevel === "all" &&
-      defaultJlptLevel
+      defaultJlptLevel &&
+      !initialPageLoad.current
     ) {
       setSearchParams({ jlptLevel: defaultJlptLevel });
+      initialPageLoad.current = true;
     }
   }, [
     defaultJlptLevel,

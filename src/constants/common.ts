@@ -16,7 +16,7 @@ export enum HistoryItemType {
   Grammar,
   Paragraph,
 }
-
+export const JLPT_LEVELS = ["N1", "N2", "N3", "N4", "N5"] as const;
 export const jlptLevels: { title: TJlptLevel; value: TJlptLevel }[] = [
   {
     title: "N1",

@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useQueryParam } from "@/hooks/useQueryParam";
 import { cn } from "@/lib";
 import { MAX_CHARS_LENGTH, PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
 import { ParagraphControls } from "@/modules/home/TranslationSection/components/ParagraphControls";
 import { TranslationTips } from "@/modules/home/TranslationSection/components/TranslationTips";
 import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
 import { X } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { KeyboardEvent, useEffect, useRef } from "react";
 
 type Props = {
@@ -19,7 +19,9 @@ export function VnToJpSearch({
   onTranslateWordVnToJp,
   onTranslateParagraphVnToJp,
 }: Props) {
-  const [searchParam, setSearchParam] = useQueryParam("searchVietnamese", "");
+  const [searchParam, setSearchParam] = useQueryState("searchVietnamese", {
+    defaultValue: "",
+  });
   const {
     searchText,
     isTranslatingParagraph,

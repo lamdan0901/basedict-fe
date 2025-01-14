@@ -4,7 +4,6 @@ import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounceFn } from "@/hooks/useDebounce";
-import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
 import { cn, stringifyParams } from "@/lib";
 import { VocabItem } from "@/modules/vocabulary/VocabItem";
 import { AppPagination } from "@/components/AppPagination";
@@ -32,6 +31,8 @@ import {
   LearningState,
   learningStateOptions,
 } from "@/modules/vocabulary/const";
+import { useEnumQueryState } from "@/hooks/useEnumQueryState";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 
 const TOP_EL_ID = "top-of-vocabulary";
 
@@ -49,15 +50,16 @@ export function Vocabulary() {
     left: 0,
   });
 
-  const [learningState, setLearningState] = useQueryParam(
+  const [learningState, setLearningState] = useEnumQueryState(
     "learningState",
+    Object.values(LearningState),
     LearningState.All
   );
-  const [searchParams, setSearchParams] = useQueryParams({
-    search: "",
-    jlptLevel: jlptLevel,
-    limit: 30,
-    offset: 1,
+  const [searchParams, setSearchParams] = useQueryStates({
+    search: parseAsString.withDefault(""),
+    jlptLevel: parseAsString.withDefault(jlptLevel),
+    limit: parseAsInteger.withDefault(30),
+    offset: parseAsInteger.withDefault(1),
   });
   const [searchText, setSearchText] = useState(searchParams.search);
   const [selectedLexeme, setSelectedLexeme] = useState<{

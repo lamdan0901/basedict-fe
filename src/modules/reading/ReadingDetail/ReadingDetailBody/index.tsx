@@ -1,27 +1,35 @@
 import { Markdown } from "@/components/Markdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useQueryParam, useQueryParams } from "@/hooks/useQueryParam";
 import { stringifyParams } from "@/lib";
 import { ReadingType, readingTypeMap } from "@/modules/reading/const";
 import { ReadingQuestions } from "@/modules/reading/ReadingDetail/ReadingDetailBody/ReadingQuestions";
 import { ReadingVocab } from "@/modules/reading/ReadingDetail/ReadingDetailBody/ReadingVocab";
 import { getRequest, postRequest } from "@/service/data";
 import { Check } from "lucide-react";
+import {
+  useQueryState,
+  useQueryStates,
+  parseAsString,
+  parseAsStringEnum,
+  parseAsInteger,
+} from "nuqs";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
 export function ReadingDetailBody() {
-  const [selectedReadingItemId] = useQueryParam<number | null>(
+  const [selectedReadingItemId] = useQueryState(
     "selectedReadingItemId",
-    null
+    parseAsInteger
   );
 
   const [showVietnamese, setShowVietnamese] = useState(false);
-  const [readingParams] = useQueryParams({
-    jlptLevel: "N1",
-    readingType: ReadingType.All,
+  const [readingParams] = useQueryStates({
+    jlptLevel: parseAsString.withDefault("N1"),
+    readingType: parseAsStringEnum(Object.values(ReadingType)).withDefault(
+      ReadingType.All
+    ),
   });
 
   const {

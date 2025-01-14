@@ -10,7 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import { ReadingType, readingTypeMap, TabVal } from "@/modules/reading/const";
 import { jlptLevels } from "@/constants";
-import { useQueryParams } from "@/hooks/useQueryParam";
+import { parseAsBoolean, parseAsStringEnum, useQueryStates } from "nuqs";
+import { parseQueryString } from "@/utils/parseQueryString";
 
 type Props = {
   readingList: TReadingMaterial[];
@@ -46,15 +47,17 @@ export function ReadingListContent({
   examId,
 }: Props) {
   const [{ hasReadBaseDict, hasReadJLPTTest }, setHasReadFilter] =
-    useQueryParams({
-      hasReadBaseDict: false,
-      hasReadJLPTTest: false,
+    useQueryStates({
+      hasReadBaseDict: parseAsBoolean.withDefault(false),
+      hasReadJLPTTest: parseAsBoolean.withDefault(false),
     });
-  const [readingParams, setReadingParams] = useQueryParams({
-    jlptLevel,
-    jlptTestLevel,
-    readingType: ReadingType.All,
-    examId,
+  const [readingParams, setReadingParams] = useQueryStates({
+    jlptLevel: parseQueryString(jlptLevel),
+    jlptTestLevel: parseQueryString(jlptTestLevel),
+    readingType: parseAsStringEnum(Object.values(ReadingType)).withDefault(
+      ReadingType.All
+    ),
+    examId: parseQueryString(examId),
   });
 
   const isBaseDictTab = tab === TabVal.BaseDict;

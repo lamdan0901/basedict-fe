@@ -1,8 +1,8 @@
 import { AdSense } from "@/components/Ad";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEnumQueryState } from "@/hooks/useEnumQueryState";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useQueryParam } from "@/hooks/useQueryParam";
 import { TabVal } from "@/modules/reading/const";
 import { BaseDictReadingList } from "@/modules/reading/ReadingList/BaseDictReadingList";
 import { JLPTReadingDescModal } from "@/modules/reading/ReadingList/JLPTReadingDescModal";
@@ -35,7 +35,11 @@ export function ReadingList() {
 }
 
 function InnerReadingList() {
-  const [tab, setTab] = useQueryParam("tab", TabVal.BaseDict);
+  const [tab, setTab] = useEnumQueryState(
+    "tab",
+    Object.values(TabVal),
+    TabVal.BaseDict
+  );
 
   const { profileJlptLevel, isLoading } = useAppStore(
     (state) => ({

@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDebounceFn } from "@/hooks/useDebounce";
-import { useQueryParams } from "@/hooks/useQueryParam";
 import {
   formatQuizNFlashcardSearchParams,
   scrollToTop,
@@ -23,15 +22,16 @@ import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/Ad";
+import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 
 const TOP_EL_ID = "top-of-flashcard-search";
 
 export function FlashcardSearch() {
-  const [searchParams, setSearchParams] = useQueryParams({
-    search: "",
-    sort: "popular",
-    offset: 1,
-    limit: 20,
+  const [searchParams, setSearchParams] = useQueryStates({
+    search: parseAsString.withDefault(""),
+    sort: parseAsString.withDefault("popular"),
+    limit: parseAsInteger.withDefault(20),
+    offset: parseAsInteger.withDefault(1),
   });
   const [searchText, setSearchText] = useState(searchParams.search);
   const shouldSearchByTag = searchParams.search.startsWith("#");
