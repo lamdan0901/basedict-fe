@@ -21,7 +21,7 @@ import {
   useRef,
   useState,
 } from "react";
-import useSWRImmutable from "swr/immutable";
+import useSWR from "swr";
 
 type Props = {
   initialText: string | undefined;
@@ -72,13 +72,13 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
     const [lexemeSearchParam, setLexemeSearchParam] = useState(search);
 
     const isParagraphMode = text.length >= PARAGRAPH_MIN_LENGTH;
-    const isVocabMode = !isParagraphMode && lexemeSearchParam;
+    const isVocabMode = !isParagraphMode && !!lexemeSearchParam;
 
     const {
       data: lexemeSuggestions = [],
       isLoading: loadingLexemeSuggestion,
       mutate: mutateLexemeVocab,
-    } = useSWRImmutable<TLexeme[]>(
+    } = useSWR<TLexeme[]>(
       isVocabMode && !initialText
         ? `lexeme-suggestions-${trimAllSpaces(lexemeSearchParam)}`
         : null,
@@ -132,6 +132,7 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
         setSelectedGrammar(null);
         setSelectedVocab(null);
         onInputClear();
+        setLexemeSearchParam("");
       }
     }
 
