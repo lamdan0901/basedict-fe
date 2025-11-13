@@ -48,7 +48,6 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
       `
       )
       .or(`standard.eq.${word},lexeme.eq.${word}`)
-      .eq("approved", true)
       .limit(1);
 
     if (error) throw error;
@@ -64,7 +63,6 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
         `
         )
         .or(`standard.ilike.${word},lexeme.ilike.${word}`)
-        .eq("approved", true)
         .limit(1);
 
       if (fuzzyError) throw fuzzyError;

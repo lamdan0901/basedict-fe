@@ -1,20 +1,20 @@
 import { ResolvingMetadata } from "next";
 import { Home } from "@/modules/home";
 import { cache } from "react";
+import { createClient } from "@/utils/supabase/server";
+import { createLexemeRepository } from "@/lib/supabase/repositories/lexemeRepo";
 
 const fetchLexemeSearch = cache(
   async (word?: string): Promise<TLexeme | undefined> => {
     if (!word) return;
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/lexemes/search/${word}`,
-        { next: { revalidate: 86_400 } } // caching for 1 day
-      );
-      if (!res.ok) return;
-      const data = await res.json();
-      return data.data;
+      const supabase = createClient();
+      const lexemeRepo = createLexemeRepository(supabase);
+      const data = await lexemeRepo.searchLexeme(word);
+      return data;
     } catch (err: any) {
+      if (err === "NOT_FOUND") return;
       console.log("err fetchLexemeSearch: ", err);
     }
   }
