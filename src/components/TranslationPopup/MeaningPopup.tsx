@@ -70,10 +70,7 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
       getRequest,
       {
         onError(errMsg) {
-          setMeaningErrMsg(
-            MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
-              MEANING_ERR_MSG.UNKNOWN
-          );
+          setMeaningErrMsg(MEANING_ERR_MSG[errMsg] ?? MEANING_ERR_MSG.UNKNOWN);
           console.error("err searching lexeme: ", errMsg);
         },
       }

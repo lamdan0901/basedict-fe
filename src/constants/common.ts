@@ -1,4 +1,4 @@
-export const MEANING_ERR_MSG = {
+export const MEANING_ERR_MSG: Record<string, string> = {
   NOT_FOUND: "Không tìm thấy từ",
   VALIDATION_FAILED:
     "Từ vựng chỉ được bao gồm hán tự, hiragana hoặc katakana và tối đa là 10 kí tự",

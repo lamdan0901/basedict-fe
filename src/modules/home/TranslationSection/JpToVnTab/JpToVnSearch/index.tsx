@@ -3,12 +3,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useDebounceFn } from "@/hooks/useDebounce";
 import { useUrlSearchParams } from "@/hooks/useUrlSearchParams";
-import { cn, stringifyParams, trimAllSpaces } from "@/lib";
+import { cn, trimAllSpaces } from "@/lib";
+import { lexemeRepo } from "@/lib/supabase/client";
 import { MAX_CHARS_LENGTH, PARAGRAPH_MIN_LENGTH } from "@/modules/home/const";
 import { ParagraphControls } from "@/modules/home/TranslationSection/components/ParagraphControls";
 import { TranslationTips } from "@/modules/home/TranslationSection/components/TranslationTips";
 import { LexemeSuggestion } from "@/modules/home/TranslationSection/JpToVnTab/JpToVnSearch/LexemeSuggestion";
-import { getRequest } from "@/service/data";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -75,24 +75,19 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
     const isVocabMode = !isParagraphMode && lexemeSearchParam;
 
     const {
-      data: lexemeSuggestionRes,
+      data: lexemeSuggestions = [],
       isLoading: loadingLexemeSuggestion,
       mutate: mutateLexemeVocab,
-    } = useSWRImmutable<{
-      data: TLexeme[];
-    }>(
+    } = useSWRImmutable<TLexeme[]>(
       isVocabMode && !initialText
-        ? `/v1/lexemes?${stringifyParams({
-            search: trimAllSpaces(lexemeSearchParam),
-          })}`
+        ? `lexeme-suggestions-${trimAllSpaces(lexemeSearchParam)}`
         : null,
-      (url: string) => {
-        abortControllerRef.current = new AbortController();
-        return getRequest(url, { signal: abortControllerRef.current.signal });
+      () => lexemeRepo.getLexemeSuggestions(trimAllSpaces(lexemeSearchParam)),
+      {
+        fallbackData: [],
       }
     );
 
-    const lexemeSuggestions = lexemeSuggestionRes?.data ?? [];
     const isDisplayingSuggestions = lexemeSuggestions.length > 0;
 
     const lexemeToShowHanviet = selectedVocab ?? lexemeSearch;
@@ -132,7 +127,7 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
       debouncedSearch(value);
 
       if (value.trim().length === 0) {
-        mutateLexemeVocab({ data: [] });
+        mutateLexemeVocab([]);
         setWord("");
         setSelectedGrammar(null);
         setSelectedVocab(null);
@@ -181,7 +176,7 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
       setSelectedVocab(lexeme);
       setSearchParam({ search: lexeme.standard });
       setLexemeSearchParam("");
-      mutateLexemeVocab({ data: [] });
+      mutateLexemeVocab([]);
       setText(lexeme.standard);
       setWord(lexeme.lexeme);
     }
@@ -238,7 +233,7 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
       ref,
       () => ({
         hideSuggestions: () => {
-          if (isDisplayingSuggestions) mutateLexemeVocab({ data: [] });
+          if (isDisplayingSuggestions) mutateLexemeVocab([]);
           if (lexemeSearchParam) setLexemeSearchParam("");
         },
       }),
@@ -344,7 +339,7 @@ export const JpToVnSearch = forwardRef<JpToVnSearchRef, Props>(
             >
               {loadingLexemeSuggestion
                 ? "Đang tìm kiếm..."
-                : lexemeSuggestions.map((lexemeSuggestion) => (
+                : lexemeSuggestions.map((lexemeSuggestion: TLexeme) => (
                     <LexemeSuggestion
                       key={lexemeSuggestion.id}
                       onClick={() => handleVocabClick(lexemeSuggestion)}

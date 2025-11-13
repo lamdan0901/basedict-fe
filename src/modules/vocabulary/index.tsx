@@ -7,7 +7,7 @@ import { useDebounceFn } from "@/hooks/useDebounce";
 import { cn, stringifyParams } from "@/lib";
 import { VocabItem } from "@/modules/vocabulary/VocabItem";
 import { AppPagination } from "@/components/AppPagination";
-import { getRequest } from "@/service/data";
+import { lexemeRepo } from "@/lib/supabase/client";
 import { Search, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { MouseEvent, useRef, useState } from "react";
@@ -68,8 +68,14 @@ export function Vocabulary() {
   } | null>(null);
 
   const { data, isLoading } = useSWR<{ data: TLexeme[]; total: number }>(
-    `/v1/lexemes/?${stringifyParams(searchParams)}`,
-    getRequest
+    `lexemes-${stringifyParams(searchParams)}`,
+    () =>
+      lexemeRepo.getLexemes({
+        search: searchParams.search,
+        page: searchParams.offset,
+        limit: searchParams.limit,
+        jlptLevel: searchParams.jlptLevel,
+      })
   );
   const lexemes =
     learningState === LearningState.All

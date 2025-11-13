@@ -17,7 +17,7 @@ import {
   VnToJpMeaningSectionRef,
 } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpMeaningSection";
 import { VnToJpSearch } from "@/modules/home/TranslationSection/VnToJpTab/VnToJpSearch";
-import { getRequest } from "@/service/data";
+import { lexemeRepo } from "@/lib/supabase/client";
 import { useHistoryStore } from "@/store/useHistoryStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { useVnToJpTransStore } from "@/store/useVnToJpTransStore";
@@ -29,6 +29,7 @@ import {
   VnToJpParagraphSectionRef,
 } from "./VnToJpTab/TranslatedVnToJpParagraph";
 import { useEnumQueryState } from "@/hooks/useEnumQueryState";
+import { THistoryItem } from "@/interface/history";
 
 type Props = {
   _lexemeSearch: TLexeme | undefined;
@@ -64,22 +65,26 @@ export function TranslationSection({ _lexemeSearch }: Props) {
     isLoading: loadingLexemeSearch,
     mutate: retryLexemeSearch,
   } = useSWRImmutable<TLexeme>(
-    word ? `/v1/lexemes/search/${trimAllSpaces(word)}` : null,
-    getRequest,
+    word ? `lexeme-search-${trimAllSpaces(word)}` : null,
+    async () => {
+      const result = await lexemeRepo.searchLexeme(trimAllSpaces(word));
+      return result as TLexeme;
+    },
     {
       onError(errMsg) {
         setVocabMeaningErrMsg(
-          MEANING_ERR_MSG[errMsg as keyof typeof MEANING_ERR_MSG] ??
-            MEANING_ERR_MSG.UNKNOWN
+          MEANING_ERR_MSG[errMsg] ?? MEANING_ERR_MSG.UNKNOWN
         );
         console.error("err searching lexeme: ", errMsg);
       },
       onSuccess(data) {
-        addHistoryItem({
-          ...data,
-          uid: uuid(),
-          type: HistoryItemType.Lexeme,
-        });
+        if (data) {
+          addHistoryItem({
+            ...data,
+            uid: uuid(),
+            type: HistoryItemType.Lexeme,
+          } as THistoryItem);
+        }
       },
     }
   );
