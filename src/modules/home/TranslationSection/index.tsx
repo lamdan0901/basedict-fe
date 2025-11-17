@@ -67,8 +67,8 @@ export function TranslationSection({ _lexemeSearch }: Props) {
   } = useSWRImmutable<TLexeme>(
     word ? `lexeme-search-${trimAllSpaces(word)}` : null,
     async () => {
-      const result = await lexemeRepo.searchLexeme(trimAllSpaces(word));
-      return result as TLexeme;
+      const data = await lexemeRepo.searchLexeme(trimAllSpaces(word));
+      return data;
     },
     {
       onError(errMsg) {

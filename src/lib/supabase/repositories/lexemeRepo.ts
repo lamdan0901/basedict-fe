@@ -37,44 +37,62 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
   /**
    * Search for a lexeme by its standard form or lexeme
    */
-  async searchLexeme(word: string): Promise<any> {
-    // First try exact match - limit to 1 result to handle multiple matches
-    const { data, error } = await client
-      .from("lexemes")
-      .select(
-        `
-        *,
-        meanings (*)
-      `
-      )
-      .or(`standard.eq.${word},lexeme.eq.${word}`)
-      .limit(1);
+  // async searchLexeme2(word: string): Promise<any> {
+  //   // First try exact match - limit to 1 result to handle multiple matches
+  //   const { data, error } = await client
+  //     .from("lexemes")
+  //     .select(
+  //       `
+  //       *,
+  //       meanings (*)
+  //     `
+  //     )
+  //     .or(`standard.eq.${word},lexeme.eq.${word}`)
+  //     .limit(1);
 
-    if (error) throw error;
+  //   if (error) throw error;
 
-    // If no exact match found, try case-insensitive search
-    if (!data || data.length === 0) {
-      const { data: fuzzyData, error: fuzzyError } = await client
-        .from("lexemes")
-        .select(
-          `
-          *,
-          meanings (*)
-        `
-        )
-        .or(`standard.ilike.${word},lexeme.ilike.${word}`)
-        .limit(1);
+  //   // If no exact match found, try case-insensitive search
+  //   if (!data || data.length === 0) {
+  //     const { data: fuzzyData, error: fuzzyError } = await client
+  //       .from("lexemes")
+  //       .select(
+  //         `
+  //         *,
+  //         meanings (*)
+  //       `
+  //       )
+  //       .or(`standard.ilike.${word},lexeme.ilike.${word}`)
+  //       .limit(1);
 
-      if (fuzzyError) throw fuzzyError;
+  //     if (fuzzyError) throw fuzzyError;
 
-      if (!fuzzyData || fuzzyData.length === 0) {
-        throw "NOT_FOUND";
-      }
+  //     if (!fuzzyData || fuzzyData.length === 0) {
+  //       throw "NOT_FOUND";
+  //     }
 
-      return transformLexeme(fuzzyData[0]);
+  //     return transformLexeme(fuzzyData[0]);
+  //   }
+
+  //   return transformLexeme(data[0]);
+  // },
+
+  /**
+   * Search for a lexeme
+   */
+  async searchLexeme(word: string): Promise<TLexeme> {
+    const { data, error } = await client.functions.invoke("lexeme-find", {
+      body: { word },
+    });
+
+    if (error) {
+      console.error(error);
+      throw error;
     }
 
-    return transformLexeme(data[0]);
+    if (data.data) return data.data;
+
+    throw "NOT_FOUND";
   },
 
   /**

@@ -135,7 +135,7 @@ export const JpToVnMeaningSection = memo<MeaningSectionProps>(
         <CardContent className="!p-4 !pb-10 space-y-2">
           {loadingLexemeSearch ? (
             "Đang tìm kiếm..."
-          ) : lexemeSearch ? (
+          ) : lexemeSearch && lexemeSearch.meaning.length > 0 ? (
             <>
               <div className="flex justify-between items-center">
                 <div className="flex gap-1 items-center">
