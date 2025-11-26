@@ -35,6 +35,7 @@ export function BadgeList({
           </Badge>
         ))
       )}
+      {!isLoading && words?.length === 0 && "Chưa có tag nào"}
     </div>
   );
 }

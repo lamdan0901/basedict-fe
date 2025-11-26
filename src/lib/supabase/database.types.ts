@@ -32,6 +32,160 @@ export type Database = {
         }
         Relationships: []
       }
+      flash_card_learners: {
+        Row: {
+          created_at: string
+          flash_card_set_id: number
+          is_learning: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          flash_card_set_id: number
+          is_learning?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          flash_card_set_id?: number
+          is_learning?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_card_learners_flash_card_set_id_fkey"
+            columns: ["flash_card_set_id"]
+            isOneToOne: false
+            referencedRelation: "flash_card_sets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flash_card_learners_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_card_set_tags: {
+        Row: {
+          flash_card_set_id: number
+          tag_id: number
+        }
+        Insert: {
+          flash_card_set_id: number
+          tag_id: number
+        }
+        Update: {
+          flash_card_set_id?: number
+          tag_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_card_set_tags_flash_card_set_id_fkey"
+            columns: ["flash_card_set_id"]
+            isOneToOne: false
+            referencedRelation: "flash_card_sets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flash_card_set_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_card_sets: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          is_public: boolean
+          popular: number
+          popular_updated_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          is_public?: boolean
+          popular?: number
+          popular_updated_at?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          is_public?: boolean
+          popular?: number
+          popular_updated_at?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_card_sets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_cards: {
+        Row: {
+          back_side: string
+          back_side_comment: string | null
+          created_at: string
+          flash_card_set_id: number
+          front_side: string
+          front_side_comment: string | null
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          back_side: string
+          back_side_comment?: string | null
+          created_at?: string
+          flash_card_set_id: number
+          front_side: string
+          front_side_comment?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          back_side?: string
+          back_side_comment?: string | null
+          created_at?: string
+          flash_card_set_id?: number
+          front_side?: string
+          front_side_comment?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_cards_flash_card_set_id_fkey"
+            columns: ["flash_card_set_id"]
+            isOneToOne: false
+            referencedRelation: "flash_card_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lexemes: {
         Row: {
           approved: boolean
@@ -141,6 +295,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tags: {
+        Row: {
+          count: number
+          id: number
+          name: string
+        }
+        Insert: {
+          count?: number
+          id?: number
+          name: string
+        }
+        Update: {
+          count?: number
+          id?: number
+          name?: string
+        }
+        Relationships: []
       }
       users: {
         Row: {

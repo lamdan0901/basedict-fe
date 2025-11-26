@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/sheet";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { cn } from "@/lib";
-import { getRequest } from "@/service/data";
+import { flashcardRepo } from "@/lib/supabase/client";
+import { useAppStore } from "@/store/useAppStore";
 import { GraduationCap, Search, SquareMenu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -84,9 +85,10 @@ function InnerFlashcardNavbar({
   onMenuItemClick?: () => void;
 }) {
   const pathname = usePathname();
+  const profile = useAppStore((state) => state.profile);
   const { data: myFlashcardSet } = useSWR<TMyFlashcard>(
-    `/v1/flash-card-sets/my-flash-card`,
-    getRequest
+    profile?.id ? ["my-flash-card", profile.id] : null,
+    () => flashcardRepo.getMyFlashcards(profile?.id!)
   );
 
   const myFlashCards = myFlashcardSet?.myFlashCards ?? [];

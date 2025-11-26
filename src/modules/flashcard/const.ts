@@ -1,6 +1,6 @@
 export const flashcardSortMap = {
   popular: "Độ phổ biến",
-  updatedAt: "Mới nhất",
+  updated_at: "Mới nhất",
 };
 export const matchingOptions = ["6", "8", "10", "12"];
 

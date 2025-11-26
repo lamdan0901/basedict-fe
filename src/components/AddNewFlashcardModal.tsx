@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { getRequest, postRequest } from "@/service/data";
+import { postRequest } from "@/service/data";
+import { flashcardRepo } from "@/lib/supabase/client";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
@@ -40,8 +41,8 @@ export const AddNewFlashcardModal = memo<Props>(
     const [loginPromptOpen, setLoginPromptOpen] = useState(false);
 
     const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
-      profile && open ? `/v1/flash-card-sets/my-flash-card` : null,
-      getRequest
+      profile?.id && open ? ["my-flash-card", profile.id] : null,
+      () => flashcardRepo.getMyFlashcards(profile?.id!)
     );
     const { trigger: addToFlashcardSet, isMutating: isAddingToFlashcardSet } =
       useSWRMutation(

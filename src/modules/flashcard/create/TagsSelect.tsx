@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multi-select";
 import { useToast } from "@/components/ui/use-toast";
-import { axiosData } from "@/lib";
+import { flashcardRepo } from "@/lib/supabase/client";
 import { MAX_TAG_CHARS, MAX_TAGS } from "@/modules/flashcard/const";
 import {
   TFlashCardSetForm,
@@ -24,17 +24,10 @@ export function TagsSelect() {
 
   async function handleSearch(value: string) {
     try {
-      const res = await axiosData.get<{ data: TFlashcardTag[] }>(
-        `/v1/flash-card-sets/tags`,
-        {
-          params: {
-            search: value,
-          },
-        }
-      );
-      return res.data.data?.map((tag) => ({
+      const tags = await flashcardRepo.getTags({ search: value });
+      return tags?.map((tag) => ({
         value: tag.id.toString(),
-        label: `${tag.name} (${tag.count})`,
+        label: tag.name,
       }));
     } catch (err) {
       console.log("err: ", err);

@@ -20,6 +20,7 @@ export function Searchbar({ id, value, placeholder, onSearch }: Props) {
           onSearch(e.target.value);
         }}
         type="text"
+        autoFocus
       />
       <Search
         className={cn(

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { flashcardRepo } from "@/lib/supabase/client";
 import {
   defaultFlashcardSet,
   FLASHCARD_SETS_LIMIT_MSG,
@@ -13,7 +14,6 @@ import {
   flashCardSetSchema,
   TFlashCardSetForm,
 } from "@/modules/flashcard/schema";
-import { getRequest, patchRequest, postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
@@ -24,11 +24,14 @@ import { FormProvider, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
+import { FLASHCARD_KEYS } from "@/modules/flashcard/keys";
 
 export function FlashcardCreation() {
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
+  console.log("🦆 flashcardId", flashcardId);
+
   const searchParams = useSearchParams();
   const userId = useAppStore((state) => state.profile?.id);
 
@@ -55,15 +58,19 @@ export function FlashcardCreation() {
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(
       flashcardId ? `flash-card-sets/${flashcardId}/get-one` : null,
-      () => getRequest(`/v1/flash-card-sets/${flashcardId}`)
+      () => flashcardRepo.getFlashcardSetById(flashcardId as string)
     );
   const { trigger: addFlashcardSet, isMutating: isAddingFlashcardSet } =
-    useSWRMutation("/v1/flash-card-sets", postRequest);
+    useSWRMutation(
+      "createFlashcardSet",
+      (_, { arg }: { arg: TFlashCardSetForm }) =>
+        flashcardRepo.createFlashcardSet(arg, userId!)
+    );
   const { trigger: updateFlashcardSet, isMutating: isUpdatingFlashcardSet } =
     useSWRMutation(
       `flash-card-sets/${flashcardId}/update`,
-      (_, { arg }: { arg: any }) =>
-        patchRequest(`/v1/flash-card-sets/${flashcardId}`, { arg })
+      (_, { arg }: { arg: TFlashCardSetForm }) =>
+        flashcardRepo.updateFlashcardSet(Number(flashcardId), arg)
     );
 
   const isLoading = isLoadingFlashcardSet;
@@ -76,16 +83,12 @@ export function FlashcardCreation() {
         delete item.uid;
         if (item.id === "") delete item.id;
       });
-      const formattedData = {
-        ...data,
-        tags: data.tags.map((tag) => tag.label.split("(")[0].trim()),
-      };
 
       const { id } = await (flashcardId
-        ? updateFlashcardSet(formattedData)
-        : addFlashcardSet(formattedData));
+        ? updateFlashcardSet(data)
+        : addFlashcardSet(data));
 
-      mutate("/v1/flash-card-sets/my-flash-card");
+      mutate(FLASHCARD_KEYS.myFlashcards(userId));
       toast({
         title: `Lưu thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,

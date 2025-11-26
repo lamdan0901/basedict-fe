@@ -30,7 +30,7 @@ export function Footer() {
           </div>
           <div className="space-y-1 mt-2">
             <p className="text-xs">Mail: basedict.work@gmail.com</p>
-            <p className="text-xs">SDT: +84xxx-yyy-zzz</p>
+            {/* <p className="text-xs">SDT: +84xxx-yyy-zzz</p> */}
           </div>
         </div>
 

@@ -142,7 +142,11 @@ function isOptionsExist(
 ) {
   for (const [, value] of Object.entries(groupOption)) {
     if (
-      value.some((option) => targetOption.find((p) => p.value === option.value))
+      value.some((option) =>
+        targetOption.find(
+          (p) => p.value === option.value || p.label === option.label
+        )
+      )
     ) {
       return true;
     }
@@ -370,7 +374,7 @@ const MultipleSelector = React.forwardRef<
       if (!creatable) return undefined;
       if (
         isOptionsExist(options, [{ value: inputValue, label: inputValue }]) ||
-        selected.find((s) => s.value === inputValue)
+        selected.find((s) => s.value === inputValue || s.label === inputValue)
       ) {
         return undefined;
       }

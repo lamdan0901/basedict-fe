@@ -4,26 +4,28 @@ import { useIsVipUser } from "@/hooks/useIsVipUser";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { UserFlashcardSetHeader } from "@/modules/flashcard/components/UserFlashcardSetHeader";
 import { FLASHCARD_SETS_LIMIT } from "@/modules/flashcard/const";
-import { getRequest } from "@/service/data";
+import { flashcardRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { CircleHelp, Plus } from "lucide-react";
 import Link from "next/link";
 import useSWR from "swr";
 import { shallow } from "zustand/shallow";
+import { FLASHCARD_KEYS } from "@/modules/flashcard/keys";
 
 export function MyFlashcard() {
   const profile = useAppStore(
     (state) => ({
       avatar: state.profile?.avatar,
       name: state.profile?.name,
+      id: state.profile?.id,
     }),
     shallow
   );
   const isVip = useIsVipUser();
 
   const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
-    `/v1/flash-card-sets/my-flash-card`,
-    getRequest
+    FLASHCARD_KEYS.myFlashcards(profile.id),
+    () => flashcardRepo.getMyFlashcards(profile.id!)
   );
 
   const myFlashCards = myFlashcardSet?.myFlashCards ?? [];

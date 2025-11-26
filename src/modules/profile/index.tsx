@@ -1,12 +1,8 @@
 "use client";
 
+import { AdSense } from "@/components/Ad";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { DEFAULT_AVATAR_URL } from "@/constants";
-import { getRequest, postRequest } from "@/service/data";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import useSWR, { mutate } from "swr";
-import useSWRMutation from "swr/mutation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,19 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { jlptLevels } from "@/constants";
-import useSWRImmutable from "swr/immutable";
-import { createClient } from "@/utils/supabase/client";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { DEFAULT_AVATAR_URL, jlptLevels } from "@/constants";
+
+import { fetchUserProfile } from "@/service/user";
 import { useAppStore } from "@/store/useAppStore";
-import { AdSense } from "@/components/Ad";
+import { createAuthRepository } from "@/lib/supabase/repositories/authRepo";
+import { createClient } from "@/utils/supabase/client";
+import { Check } from "lucide-react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import useSWR, { mutate } from "swr";
+import useSWRImmutable from "swr/immutable";
 
 type TUserForm = {
   name: string;
-  jlptLevel: TJlptLevel;
+  jlptlevel: TJlptLevel;
 };
 
 export function Profile() {
@@ -44,7 +44,7 @@ export function Profile() {
     handleSubmit,
     formState: { errors },
   } = useForm<TUserForm>({ mode: "all" });
-  const jlptLevel = watch("jlptLevel");
+  const jlptlevel = watch("jlptlevel");
 
   const { data: email } = useSWRImmutable("get-email", async () => {
     const {
@@ -52,35 +52,39 @@ export function Profile() {
     } = await supabase.auth.getSession();
     return session?.user.email;
   });
+
   const {
     data: user,
     mutate: mutateUser,
     isLoading,
-  } = useSWR<TUser>("v1/users/profile", getRequest, {
-    onSuccess: (data) => {
+  } = useSWR<TUser>("get-user-profile", fetchUserProfile);
+
+  const [isMutating, setIsMutating] = useState(false);
+
+  useEffect(() => {
+    if (user) {
       reset({
-        name: data.name,
-        jlptLevel: data.jlptLevel,
+        name: user.name,
+        jlptlevel: user.jlptlevel,
       });
-    },
-  });
-  const { trigger: updateUser, isMutating } = useSWRMutation(
-    "/v1/users",
-    postRequest
-  );
+    }
+  }, [user]);
 
   async function submitForm(data: TUserForm) {
+    if (!user) return;
     try {
-      await updateUser(data);
-      if (user) {
-        const newUserData = {
-          ...user,
-          ...data,
-        };
-        mutateUser(newUserData);
-        mutate("get-user", newUserData);
-        setProfile(newUserData);
-      }
+      setIsMutating(true);
+      const authRepo = createAuthRepository(supabase);
+      await authRepo.updateUserProfile(user.id, data);
+
+      const newUserData = {
+        ...user,
+        ...data,
+      };
+      mutateUser(newUserData);
+      mutate("get-user", newUserData);
+      setProfile(newUserData);
+
       toast({
         title: "Cập nhật thông tin thành công",
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -90,6 +94,8 @@ export function Profile() {
         title: "Không thể cập nhật thông tin",
         variant: "destructive",
       });
+    } finally {
+      setIsMutating(false);
     }
   }
 
@@ -133,10 +139,10 @@ export function Profile() {
             <div className="flex w-full max-w-md items-center gap-1.5">
               <Label className="w-[60px] shrink-0">Trình độ</Label>
               <Select
-                value={jlptLevel}
+                value={jlptlevel}
                 disabled={isLoading}
                 onValueChange={(value) =>
-                  setValue("jlptLevel", value as TJlptLevel)
+                  setValue("jlptlevel", value as TJlptLevel)
                 }
               >
                 <SelectTrigger className="w-full">
@@ -156,11 +162,13 @@ export function Profile() {
               <Button type="submit" disabled={isMutating}>
                 Lưu
               </Button>
-              <Link href="/">
-                <Button variant={"secondary"} type="button">
-                  Huỷ
-                </Button>
-              </Link>
+              <Button
+                variant={"secondary"}
+                onClick={() => window.history.back()}
+                type="button"
+              >
+                Huỷ
+              </Button>
             </div>
           </form>
         </CardContent>

@@ -10,19 +10,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDebounceFn } from "@/hooks/useDebounce";
-import {
-  formatQuizNFlashcardSearchParams,
-  scrollToTop,
-  stringifyParams,
-} from "@/lib";
+import { scrollToTop } from "@/lib";
 import { flashcardSortMap } from "@/modules/flashcard/const";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
 import { Searchbar } from "@/components/Searchbar";
-import { getRequest } from "@/service/data";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/Ad";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { flashcardRepo } from "@/lib/supabase/client";
 
 const TOP_EL_ID = "top-of-flashcard-search";
 
@@ -36,14 +32,16 @@ export function FlashcardSearch() {
   const [searchText, setSearchText] = useState(searchParams.search);
   const shouldSearchByTag = searchParams.search.startsWith("#");
 
-  const { data: flashcardSearch, isLoading: isSearching } = useSWR<{
-    data: TFlashcardSet[];
-    total: number;
-  }>(
-    `/v1/flash-card-sets/discover?${stringifyParams(
-      formatQuizNFlashcardSearchParams(searchParams, shouldSearchByTag)
-    )}`,
-    getRequest
+  const { data: flashcardSearch, isLoading: isSearching } = useSWR(
+    ["flashcard-search", searchParams],
+    async () =>
+      flashcardRepo.searchFlashcardSets({
+        search: searchParams.search,
+        tagName: shouldSearchByTag ? searchParams.search.slice(1) : undefined,
+        sort: searchParams.sort as "popular" | "updated_at",
+        limit: searchParams.limit,
+        offset: (searchParams.offset - 1) * searchParams.limit,
+      })
   );
   const flashcards = flashcardSearch?.data ?? [];
   const total = flashcardSearch?.total ?? 0;
@@ -87,11 +85,13 @@ export function FlashcardSearch() {
         </Select>
       </div>
 
-      {isSearching ? (
-        <span>Đang tìm kiếm...</span>
-      ) : flashcards.length === 0 ? (
-        <span>Không có kết quả tìm kiếm</span>
-      ) : null}
+      <div>
+        {isSearching
+          ? "Đang tìm kiếm..."
+          : flashcards.length === 0
+          ? "Không có kết quả tìm kiếm"
+          : null}
+      </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
         {flashcards.map((card) => (

@@ -21,7 +21,7 @@ import {
   MIN_CARDS_TO_MATCH,
 } from "@/modules/flashcard/const";
 import { MatchingOptionSelector } from "@/modules/flashcard/detail/MatchingOptionSelector";
-import { deleteRequest, getRequest, postRequest } from "@/service/data";
+import { flashcardRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -30,6 +30,7 @@ import { useRouter } from "nextjs-toploader/app";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
+import { FLASHCARD_KEYS } from "@/modules/flashcard/keys";
 
 export function FlashcardDetail() {
   const { toast } = useToast();
@@ -48,20 +49,21 @@ export function FlashcardDetail() {
     data: flashcardSet,
     isLoading,
     mutate: mutateFlashcardSet,
-  } = useSWR<TFlashcardSet>(`/v1/flash-card-sets/${flashcardId}`, getRequest);
+  } = useSWR<TFlashcardSet>(
+    flashcardId ? ["flashcard-set", flashcardId, userId] : null,
+    async () => flashcardRepo.getFlashcardSetById(flashcardId as string, userId)
+  );
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
-    useSWRMutation(
-      `/v1/flash-card-sets/${flashcardId}/start-learning`,
-      postRequest
+    useSWRMutation(["start-learning", flashcardId], async () =>
+      flashcardRepo.startLearning(Number(flashcardId), userId!)
     );
   const { trigger: stopLearning, isMutating: isMutatingStopLearning } =
-    useSWRMutation(
-      `/v1/flash-card-sets/${flashcardId}/stop-learning`,
-      postRequest
+    useSWRMutation(["stop-learning", flashcardId], async () =>
+      flashcardRepo.stopLearning(Number(flashcardId), userId!)
     );
   const { trigger: deleteFlashcardSet } = useSWRMutation(
-    `/v1/flash-card-sets/${flashcardId}`,
-    deleteRequest
+    ["delete-flashcard-set", flashcardId],
+    async () => flashcardRepo.deleteFlashcardSet(Number(flashcardId))
   );
 
   const flashCardsLength = flashcardSet?.flashCards?.length || 0;
@@ -82,7 +84,7 @@ export function FlashcardDetail() {
       await (flashcardSet?.isLearning ? stopLearning() : startLearning());
 
       await Promise.all([
-        mutate("/v1/flash-card-sets/my-flash-card"),
+        mutate(FLASHCARD_KEYS.myFlashcards(userId)),
         mutateFlashcardSet(),
       ]);
       toast({
@@ -104,7 +106,6 @@ export function FlashcardDetail() {
   async function handleDeleteFlashcardSet() {
     try {
       await deleteFlashcardSet();
-      mutate("/v1/flash-card-sets/my-flash-card");
       toast({
         title: `Xoá thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -126,6 +127,13 @@ export function FlashcardDetail() {
     }
     if (!isMyFlashcard && !flashcardSet?.isLearning) {
       setFlashcardRegisterPromptOpen(true);
+      return false;
+    }
+    if (flashCardsLength === 0) {
+      toast({
+        title: `Bộ flashcard không có thẻ`,
+        variant: "destructive",
+      });
       return false;
     }
     return true;
@@ -155,7 +163,7 @@ export function FlashcardDetail() {
       await startLearning();
 
       setFlashcardRegisterPromptOpen(false);
-      mutate("/v1/flash-card-sets/my-flash-card");
+      mutate(FLASHCARD_KEYS.myFlashcards(userId));
       router.push(`/flashcard/${flashcardId}/learn`);
 
       toast({

@@ -1,29 +1,21 @@
 import { UserFlashcard } from "@/modules/flashcard/user-flashcard";
 import { ResolvingMetadata } from "next";
 
-const fetchFlashcardSet = async (userId?: string) => {
-  if (!userId) return;
-
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/flash-card-sets/user/${userId}`
-    );
-    if (!res.ok) return;
-    const data = await res.json();
-    return data.data as TFlashcardSetOwner;
-  } catch (err: any) {
-    console.log("err fetchFlashcardSet: ", err);
-  }
-};
+import { createClient } from "@/utils/supabase/server";
+import { createFlashcardRepository } from "@/lib/supabase/repositories/flashcardRepo";
 
 export async function generateMetadata(
   { params }: TComponentProps,
   parent: ResolvingMetadata
 ) {
-  const [owner, previousMeta] = await Promise.all([
-    fetchFlashcardSet(params.flashcardId),
-    parent,
-  ]);
+  const previousMeta = await parent;
+  if (!params.userId) return previousMeta;
+
+  const supabase = createClient();
+  const flashcardRepo = createFlashcardRepository(supabase);
+  const owner = await flashcardRepo
+    .getUserFlashcardSets(params.userId)
+    .catch(() => null);
 
   if (!owner) return previousMeta;
 
@@ -36,6 +28,13 @@ export async function generateMetadata(
 }
 
 export default async function UserFlashcardPage({ params }: TComponentProps) {
-  const owner = await fetchFlashcardSet(params.userId);
+  if (!params.userId) return null;
+
+  const supabase = createClient();
+  const flashcardRepo = createFlashcardRepository(supabase);
+  const owner = await flashcardRepo
+    .getUserFlashcardSets(params.userId)
+    .catch(() => undefined);
+
   return <UserFlashcard owner={owner} />;
 }

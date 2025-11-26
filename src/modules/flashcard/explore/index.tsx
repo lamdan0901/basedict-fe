@@ -5,7 +5,7 @@ import { BadgeList } from "@/components/BadgeList";
 import { Input } from "@/components/ui/input";
 import { FlashcardCreator } from "@/modules/flashcard/components/FlashcardCreator";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { getRequest } from "@/service/data";
+import { flashcardRepo } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "nextjs-toploader/app";
 import useSWR from "swr";
@@ -15,16 +15,16 @@ export function FlashcardExploring() {
 
   const { data: flashcardTags, isLoading: isLoadingTags } = useSWR<
     TFlashcardTag[]
-  >("/v1/flash-card-sets/tags", getRequest);
+  >("flashcardTags", () => flashcardRepo.getTags({ excludeEmpty: true }));
 
   const { data: flashcardDiscover, isLoading: isLoadingDiscover } = useSWR<{
     data: TFlashcardSet[];
     total: number;
-  }>("/v1/flash-card-sets/discover", getRequest);
+  }>("flashcardDiscover", () => flashcardRepo.getDiscoverSets());
 
   const { data: topCreators = [], isLoading: isLoadingTopCreators } = useSWR<
     TFlashcardCreator[]
-  >("/v1/flash-card-sets/top-creator", getRequest);
+  >("topCreators", () => flashcardRepo.getTopCreators());
 
   const flashcards = flashcardDiscover?.data ?? [];
 
@@ -42,6 +42,9 @@ export function FlashcardExploring() {
           {flashcards.map((card) => (
             <FlashcardItem key={card.id} hiddenDate card={card} />
           ))}
+          {!isLoadingDiscover &&
+            flashcards.length === 0 &&
+            "Chưa có flashcard nào"}
         </div>
         <Link
           className="text-blue-500 hover:underline block w-fit ml-auto mt-2"
@@ -70,6 +73,9 @@ export function FlashcardExploring() {
           {topCreators.map((creator, i) => (
             <FlashcardCreator key={i} creator={creator} />
           ))}
+          {!isLoadingTopCreators &&
+            topCreators.length === 0 &&
+            "Chưa có người đóng góp nào"}
         </div>
       </div>
 

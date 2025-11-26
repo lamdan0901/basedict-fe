@@ -28,8 +28,8 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { shuffleArray } from "@/lib";
 import { RegisterRequiredWrapper } from "@/modules/flashcard/components/RegisterRequiredWrapper";
 import { DefaultFace } from "@/modules/flashcard/const";
+import { flashcardRepo } from "@/lib/supabase/client";
 import { FlashcardCarouselItem } from "@/modules/flashcard/learn/FlashcardCarouselItem";
-import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CircleHelp } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -54,8 +54,8 @@ export function FlashcardLearning() {
 
   const { data: flashcardSet, isLoading: isLoadingFlashcardSet } =
     useSWR<TFlashcardSet>(
-      userId ? `/v1/flash-card-sets/${flashcardId}` : null,
-      getRequest
+      userId && flashcardId ? ["flashcardSet", flashcardId, userId] : null,
+      () => flashcardRepo.getFlashcardSetById(flashcardId as string, userId)
     );
 
   const flashCards = useMemo(() => {

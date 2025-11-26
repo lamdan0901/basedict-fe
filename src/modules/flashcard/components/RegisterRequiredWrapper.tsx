@@ -33,7 +33,7 @@ export function RegisterRequiredWrapper({
       await startLearning();
 
       onOpenChange(false);
-      mutate("/v1/flash-card-sets/my-flash-card");
+      mutate("my-flash-card");
 
       toast({
         title: `Đăng kí học thành công`,

@@ -128,7 +128,7 @@ export const Header = () => {
               <Link
                 href={
                   item.href === "/vocabulary"
-                    ? `${item.href}/${user?.jlptLevel ?? "N3"}`
+                    ? `${item.href}/${user?.jlptlevel ?? "N3"}`
                     : item.href
                 }
                 key={item.href}

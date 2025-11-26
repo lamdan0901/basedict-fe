@@ -7,11 +7,11 @@ import {
   MatchTimerRef,
 } from "@/modules/flashcard/match/MatchTimer";
 import { OptionsSelector } from "@/modules/flashcard/match/OptionSelector";
-import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
+import { flashcardRepo } from "@/lib/supabase/client";
 
 export function FlashcardMatching() {
   const timerRef = useRef<MatchTimerRef>(null);
@@ -25,8 +25,8 @@ export function FlashcardMatching() {
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   const { data: flashcardSet, isLoading } = useSWR<TFlashcardSet>(
-    userId ? `/v1/flash-card-sets/${flashcardId}` : null,
-    getRequest
+    userId && flashcardId ? ["flashcardSet", flashcardId, userId] : null,
+    () => flashcardRepo.getFlashcardSetById(flashcardId as string, userId)
   );
 
   const isMyFlashcard = userId === flashcardSet?.owner?.id;
