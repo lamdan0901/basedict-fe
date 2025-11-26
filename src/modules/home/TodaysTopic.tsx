@@ -19,7 +19,7 @@ export function TodaysTopic() {
 
   const { profileJlptLevel, isLoading } = useAppStore(
     (state) => ({
-      profileJlptLevel: state.profile?.jlptLevel,
+      profileJlptLevel: state.profile?.jlptlevel,
       isLoading: state.isLoading,
     }),
     shallow

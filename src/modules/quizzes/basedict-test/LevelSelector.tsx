@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export function LevelSelector() {
   const router = useRouter();
-  const jlptLevel = useAppStore((state) => state.profile?.jlptLevel);
+  const jlptLevel = useAppStore((state) => state.profile?.jlptlevel);
   const [selectedLevel, setSelectedLevel] = useState("N3");
 
   useEffect(() => {

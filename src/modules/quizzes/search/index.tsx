@@ -33,7 +33,7 @@ export function QuizzesSearch() {
   const initialPageLoad = useRef(false);
   const { jlptLevel, isLoading: isLoadingProfile } = useAppStore(
     (state) => ({
-      jlptLevel: state.profile?.jlptLevel,
+      jlptLevel: state.profile?.jlptlevel,
       isLoading: state.isLoading,
     }),
     shallow

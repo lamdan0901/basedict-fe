@@ -25,7 +25,7 @@ export function JLPTTests() {
 
   const { profileJlptLevel, isLoading: isLoadingUser } = useAppStore(
     (state) => ({
-      profileJlptLevel: state.profile?.jlptLevel,
+      profileJlptLevel: state.profile?.jlptlevel,
       isLoading: state.isLoading,
     }),
     shallow
