@@ -10,10 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { postRequest } from "@/service/data";
 import { flashcardRepo } from "@/lib/supabase/client";
 import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
 import { BookX, Check } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import {
@@ -39,16 +37,12 @@ export const AddNewFlashcardModal = memo<Props>(
     const [selectedSet, setSelectedSet] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+    const [isAddingToFlashcardSet, setIsAddingToFlashcardSet] = useState(false);
 
     const { data: myFlashcardSet, isLoading } = useSWR<TMyFlashcard>(
       profile?.id && open ? ["my-flash-card", profile.id] : null,
       () => flashcardRepo.getMyFlashcards(profile?.id!)
     );
-    const { trigger: addToFlashcardSet, isMutating: isAddingToFlashcardSet } =
-      useSWRMutation(
-        `/v1/flash-card-sets/${selectedSet}/add-flashcard`,
-        postRequest
-      );
 
     const myFlashCards = myFlashcardSet?.myFlashCards ?? [];
     const hasFlashcardSet = myFlashCards.length > 0;
@@ -58,18 +52,22 @@ export const AddNewFlashcardModal = memo<Props>(
       const hiragana2 = lexeme?.hiragana2 ? `/ ${lexeme?.hiragana2}` : "";
 
       return {
-        frontSide: lexeme?.standard,
+        frontSide: lexeme?.standard || "",
         frontSideComment: `${lexeme?.lexeme} ${hanviet}\n${lexeme?.hiragana} ${hiragana2}`,
-        backSide: currentMeaning?.meaning,
-        backSideComment: currentMeaning?.explaination,
+        backSide: currentMeaning?.meaning || "",
+        backSideComment: currentMeaning?.explaination || "",
       };
     }
 
     async function handleSubmit() {
       if (!selectedSet) return;
+      setIsAddingToFlashcardSet(true);
 
       try {
-        await addToFlashcardSet(formatLexemeToFlashcard());
+        await flashcardRepo.addFlashcardToSet(
+          selectedSet,
+          formatLexemeToFlashcard()
+        );
 
         toast({
           title: "Thêm flashcard thành công",
@@ -83,6 +81,8 @@ export const AddNewFlashcardModal = memo<Props>(
         }
         setErrorMsg("Có lỗi xảy ra, vui lòng thử lại");
         console.log("err: ", err);
+      } finally {
+        setIsAddingToFlashcardSet(false);
       }
     }
 

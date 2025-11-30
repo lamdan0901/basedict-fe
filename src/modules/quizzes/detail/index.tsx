@@ -15,10 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { quizRepo } from "@/lib/supabase/client";
 import { FLASHCARD_SETS_LIMIT_MSG } from "@/modules/flashcard/const";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
 import { QuizRegisterPrompt } from "@/modules/quizzes/components/QuizRegisterPrompt";
-import { deleteRequest, getRequest, postRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { Check, CheckCheck } from "lucide-react";
 import Link from "next/link";
@@ -42,18 +42,24 @@ export function QuizDetail() {
   const {
     data: quiz,
     isLoading,
-    mutate: mutateFlashcardSet,
-  } = useSWR<TQuiz>(`/v1/exams/${quizId}`, getRequest);
+    mutate: mutateQuiz,
+  } = useSWR<TQuiz>(quizId ? ["quiz", quizId] : null, async () =>
+    quizRepo.getQuizById(quizId as string)
+  );
 
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
-    useSWRMutation(`/v1/exams/${quizId}/start-learning`, postRequest);
+    useSWRMutation(["start-learning-quiz", quizId], async () =>
+      quizRepo.startLearning(Number(quizId), userId!)
+    );
 
   const { trigger: stopLearning, isMutating: isMutatingStopLearning } =
-    useSWRMutation(`/v1/exams/${quizId}/stop-learning`, postRequest);
+    useSWRMutation(["stop-learning-quiz", quizId], async () =>
+      quizRepo.stopLearning(Number(quizId), userId!)
+    );
 
   const { trigger: deleteQuiz } = useSWRMutation(
-    `/v1/exams/${quizId}`,
-    deleteRequest
+    ["delete-quiz", quizId],
+    async () => quizRepo.deleteQuiz(Number(quizId))
   );
 
   const isMyQuiz = userId === quiz?.owner?.id;
@@ -69,7 +75,7 @@ export function QuizDetail() {
     try {
       await (quiz?.isLearning ? stopLearning() : startLearning());
 
-      await Promise.all([mutate("/v1/exams/my-exams"), mutateFlashcardSet()]);
+      await Promise.all([mutate(["my-quizzes", userId]), mutateQuiz()]);
       toast({
         title: `${learningStatusTitle} thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -89,7 +95,7 @@ export function QuizDetail() {
   async function handleDeleteQuiz() {
     try {
       await deleteQuiz();
-      mutate("/v1/exams/my-exams");
+      mutate(["my-quizzes", userId]);
       toast({
         title: `Xoá thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -134,7 +140,7 @@ export function QuizDetail() {
 
       setQuizRegisterPromptOpen(false);
 
-      await Promise.all([mutate("/v1/exams/my-exams"), mutateFlashcardSet()]);
+      await Promise.all([mutate(["my-quizzes", userId]), mutateQuiz()]);
 
       router.push(`/quizzes/jlpt-test/${quizId}`);
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { HistoryItemType, MEANING_ERR_MSG } from "@/constants";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { cn, trimAllSpaces } from "@/lib";
+import { lexemeRepo } from "@/lib/supabase/client";
 import { getRequest } from "@/service/data";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import {
@@ -65,9 +66,11 @@ export const MeaningPopup = forwardRef<HTMLDivElement, MeaningPopupProps>(
       mutate: retryLexemeSearch,
     } = useSWRImmutable<TLexeme>(
       selection && showPopup
-        ? `/v1/lexemes/search/${trimAllSpaces(selection)}`
+        ? `lexeme-search-${trimAllSpaces(selection)}`
         : null,
-      getRequest,
+      async () => {
+        return lexemeRepo.searchLexeme(trimAllSpaces(selection));
+      },
       {
         onError(errMsg) {
           setMeaningErrMsg(MEANING_ERR_MSG[errMsg] ?? MEANING_ERR_MSG.UNKNOWN);

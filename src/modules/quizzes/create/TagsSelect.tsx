@@ -1,12 +1,9 @@
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multi-select";
 import { useToast } from "@/components/ui/use-toast";
-import { axiosData } from "@/lib";
+import { quizRepo } from "@/lib/supabase/client";
 import { MAX_TAG_CHARS, MAX_TAGS } from "@/modules/flashcard/const";
-import {
-  TFlashCardSetForm,
-  TFlashCardTagItem,
-} from "@/modules/flashcard/schema";
+import { TQuizForm, TQuizTagItem } from "@/modules/quizzes/schema";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 export function TagsSelect() {
@@ -14,27 +11,20 @@ export function TagsSelect() {
   const {
     formState: { errors },
     setValue,
-  } = useFormContext<TFlashCardSetForm>();
+  } = useFormContext<TQuizForm>();
 
   const { fields, append, remove } = useFieldArray<{
-    tags: TFlashCardTagItem[];
+    tags: TQuizTagItem[];
   }>({
     name: "tags",
   });
 
   async function handleSearch(value: string) {
     try {
-      const res = await axiosData.get<{ data: TFlashcardTag[] }>(
-        `/v1/flash-card-sets/tags`,
-        {
-          params: {
-            search: value,
-          },
-        }
-      );
-      return res.data.data?.map((tag) => ({
+      const tags = await quizRepo.getTags({ search: value });
+      return tags.map((tag) => ({
         value: tag.id.toString(),
-        label: `${tag.name} (${tag.count})`,
+        label: tag.name,
       }));
     } catch (err) {
       console.log("err: ", err);

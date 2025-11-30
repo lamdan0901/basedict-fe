@@ -45,7 +45,7 @@ export const questionTypesWithExplanation: TQuestionType[] = [
 
 export const quizSortMap = {
   popular: "Độ phổ biến",
-  updatedAt: "Mới nhất",
+  updated_at: "Mới nhất",
 };
 
 export const defaultQuizItem = (uid: string) => ({

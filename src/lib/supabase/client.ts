@@ -4,7 +4,10 @@ import { createBrowserClient } from "@supabase/ssr";
 import { Database } from "@/lib/supabase/database.types";
 import { createLexemeRepository } from "./repositories/lexemeRepo";
 import { createFlashcardRepository } from "./repositories/flashcardRepo";
+import { createQuizRepository } from "./repositories/quizRepo";
 import { createAuthRepository } from "./repositories/authRepo";
+
+import { createReadingRepository } from "./repositories/readingRepo";
 
 const client: ReturnType<typeof createBrowserClient<Database>> =
   createBrowserClient<Database>(
@@ -14,4 +17,6 @@ const client: ReturnType<typeof createBrowserClient<Database>> =
 
 export const lexemeRepo = createLexemeRepository(client);
 export const flashcardRepo = createFlashcardRepository(client);
+export const quizRepo = createQuizRepository(client);
 export const authRepo = createAuthRepository(client);
+export const readingRepo = createReadingRepository(client);

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { LevelSelector } from "@/modules/quizzes/jlpt-test/test-list/LevelSelector";
 import { JLPTTestDescLink } from "@/modules/quizzes/components/JLPTTestDescLink";
-import { getRequest } from "@/service/data";
+import { quizRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { CheckCheck, GraduationCap } from "lucide-react";
 import Link from "next/link";
@@ -34,8 +34,8 @@ export function JLPTTests() {
     _jlptLevel ?? (isLoadingUser ? undefined : profileJlptLevel || "N3");
 
   const { data: jlptTests = [], isLoading } = useSWR<TTestPeriod[]>(
-    jlptLevel ? `/v1/exams/jlpt?jlptLevel=${jlptLevel}` : null,
-    getRequest
+    jlptLevel ? `jlptTests-${jlptLevel}` : null,
+    () => quizRepo.getJlptTests(jlptLevel!)
   );
 
   return (

@@ -123,7 +123,7 @@ export function HistoryNFavorite() {
                       <ChevronRight className="size-10 text-muted-foreground shrink-0" />{" "}
                       <div className=" w-[124px]">
                         <div className="text-lg truncate font-semibold">
-                          {item.meaning[0].meaning}
+                          {item.meaning?.[0]?.meaning}
                         </div>
                         <div className=" truncate">{item.hanviet}</div>
                       </div>

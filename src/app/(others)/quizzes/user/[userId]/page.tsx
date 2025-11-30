@@ -1,27 +1,18 @@
 import { UserQuiz } from "@/modules/quizzes/user-quiz";
 import { ResolvingMetadata } from "next";
-
-const fetchUserQuiz = async (userId?: string) => {
-  if (!userId) return;
-
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_AUTH_BASE_URL}/v1/exams/user/${userId}`
-    );
-    if (!res.ok) return;
-    const data = await res.json();
-    return data.data as TQuizCreator;
-  } catch (err: any) {
-    console.log("err fetchFlashcardSet: ", err);
-  }
-};
+import { createClient } from "@/utils/supabase/server";
+import { createQuizRepository } from "@/lib/supabase/repositories/quizRepo";
 
 export async function generateMetadata(
   { params }: TComponentProps,
   parent: ResolvingMetadata
 ) {
+  const supabase = createClient();
+  const quizRepo = createQuizRepository(supabase);
   const [owner, previousMeta] = await Promise.all([
-    fetchUserQuiz(params.flashcardId),
+    params.userId
+      ? quizRepo.getUserQuizzes(params.userId)
+      : Promise.resolve(undefined),
     parent,
   ]);
 
@@ -36,6 +27,9 @@ export async function generateMetadata(
 }
 
 export default async function UserQuizPage({ params }: TComponentProps) {
-  const owner = await fetchUserQuiz(params.userId);
+  if (!params.userId) return null;
+  const supabase = createClient();
+  const quizRepo = createQuizRepository(supabase);
+  const owner = await quizRepo.getUserQuizzes(params.userId);
   return <UserQuiz owner={owner} />;
 }

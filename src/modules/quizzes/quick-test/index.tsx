@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/dialog";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { shuffleArray } from "@/lib";
+import { quizRepo } from "@/lib/supabase/client";
 import { RegisterRequiredWrapper } from "@/modules/quizzes/components/RegisterRequiredWrapper";
 import { QuizCarouselItem } from "@/modules/quizzes/quick-test/QuizCarouselItem";
 import { QuizQuickTestResult } from "@/modules/quizzes/quick-test/QuizQuickTestResult";
 import { QuizQuickTestTopBar } from "@/modules/quizzes/quick-test/QuizQuickTestTopBar";
-import { getRequest } from "@/service/data";
 import { useAppStore } from "@/store/useAppStore";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -52,8 +52,8 @@ export function QuizQuickTest() {
   const [questions, setQuestions] = useState<TQuizQuestion[]>([]);
 
   const { data: quiz, isLoading } = useSWR<TQuiz>(
-    userId && quizId ? `/v1/exams/${quizId}` : null,
-    getRequest
+    quizId && userId ? ["quiz", quizId] : null,
+    async () => quizRepo.getQuizById(quizId as string)
   );
 
   const isMyQuiz = userId === quiz?.owner?.id;

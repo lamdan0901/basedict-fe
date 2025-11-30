@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
+import { quizRepo } from "@/lib/supabase/client";
 import { QuizRegisterPrompt } from "@/modules/quizzes/components/QuizRegisterPrompt";
-import { postRequest } from "@/service/data";
+import { useAppStore } from "@/store/useAppStore";
 import { Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import { PropsWithChildren, useState } from "react";
@@ -19,18 +20,21 @@ export function RegisterRequiredWrapper({
 }: PropsWithChildren<Props>) {
   const { toast } = useToast();
   const { id } = useParams();
+  const userId = useAppStore((state) => state.profile?.id);
 
   const [isForbidden, setIsForbidden] = useState(false);
 
   const { trigger: startLearning, isMutating: isMutatingStartLearning } =
-    useSWRMutation(`/v1/exams/${id}/start-learning`, postRequest);
+    useSWRMutation(["start-learning-quiz", id], async () =>
+      quizRepo.startLearning(Number(id), userId!)
+    );
 
   async function handleRegisterFlashcardSet() {
     try {
       await startLearning();
 
+      mutate(["my-quizzes", userId]);
       onOpenChange(false);
-      mutate("/v1/exams/my-exams");
 
       toast({
         title: `Đăng kí làm thành công`,

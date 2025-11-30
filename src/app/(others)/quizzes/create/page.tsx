@@ -1,5 +1,10 @@
+import { AuthWrapper } from "@/components/AuthWrapper";
 import { QuizCreation } from "@/modules/quizzes/create";
 
 export default function QuizCreationPage() {
-  return <QuizCreation />;
+  return (
+    <AuthWrapper>
+      <QuizCreation />
+    </AuthWrapper>
+  );
 }

@@ -18,16 +18,15 @@ import { defaultQuizFormValue, QUIZ_LIMIT_MSG } from "@/modules/quizzes/const";
 import { QuizItemRegistration } from "@/modules/quizzes/create/QuizItemRegistration";
 import { TagsSelect } from "@/modules/quizzes/create/TagsSelect";
 import { quizSchema, TQuizForm } from "@/modules/quizzes/schema";
-import { getRequest, patchRequest, postRequest } from "@/service/data";
+import { quizRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
-import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 
 export function QuizCreation() {
@@ -35,6 +34,7 @@ export function QuizCreation() {
   const router = useRouter();
   const { quizId } = useParams();
   const userId = useAppStore((state) => state.profile?.id);
+  const [isMutating, setIsMutating] = useState(false);
 
   const form = useForm<TQuizForm>({
     mode: "onSubmit",
@@ -50,23 +50,15 @@ export function QuizCreation() {
   } = form;
 
   const { data: quiz, isLoading: isLoadingQuiz } = useSWR<TQuiz>(
-    quizId ? `exams/${quizId}/get-one` : null,
-    () => getRequest(`/v1/exams/${quizId}`)
-  );
-  const { trigger: addQuiz, isMutating: isAddingQuiz } = useSWRMutation(
-    "/v1/exams",
-    postRequest
-  );
-  const { trigger: updateQuiz, isMutating: isUpdatingQuiz } = useSWRMutation(
-    `exams/${quizId}/update`,
-    (_, { arg }: { arg: any }) => patchRequest(`/v1/exams/${quizId}`, { arg })
+    quizId && userId ? `exams/${quizId}/get-one` : null,
+    () => quizRepo.getQuizById(quizId as string)
   );
 
   const isLoading = isLoadingQuiz;
-  const isMutating = isAddingQuiz || isUpdatingQuiz;
   const isMyQuiz = userId === quiz?.owner?.id;
 
   async function submitForm(data: TQuizForm) {
+    if (!userId) return;
     try {
       let hasCorrectAnsError = false;
       data.questions.forEach((question, index) => {
@@ -85,7 +77,11 @@ export function QuizCreation() {
       });
       const formattedData = {
         ...data,
-        tags: data.tags?.map((tag) => tag.label.split("(")[0].trim()) ?? [],
+        tags:
+          data.tags?.map((tag) => ({
+            ...tag,
+            label: tag.label.split("(")[0].trim(),
+          })) ?? [],
         questions: data.questions.map((question) => {
           // ex: questions.1.answers.1 -> index == 1
           const correctAnsIndex = Number(
@@ -98,11 +94,12 @@ export function QuizCreation() {
         }),
       };
 
+      setIsMutating(true);
       const { id } = await (quizId
-        ? updateQuiz(formattedData)
-        : addQuiz(formattedData));
+        ? quizRepo.updateQuiz(Number(quizId), formattedData)
+        : quizRepo.createQuiz(formattedData, userId));
 
-      mutate("/v1/exams/my-exams");
+      mutate(["my-quizzes", userId]);
       toast({
         title: `Lưu thành công`,
         action: <Check className="h-5 w-5 text-green-500" />,
@@ -117,6 +114,8 @@ export function QuizCreation() {
             : `Lưu không thành công, hãy thử lại!`,
         variant: "destructive",
       });
+    } finally {
+      setIsMutating(false);
     }
   }
 

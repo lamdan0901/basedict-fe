@@ -1,6 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/lib/supabase/database.types";
 import { TFlashCardSetForm } from "@/modules/flashcard/schema";
+import { FLASHCARD_LIMIT } from "@/modules/flashcard/const";
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -86,7 +87,8 @@ export const createFlashcardRepository = (client: SupabaseClientType) => ({
       )
       .eq("is_public", true)
       .eq("active_learners.is_learning", true)
-      .order("popular", { ascending: false });
+      .order("popular", { ascending: false })
+      .limit(9);
 
     if (error) throw error;
 
@@ -828,5 +830,36 @@ export const createFlashcardRepository = (client: SupabaseClientType) => ({
       totalLearnedNumber,
       totalLearningNumber,
     };
+  },
+
+  async addFlashcardToSet(
+    setId: string,
+    card: {
+      frontSide: string;
+      frontSideComment: string;
+      backSide: string;
+      backSideComment: string;
+    }
+  ): Promise<void> {
+    const { count, error: countError } = await client
+      .from("flash_cards")
+      .select("*", { count: "exact", head: true })
+      .eq("flash_card_set_id", setId);
+
+    if (countError) throw countError;
+
+    if (count !== null && count >= FLASHCARD_LIMIT) {
+      throw "FORBIDDEN";
+    }
+
+    const { error } = await client.from("flash_cards").insert({
+      flash_card_set_id: Number(setId),
+      front_side: card.frontSide,
+      back_side: card.backSide,
+      front_side_comment: card.frontSideComment,
+      back_side_comment: card.backSideComment,
+    });
+
+    if (error) throw error;
   },
 });

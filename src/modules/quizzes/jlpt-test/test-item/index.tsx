@@ -2,7 +2,7 @@
 
 import { RegisterRequiredWrapper } from "@/modules/quizzes/components/RegisterRequiredWrapper";
 import { JlptTestModule } from "@/modules/quizzes/components/JlptTestModule";
-import { getRequest } from "@/service/data";
+import { quizRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,20 +10,23 @@ import useSWR from "swr";
 
 export function JLPTTest() {
   const { id } = useParams();
-  const isMixedTest = id === "mixed";
   const searchParams = useSearchParams();
   const userId = useAppStore((state) => state.profile?.id);
+
+  const isMixedTest = id === "mixed";
+  const jlptLevel = searchParams.get("jlptLevel");
 
   const [flashcardRegisterPromptOpen, setFlashcardRegisterPromptOpen] =
     useState(false);
 
   const { data, isLoading, error } = useSWR<TQuiz>(
-    id
-      ? isMixedTest
-        ? `v1/exams/jlpt/random?jlptLevel=${searchParams.get("jlptLevel")}`
-        : `/v1/exams/${id}`
-      : null,
-    getRequest
+    id ? ["jlpt-test", id, jlptLevel] : null,
+    async () => {
+      if (isMixedTest && jlptLevel) {
+        return quizRepo.getRandomJlptQuiz(jlptLevel);
+      }
+      return quizRepo.getQuizById(id as string);
+    }
   );
 
   const isMyFlashcard = userId === data?.owner?.id;
@@ -35,6 +38,7 @@ export function JLPTTest() {
 
   useEffect(() => {
     if (isMixedTest) return;
+
     if (!isLoading && !isMyFlashcard && !data?.isLearning) {
       setFlashcardRegisterPromptOpen(true);
     }

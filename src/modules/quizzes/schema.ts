@@ -1,25 +1,40 @@
 import { z } from "zod";
 
-const quizItemSchema = z.object({
-  question: z
-    .string()
-    .min(1, "Câu hỏi không được để trống")
-    .max(255, "Câu hỏi không được quá 255 ký tự"),
-  answers: z.array(
-    z
+const quizItemSchema = z
+  .object({
+    question: z
       .string()
-      .min(1, "Câu trả lời không được để trống")
-      .max(100, "Câu trả lời không được quá 100 ký tự")
-  ),
-  correctAnswer: z.string(),
-  explanation: z
-    .string()
-    .max(2000, "Giải thích không được quá 2000 ký tự")
-    .nullable()
-    .optional(),
-  uid: z.string().optional(),
-  id: z.any().optional(),
-});
+      .min(1, "Câu hỏi không được để trống")
+      .max(255, "Câu hỏi không được quá 255 ký tự"),
+    answers: z.array(
+      z
+        .string()
+        .min(1, "Câu trả lời không được để trống")
+        .max(100, "Câu trả lời không được quá 100 ký tự")
+    ),
+    correctAnswer: z.string(),
+    explanation: z
+      .string()
+      .max(2000, "Giải thích không được quá 2000 ký tự")
+      .nullable()
+      .optional(),
+    uid: z.string().optional(),
+    id: z.any().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.answers.filter(Boolean).length == 0) return true;
+
+      const uniqueAnswers = new Set(data.answers);
+      console.log("🐷 data.answers", data.answers);
+
+      return uniqueAnswers.size === data.answers.length;
+    },
+    {
+      message: "Các câu trả lời phải là duy nhất, không được trùng lặp",
+      path: ["answers"],
+    }
+  );
 
 const quizTagSchema = z.object({
   value: z.string(),

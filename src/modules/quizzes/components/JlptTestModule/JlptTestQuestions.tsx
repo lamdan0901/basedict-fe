@@ -16,8 +16,8 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { stateSwitcherVariant, TestState } from "@/modules/quizzes/const";
-import { HistoryDialog } from "@/modules/quizzes/general/HistoryDialog";
-import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
+import { HistoryDialog } from "@/modules/quizzes/components/HistoryDialog";
+import { TDateWithExamRes } from "@/modules/quizzes/components/types";
 import {
   StateSwitcher,
   TStateSwitcherRef,

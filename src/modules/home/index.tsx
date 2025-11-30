@@ -15,9 +15,9 @@ export function Home({ _lexemeSearch }: Props) {
     <>
       <TranslationSection _lexemeSearch={_lexemeSearch} />
       <HistoryNFavorite />
-      <TopFlashcardSets />
+      {/* <TopFlashcardSets />
       <AdSense slot="horizontal" />
-      <TodaysTopic />
+      <TodaysTopic /> */}
     </>
   );
 }

@@ -10,13 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDebounceFn } from "@/hooks/useDebounce";
-import {
-  formatQuizNFlashcardSearchParams,
-  scrollToTop,
-  stringifyParams,
-} from "@/lib";
+import { scrollToTop } from "@/lib";
 import { Searchbar } from "@/components/Searchbar";
-import { getRequest } from "@/service/data";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { AdSense } from "@/components/Ad";
@@ -26,6 +21,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { shallow } from "zustand/shallow";
 import { jlptLevels } from "@/constants";
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import { quizRepo } from "@/lib/supabase/client";
 
 const TOP_EL_ID = "top-of-quiz-search";
 
@@ -50,25 +46,18 @@ export function QuizzesSearch() {
   const [searchText, setSearchText] = useState(searchParams.search);
   const shouldSearchByTag = searchParams.search.startsWith("#");
 
-  const { data: quizSearch, isLoading: isSearching } = useSWR<{
-    data: TQuiz[];
-    total: number;
-  }>(
-    !isLoadingProfile
-      ? `/v1/exams/discover?${stringifyParams(
-          formatQuizNFlashcardSearchParams(
-            {
-              ...searchParams,
-              jlptLevel:
-                searchParams.jlptLevel === "all"
-                  ? undefined
-                  : searchParams.jlptLevel,
-            },
-            shouldSearchByTag
-          )
-        )}`
-      : null,
-    getRequest
+  const { data: quizSearch, isLoading: isSearching } = useSWR(
+    ["quiz-search", searchParams],
+    async () =>
+      quizRepo.searchQuizzes({
+        search: searchParams.search,
+        tagName: shouldSearchByTag ? searchParams.search.slice(1) : undefined,
+        jlptLevel:
+          searchParams.jlptLevel === "all" ? undefined : searchParams.jlptLevel,
+        sort: searchParams.sort as "popular" | "updated_at",
+        limit: searchParams.limit,
+        offset: (searchParams.offset - 1) * searchParams.limit,
+      })
   );
 
   const quizzes = quizSearch?.data ?? [];
@@ -148,11 +137,13 @@ export function QuizzesSearch() {
         </Select>
       </div>
 
-      {isLoading ? (
-        <span>Đang tìm kiếm...</span>
-      ) : quizzes.length === 0 ? (
-        <span>Không có kết quả tìm kiếm</span>
-      ) : null}
+      <div>
+        {isLoading
+          ? "Đang tìm kiếm..."
+          : quizzes.length === 0
+          ? "Không có kết quả tìm kiếm"
+          : null}
+      </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
         {quizzes.map((quiz) => (

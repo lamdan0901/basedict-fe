@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 const isSelectionValid = (text: string) =>
   isJapanese(text) && isNotEndingWithForbiddenForms(text);
 
-const noTranslationPages = ["/quizzes/daily-test"];
+const noTranslationPages: string[] = [];
 
 export function TranslationPopup({ children }: { children: ReactNode }) {
   const pathname = usePathname();

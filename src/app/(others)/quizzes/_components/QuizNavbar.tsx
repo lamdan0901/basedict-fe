@@ -22,23 +22,12 @@ import {
 } from "lucide-react";
 import { QuizIcon } from "@/components/icons/QuizIcon";
 import Link from "next/link";
-import { getRequest } from "@/service/data";
+import { quizRepo } from "@/lib/supabase/client";
+import { useAppStore } from "@/store/useAppStore";
 import useSWR from "swr";
 import { Fragment, useState } from "react";
 
 const menu = [
-  // {
-  //   title: "Thông tin chung",
-  //   href: "/quizzes/general-info",
-  // },
-  // {
-  //   title: "Luyện thi BaseDict",
-  //   href: "/quizzes/basedict-test",
-  // },
-  // {
-  //   title: "Bảng xếp hạng",
-  //   href: "/quizzes/ranking",
-  // },
   {
     title: "Khám phá",
     href: "/quizzes",
@@ -108,8 +97,12 @@ function InnerQuizNavbar({
   onMenuItemClick?: () => void;
 }) {
   const pathname = usePathname();
+  const userId = useAppStore((state) => state.profile?.id);
 
-  const { data: myQuiz } = useSWR<TMyQuiz>(`/v1/exams/my-exams`, getRequest);
+  const { data: myQuiz } = useSWR<TMyQuiz>(
+    userId ? ["my-quizzes", userId] : null,
+    () => quizRepo.getMyQuizzes(userId!)
+  );
 
   const myExams = myQuiz?.myExams ?? [];
   const learningExams = myQuiz?.learningExams ?? [];

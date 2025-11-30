@@ -6,7 +6,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { TDateWithExamRes } from "@/modules/quizzes/general/utils";
+import { TDateWithExamRes } from "./types";
 
 type Props = {
   open: boolean;

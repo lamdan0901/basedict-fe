@@ -27,6 +27,7 @@ export function QuizItemRegistration({
     setValue,
     formState: { errors },
   } = useFormContext<TQuizForm>();
+  console.log("🥐 errors", errors);
 
   const { fields, append, remove } = useFieldArray<{
     questions: TQuizItem[];
@@ -111,6 +112,11 @@ export function QuizItemRegistration({
                     );
                   })}
                 </RadioGroup>
+                {errors.questions?.[i]?.answers?.root?.message && (
+                  <p className="text-sm  text-destructive">
+                    {errors.questions?.[i]?.answers?.root?.message}
+                  </p>
+                )}
 
                 <FormField
                   control={control}

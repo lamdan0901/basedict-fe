@@ -5,7 +5,7 @@ import { BadgeList } from "@/components/BadgeList";
 import { Input } from "@/components/ui/input";
 import { QuizCreator } from "@/modules/quizzes/components/QuizCreator";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
-import { getRequest } from "@/service/data";
+import { quizRepo } from "@/lib/supabase/client";
 import Link from "next/link";
 import { useRouter } from "nextjs-toploader/app";
 import useSWR from "swr";
@@ -14,18 +14,18 @@ export function QuizzesExplore() {
   const router = useRouter();
 
   const { data: quizTags, isLoading: isLoadingTags } = useSWR<TQuizTag[]>(
-    "/v1/exams/tags",
-    getRequest
+    "quizTags",
+    () => quizRepo.getTags({ excludeEmpty: true })
   );
 
   const { data: quizDiscover, isLoading: isLoadingDiscover } = useSWR<{
     data: TQuiz[];
     total: number;
-  }>("/v1/exams/discover", getRequest);
+  }>("quizDiscover", () => quizRepo.getDiscoverQuizzes());
 
   const { data: topCreators = [], isLoading: isLoadingTopCreators } = useSWR<
     TQuizCreator[]
-  >("/v1/exams/top-creator", getRequest);
+  >("topCreators", () => quizRepo.getTopCreators());
 
   const quizzes = quizDiscover?.data ?? [];
 
@@ -41,6 +41,7 @@ export function QuizzesExplore() {
           {quizzes.map((quiz) => (
             <QuizItem key={quiz.id} hiddenDate quiz={quiz} />
           ))}
+          {!isLoadingDiscover && quizzes.length === 0 && "Chưa có đề thi nào"}
         </div>
         <Link
           className="text-blue-500 hover:underline block w-fit ml-auto mt-2"

@@ -6,7 +6,7 @@ import { useIsVipUser } from "@/hooks/useIsVipUser";
 import { QuizItem } from "@/modules/quizzes/components/QuizItem";
 import { UserQuizHeader } from "@/modules/quizzes/components/UserQuizHeader";
 import { QUIZ_LIMIT } from "@/modules/quizzes/const";
-import { getRequest } from "@/service/data";
+import { quizRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { CircleHelp, Plus } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import { shallow } from "zustand/shallow";
 export function MyQuizzes() {
   const profile = useAppStore(
     (state) => ({
+      id: state.profile?.id,
       avatar: state.profile?.avatar,
       name: state.profile?.name,
     }),
@@ -24,8 +25,8 @@ export function MyQuizzes() {
   const isVip = useIsVipUser();
 
   const { data: myQuiz, isLoading } = useSWR<TMyQuiz>(
-    `/v1/exams/my-exams`,
-    getRequest
+    profile.id ? ["my-quizzes", profile.id] : null,
+    () => quizRepo.getMyQuizzes(profile.id!)
   );
 
   const myExams = myQuiz?.myExams ?? [];
