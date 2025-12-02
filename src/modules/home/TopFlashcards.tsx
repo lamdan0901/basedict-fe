@@ -5,14 +5,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { flashcardRepo } from "@/lib/supabase/client";
 import { FlashcardItem } from "@/modules/flashcard/components/FlashcardItem";
-import { getRequest } from "@/service/data";
 import useSWR from "swr";
 
 export function TopFlashcardSets() {
   const { data: flashcardDiscover, isLoading: isLoadingDiscover } = useSWR<{
     data: TFlashcardSet[];
-  }>("/v1/flash-card-sets/discover", getRequest);
+    total: number;
+  }>("flashcardDiscover", () => flashcardRepo.getDiscoverSets({ limit: 6 }));
 
   const flashcards = flashcardDiscover?.data?.slice(0, 6) ?? [];
 

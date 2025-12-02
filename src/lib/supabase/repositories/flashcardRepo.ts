@@ -69,7 +69,9 @@ export const createFlashcardRepository = (client: SupabaseClientType) => ({
     return data as TFlashcardTag[];
   },
 
-  async getDiscoverSets(): Promise<{ data: TFlashcardSet[]; total: number }> {
+  async getDiscoverSets(options?: {
+    limit?: number;
+  }): Promise<{ data: TFlashcardSet[]; total: number }> {
     const { data, error, count } = await client
       .from("flash_card_sets")
       .select(
@@ -88,7 +90,7 @@ export const createFlashcardRepository = (client: SupabaseClientType) => ({
       .eq("is_public", true)
       .eq("active_learners.is_learning", true)
       .order("popular", { ascending: false })
-      .limit(9);
+      .limit(options?.limit || 9);
 
     if (error) throw error;
 
