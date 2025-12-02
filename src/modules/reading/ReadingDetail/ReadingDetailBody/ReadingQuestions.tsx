@@ -1,6 +1,6 @@
 import { ReadingQuestion } from "@/components/ReadingQuestion";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ReadingQuestions({
   readingQuestions,
@@ -19,6 +19,12 @@ export function ReadingQuestions({
       return acc;
     }, 0);
   }
+
+  useEffect(() => {
+    setUserAnswers({});
+    showAnswers(false);
+    setResetKey((prevKey) => prevKey + 1);
+  }, [readingQuestions]);
 
   return (
     <div className="">

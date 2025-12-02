@@ -19,11 +19,11 @@ export const menu = [
     icon: "/collections_bookmark.svg",
     title: "Flashcard",
   },
-  {
-    href: "/reading",
-    icon: "/library.svg",
-    title: "Luyện đọc",
-  },
+  // {
+  //   href: "/reading",
+  //   icon: "/library.svg",
+  //   title: "Luyện đọc",
+  // },
   {
     href: "/quizzes",
     icon: "/quiz.svg",

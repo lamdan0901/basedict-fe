@@ -1,7 +1,6 @@
-import { stringifyParams } from "@/lib";
 import { ReadingType, TabVal } from "@/modules/reading/const";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
-import { getRequest } from "@/service/data";
+import { readingRepo } from "@/lib/supabase/client";
 import {
   parseAsBoolean,
   parseAsInteger,
@@ -32,16 +31,13 @@ export function BaseDictReadingList({ jlptLevel }: Props) {
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     readingParams.jlptLevel
-      ? `/v1/readings?${stringifyParams({
-          source: "BaseDict",
-          jlptLevel: readingParams.jlptLevel,
-          readingType:
-            readingParams.readingType !== "all"
-              ? readingParams.readingType
-              : undefined,
-        })}`
+      ? ["getReadingList", readingParams.jlptLevel, readingParams.readingType]
       : null,
-    getRequest,
+    () =>
+      readingRepo.getReadingList({
+        source: "BaseDict",
+        ...readingParams,
+      }),
     {
       onSuccess(data) {
         if (data[0] && !hasSetInitialReading.current) {

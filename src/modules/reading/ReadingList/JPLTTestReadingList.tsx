@@ -1,4 +1,4 @@
-import { stringifyParams } from "@/lib";
+import { readingRepo } from "@/lib/supabase/client";
 import { TabVal } from "@/modules/reading/const";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
@@ -29,13 +29,14 @@ export function JPLTTestReadingList({ jlptLevel }: Props) {
 
   const { data: readingList = [], isLoading } = useSWR<TReadingMaterial[]>(
     examId && jlptTestLevel
-      ? `/v1/readings?${stringifyParams({
-          source: "JLPT",
-          examId,
-          jlptLevel: jlptTestLevel,
-        })}`
+      ? `v1/readings/jlpt/${examId}/${jlptTestLevel}`
       : null,
-    getRequest,
+    () =>
+      readingRepo.getReadingList({
+        source: "JLPT",
+        examId: examId!,
+        jlptLevel: jlptTestLevel!,
+      }),
     {
       onSuccess(data) {
         if (data[0] && !hasSetInitialReading.current) {

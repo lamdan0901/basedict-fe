@@ -5,7 +5,8 @@ import { stringifyParams } from "@/lib";
 import { ReadingType, readingTypeMap } from "@/modules/reading/const";
 import { ReadingQuestions } from "@/modules/reading/ReadingDetail/ReadingDetailBody/ReadingQuestions";
 import { ReadingVocab } from "@/modules/reading/ReadingDetail/ReadingDetailBody/ReadingVocab";
-import { getRequest, postRequest } from "@/service/data";
+import { postRequest } from "@/service/data";
+import { readingRepo } from "@/lib/supabase/client";
 import { Check } from "lucide-react";
 import {
   useQueryState,
@@ -38,8 +39,10 @@ export function ReadingDetailBody() {
     mutate: updateReadingItem,
     error,
   } = useSWR<TReadingDetail>(
-    selectedReadingItemId ? `/v1/readings/${selectedReadingItemId}` : null,
-    getRequest
+    selectedReadingItemId
+      ? ["readingRepo.getReadingDetail", selectedReadingItemId]
+      : null,
+    () => readingRepo.getReadingDetail(selectedReadingItemId!)
   );
   const { trigger: markAsRead, isMutating: markingAsRead } = useSWRMutation(
     `/v1/readings/read/${selectedReadingItemId}`,
