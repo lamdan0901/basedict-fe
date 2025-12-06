@@ -121,7 +121,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
   },
 
   async getDiscoverQuizzes(): Promise<{ data: TQuiz[]; total: number }> {
-    const { data, error, count } = await client
+    const { data, error, count } = (await client
       .from("exams")
       .select(
         `
@@ -139,12 +139,12 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       .eq("is_public", true)
       .eq("active_learners.is_learning", true)
       .order("popular", { ascending: false })
-      .limit(9);
+      .limit(9)) as any;
 
     if (error) throw error;
 
     const formattedData =
-      data?.map((item) => ({
+      data?.map((item: any) => ({
         id: item.id,
         title: item.title,
         description: item.description || "",
@@ -153,7 +153,8 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         learningNumber: item.active_learners?.[0]?.count || 0,
         owner: item.users as TUser,
         tags:
-          item.exam_tags?.map((t) => t.tags?.name || "").filter(Boolean) || [],
+          item.exam_tags?.map((t: any) => t.tags?.name || "").filter(Boolean) ||
+          [],
         questionNumber: item.exam_questions?.length || 0,
         isLearning: false,
         jlptLevel: item.users?.jlptlevel || "N5",
@@ -218,15 +219,15 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
 
     query = query.order(sort, { ascending: false });
 
-    const { data, error, count } = await query.range(
+    const { data, error, count } = (await query.range(
       offset,
       offset + limit - 1
-    );
+    )) as any;
 
     if (error) throw error;
 
     const formattedData =
-      data?.map((item) => ({
+      data?.map((item: any) => ({
         id: item.id,
         title: item.title,
         description: item.description || "",
@@ -235,7 +236,8 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         learningNumber: item.active_learners?.[0]?.count || 0,
         owner: item.users as TUser,
         tags:
-          item.exam_tags?.map((t) => t.tags?.name || "").filter(Boolean) || [],
+          item.exam_tags?.map((t: any) => t.tags?.name || "").filter(Boolean) ||
+          [],
         questionNumber: item.exam_questions?.length || 0,
         isLearning: false,
         jlptLevel: item.users?.jlptlevel || "N5",
@@ -395,7 +397,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       .eq("id", id)
       .eq("active_learners.is_learning", true);
 
-    const { data, error } = await query.single();
+    const { data, error } = (await query.single()) as any;
     if (error) throw error;
 
     const isLearning =
@@ -412,20 +414,21 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       learningNumber: data.active_learners?.[0]?.count || 0,
       owner: data.users as TUser,
       tags:
-        data.exam_tags?.map((t) => t.tags?.name || "").filter(Boolean) || [],
+        data.exam_tags?.map((t: any) => t.tags?.name || "").filter(Boolean) ||
+        [],
       questionNumber: data.exam_questions?.length || 0,
       isLearning: isLearning,
       jlptLevel: data.jlpt_level || "N5",
       questions:
-        data.exam_questions?.map((q) => ({
+        data.exam_questions?.map((q: any) => ({
           id: q.id,
           question: q.question,
           answers: q.answers,
           correctAnswer: q.correct_answer,
           explanation: q.explanation || "",
         })) || [],
-      readings: data.exam_readings.map((r) => ({
-        questions: (r.readings?.reading_questions || []).map((q) => ({
+      readings: data.exam_readings.map((r: any) => ({
+        questions: (r.readings?.reading_questions || []).map((q: any) => ({
           question: q.question,
           answers: q.answers,
           correctAnswer: q.correct_answer,
@@ -731,7 +734,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
     if (userError) throw userError;
     if (!user) throw new Error("User not found");
 
-    const { data: exams, error: examsError } = await client
+    const { data: exams, error: examsError } = (await client
       .from("exams")
       .select(
         `
@@ -748,12 +751,12 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       .eq("user_id", userId)
       .eq("is_public", true)
       .eq("active_learners.is_learning", true)
-      .order("updated_at", { ascending: false });
+      .order("updated_at", { ascending: false })) as any;
 
     if (examsError) throw examsError;
 
     const formattedExams: TQuiz[] =
-      exams?.map((item) => ({
+      exams?.map((item: any) => ({
         id: item.id,
         title: item.title,
         description: item.description || "",
@@ -762,7 +765,8 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         learningNumber: item.active_learners?.[0]?.count || 0,
         owner: item.users as TUser,
         tags:
-          item.exam_tags?.map((t) => t.tags?.name || "").filter(Boolean) || [],
+          item.exam_tags?.map((t: any) => t.tags?.name || "").filter(Boolean) ||
+          [],
         questionNumber: item.exam_questions?.length || 0,
         isLearning: false,
         jlptLevel: item.users?.jlptlevel || "N5",

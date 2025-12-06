@@ -98,7 +98,7 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
   /**
    * Get lexeme suggestions based on search term
    */
-  async getLexemeSuggestions(search: string): Promise<any[]> {
+  async getLexemeSuggestions(search: string): Promise<TLexeme[]> {
     const { data, error } = await client
       .from("lexemes")
       .select("*")
@@ -122,7 +122,7 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
     page?: number;
     limit?: number;
     jlptLevel?: string;
-  }): Promise<{ data: any[]; total: number }> {
+  }): Promise<{ data: TLexeme[]; total: number }> {
     const { search, page = 1, limit = 20, jlptLevel } = params;
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -173,7 +173,7 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
   /**
    * Get lexeme by ID with meanings
    */
-  async getLexemeById(id: number): Promise<any> {
+  async getLexemeById(id: number): Promise<TLexeme> {
     const { data, error } = await client
       .from("lexemes")
       .select(

@@ -83,7 +83,7 @@ export const createReadingRepository = (client: SupabaseClientType) => ({
       readingType: data.reading_type,
       isRead:
         userId && data.user_readings
-          ? data.user_readings.some(({ user_id }) => user_id === userId)
+          ? data.user_readings.some(({ user_id }: any) => user_id === userId)
           : false,
       createdAt: data.created_at,
       japanese: data.japanese,
@@ -91,7 +91,7 @@ export const createReadingRepository = (client: SupabaseClientType) => ({
       topic: data.topic || "",
       lexemes: data.lexemes || [],
       readingQuestions:
-        data.reading_questions?.map((q) => ({
+        data.reading_questions?.map((q: any) => ({
           id: q.id,
           question: q.question,
           answers: q.answers,

@@ -264,7 +264,7 @@ export const createFlashcardRepository = (client: SupabaseClientType) => ({
       query = query.eq("flash_card_learners.user_id", userId);
     }
 
-    const { data, error } = await query.single();
+    const { data, error } = (await query.single()) as any;
 
     if (error) throw error;
 
