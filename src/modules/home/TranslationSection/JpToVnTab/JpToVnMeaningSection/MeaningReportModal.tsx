@@ -1,5 +1,5 @@
-import { postRequest } from "@/service/data";
-import useSWRMutation from "swr/mutation";
+import { lexemeRepo } from "@/lib/supabase/client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,9 +22,8 @@ type MeaningReportModalProps = {
 };
 
 type TReportForm = {
-  word: string;
   problem: string;
-  userSuggest: string;
+  userSuggest?: string;
 };
 
 export function MeaningReportModal({
@@ -33,7 +32,7 @@ export function MeaningReportModal({
   onOpenChange,
   onMeaningReported,
 }: MeaningReportModalProps) {
-  const profile = useAppStore((state) => state.profile?.id);
+  const profileId = useAppStore((state) => state.profile?.id);
   const { toast } = useToast();
   const {
     register,
@@ -43,17 +42,23 @@ export function MeaningReportModal({
   } = useForm<TReportForm>({
     mode: "all",
     defaultValues: {
-      word: lexeme?.lexeme ?? "",
       problem: "",
       userSuggest: "",
     },
   });
-  const { trigger: reportMeaningTrigger, isMutating: isReportingMeaning } =
-    useSWRMutation(`/v1/reports`, postRequest);
+  const [isReportingMeaning, setIsReportingMeaning] = useState(false);
 
   async function reportMeaning(data: TReportForm) {
+    if (!lexeme) return;
+
     try {
-      await reportMeaningTrigger(data);
+      setIsReportingMeaning(true);
+      await lexemeRepo.createReport({
+        word: lexeme.lexeme,
+        problem: data.problem,
+        user_suggest: data.userSuggest,
+        user_id: profileId!,
+      });
       toast({
         title: "Đã báo cáo",
       });
@@ -65,6 +70,8 @@ export function MeaningReportModal({
         variant: "destructive",
       });
       console.error("err reportMeaning: ", err);
+    } finally {
+      setIsReportingMeaning(false);
     }
   }
 
@@ -82,12 +89,12 @@ export function MeaningReportModal({
         <DialogHeader>
           <DialogTitle>Báo cáo</DialogTitle>
         </DialogHeader>
-        {!profile ? (
+        {!profileId ? (
           <div className="text-xl text-destructive">
             Vui lòng đăng nhập để tiếp tục
           </div>
         ) : (
-          <>
+          <form onSubmit={handleSubmit(reportMeaning)}>
             <div>
               <span className="font-semibold">Từ vựng:</span> {lexeme?.lexeme}
             </div>
@@ -117,11 +124,9 @@ export function MeaningReportModal({
               />
             </div>
             <DialogFooter className="sm:mt-6 fixed left-1/2 bottom-[20px] -translate-x-1/2 mt-3 sm:justify-center sm:space-x-4">
-              <form onSubmit={handleSubmit(reportMeaning)}>
-                <Button type="submit" disabled={isReportingMeaning}>
-                  Gửi báo cáo
-                </Button>
-              </form>
+              <Button type="submit" disabled={isReportingMeaning}>
+                Gửi báo cáo
+              </Button>
               <Button
                 disabled={isReportingMeaning}
                 onClick={closeDialog}
@@ -131,7 +136,7 @@ export function MeaningReportModal({
                 Hủy
               </Button>
             </DialogFooter>
-          </>
+          </form>
         )}
       </DialogContent>
     </Dialog>

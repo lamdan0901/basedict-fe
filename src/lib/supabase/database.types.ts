@@ -380,6 +380,33 @@ export type Database = {
           }
         ];
       };
+      reports: {
+        Row: {
+          id: number;
+          word: string;
+          problem: string;
+          user_suggest: string | null;
+          status: number;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          word: string;
+          problem: string;
+          user_suggest?: string | null;
+          user_id: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reports_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       blacklists: {
         Row: {
           id: number;

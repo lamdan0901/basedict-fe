@@ -16,14 +16,13 @@ import { useJpToVnMeaningStore } from "@/modules/home/TranslationSection/JpToVnT
 import { MeaningSectionTips } from "@/modules/home/TranslationSection/components/MeaningSectionTips";
 import { TipsPopup } from "@/modules/home/TranslationSection/components/TipsPopup";
 import { isDifferenceGreaterSpecifiedDay } from "@/modules/home/utils";
-import { postRequest } from "@/service/data";
+import { lexemeRepo } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { useLexemeStore } from "@/store/useLexemeStore";
 import { Check, CircleCheckBig, Flag, Heart, RotateCcw } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { type KeyedMutator } from "swr";
-import useSWRMutation from "swr/mutation";
 import { v4 as uuid } from "uuid";
 
 type MeaningSectionProps = {
@@ -67,22 +66,24 @@ export const JpToVnMeaningSection = memo<MeaningSectionProps>(
     const isFavorite = isFavoriteItem(lexemeSearch?.id);
     const currentMeaning = lexemeSearch?.meaning?.[meaningIndex];
 
-    const {
-      trigger: reportWrongWordTrigger,
-      isMutating: isReportingWrongWord,
-    } = useSWRMutation(
-      `/v1/lexemes/report-wrong/${wordIdToReport}`,
-      postRequest
-    );
+    const [isReportingWrongWord, setIsReportingWrongWord] = useState(false);
 
     async function reportWrongWord() {
       if (isWordReported || !wordIdToReport) return;
 
-      await reportWrongWordTrigger();
+      setIsReportingWrongWord(true);
 
-      setIsWordReported(true);
-      reportedWords[wordIdToReport] = new Date().toISOString();
-      localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
+      try {
+        await lexemeRepo.reportWrongWord(wordIdToReport);
+
+        setIsWordReported(true);
+        reportedWords[wordIdToReport] = new Date().toISOString();
+        localStorage.setItem("reportedWords", JSON.stringify(reportedWords));
+      } catch (error) {
+        console.error("Failed to report word:", error);
+      } finally {
+        setIsReportingWrongWord(false);
+      }
     }
 
     function toggleFavorite() {

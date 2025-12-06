@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database, Tables } from "@/lib/supabase/database.types";
+import { Database, Tables, TablesInsert } from "@/lib/supabase/database.types";
 
 export type Lexeme = Tables<"lexemes">;
 export type Meaning = Tables<"meanings">;
@@ -187,5 +187,33 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
 
     if (error) throw error;
     return transformLexeme(data);
+  },
+
+  /**
+   * Create a new report
+   */
+  async createReport(report: TablesInsert<"reports">): Promise<void> {
+    const { error } = await client.from("reports").insert(report);
+    if (error) throw error;
+  },
+
+  /**
+   * Report a wrong word by incrementing its report count
+   */
+  async reportWrongWord(id: string): Promise<void> {
+    const { data: lexeme } = await client
+      .from("lexemes")
+      .select("reportcount")
+      .eq("id", id)
+      .single();
+
+    if (lexeme) {
+      const { error } = await client
+        .from("lexemes")
+        .update({ reportcount: (lexeme.reportcount || 0) + 1 })
+        .eq("id", id);
+
+      if (error) throw error;
+    }
   },
 });
