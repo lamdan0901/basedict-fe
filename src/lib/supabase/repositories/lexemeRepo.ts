@@ -24,11 +24,11 @@ function transformLexeme(data: any): any {
 
 function transformLexemes(data: any[]): any[] {
   return data.map((item) => {
-    const { id, ...rest } = item;
+    const { id, meanings, ...rest } = item;
     return {
       ...rest,
       id: id.toString(),
-      meaning: [],
+      meaning: meanings || [],
     };
   });
 }
@@ -129,7 +129,7 @@ export const createLexemeRepository = (client: SupabaseClientType) => ({
 
     let query = client
       .from("lexemes")
-      .select("*", { count: "exact" })
+      .select("*, meanings(*)", { count: "exact" })
       .eq("approved", true);
 
     if (search) {

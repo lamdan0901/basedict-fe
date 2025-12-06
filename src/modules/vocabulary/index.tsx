@@ -78,14 +78,15 @@ export function Vocabulary() {
       })
   );
   const lexemes =
-    learningState === LearningState.All
+    (learningState === LearningState.All
       ? data?.data
       : data?.data?.filter(({ id }) =>
           learningState === LearningState.Learned
             ? learnedVocabMap[id]
             : !learnedVocabMap[id]
-        ) ?? [];
-  const total = data?.total ?? 0;
+        )) ?? [];
+  const total =
+    learningState === LearningState.All ? data?.total ?? 0 : lexemes.length;
 
   const debouncedSearch = useDebounceFn((value: string) => {
     setSearchParams({ search: value });
@@ -157,6 +158,7 @@ export function Vocabulary() {
           value={learningState}
           onValueChange={(value: LearningState) => {
             setLearningState(value);
+            setSearchParams({ offset: 1 });
           }}
         >
           <SelectTrigger className="h-8 w-fit">
