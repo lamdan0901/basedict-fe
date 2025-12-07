@@ -30,7 +30,6 @@ export function FlashcardCreation() {
   const { toast } = useToast();
   const router = useRouter();
   const { flashcardId } = useParams();
-  console.log("🦆 flashcardId", flashcardId);
 
   const searchParams = useSearchParams();
   const userId = useAppStore((state) => state.profile?.id);

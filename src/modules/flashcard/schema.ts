@@ -36,7 +36,9 @@ export const flashCardSetSchema = z.object({
     .max(1000, "Mô tả không được quá 1000 ký tự")
     .optional(),
   tags: z.array(flashCardTagSchema),
-  flashCards: z.array(flashCardItemSchema),
+  flashCards: z
+    .array(flashCardItemSchema)
+    .min(1, "Bộ flashcard phải có ít nhất 1 thẻ"),
 });
 
 export type TFlashCardItem = z.infer<typeof flashCardItemSchema>;

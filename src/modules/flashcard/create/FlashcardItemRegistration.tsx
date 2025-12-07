@@ -38,6 +38,10 @@ export function FlashcardItemRegistration({
     <div className="pt-2 space-y-4 border-t border-muted-foreground">
       <h2 className="text-lg mb-2 font-semibold">Đăng kí thẻ flashcard</h2>
 
+      {errors.flashCards?.message && (
+        <p className="text-sm text-destructive">{errors.flashCards.message}</p>
+      )}
+
       <div className="space-y-4">
         {fields.map((item, i) => {
           return (
