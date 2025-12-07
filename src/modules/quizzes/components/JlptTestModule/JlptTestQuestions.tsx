@@ -31,7 +31,7 @@ export function JlptTestQuestions({
   data: TQuiz | undefined;
   isDailyTest?: boolean;
 }) {
-  const { userAnswers } = useAnswerStore();
+  const { userAnswers, clearUserAnswers } = useAnswerStore();
 
   const stateSwitcherRef = useRef<TStateSwitcherRef>(null);
   const [resetKey, setResetKey] = useState(0);
@@ -120,6 +120,7 @@ export function JlptTestQuestions({
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      clearUserAnswers();
     };
   }, [testState]);
 
