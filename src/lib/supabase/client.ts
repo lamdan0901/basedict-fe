@@ -6,7 +6,6 @@ import { createLexemeRepository } from "./repositories/lexemeRepo";
 import { createFlashcardRepository } from "./repositories/flashcardRepo";
 import { createQuizRepository } from "./repositories/quizRepo";
 import { createAuthRepository } from "./repositories/authRepo";
-
 import { createReadingRepository } from "./repositories/readingRepo";
 
 const client: ReturnType<typeof createBrowserClient<Database>> =

@@ -15,18 +15,14 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
-import { stateSwitcherVariant, TestState } from "@/modules/quizzes/const";
-import { HistoryDialog } from "@/modules/quizzes/components/HistoryDialog";
-import { TDateWithExamRes } from "@/modules/quizzes/components/types";
 import {
   StateSwitcher,
   TStateSwitcherRef,
 } from "@/modules/quizzes/components/JlptTestModule/StateSwitcher";
-import { postRequest } from "@/service/data";
+import { stateSwitcherVariant, TestState } from "@/modules/quizzes/const";
 import { useAnswerStore } from "@/store/useAnswerStore";
 import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
-import useSWRMutation from "swr/mutation";
 
 export function JlptTestQuestions({
   data,
@@ -39,19 +35,19 @@ export function JlptTestQuestions({
 
   const stateSwitcherRef = useRef<TStateSwitcherRef>(null);
   const [resetKey, setResetKey] = useState(0);
-  const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
   const [testState, setTestState] = useState(
     data?.isDone ? TestState.Done : TestState.Ready
   );
-
   const [alertOpen, setAlertOpen] = useState(false);
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
-  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
 
-  const { trigger: submitAnswers } = useSWRMutation(
-    `/v1/exams/${data?.id}/exam-execute`,
-    postRequest
-  );
+  // const [examResult, setExamResult] = useState<TDateWithExamRes | null>(null);
+  // const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+
+  // const { trigger: submitAnswers } = useSWRMutation(
+  //   `/v1/exams/${data?.id}/exam-execute`,
+  //   postRequest
+  // );
 
   const questions = data?.questions ?? [];
   const readings = data?.readings ?? [];
@@ -101,17 +97,17 @@ export function JlptTestQuestions({
     }
   }
 
-  async function handleSubmitAnswers() {
-    const { userAnswers } = useAnswerStore.getState();
+  // async function handleSubmitAnswers() {
+  //   const { userAnswers } = useAnswerStore.getState();
 
-    const answers = Array.from(
-      { length: questions.length + readings.length },
-      (_, i) => userAnswers[i]?.split("|")?.[0] || ""
-    );
-    const res = await submitAnswers({ answers });
-    setExamResult({ ...res, createdAt: new Date() });
-    setHistoryDialogOpen(true);
-  }
+  //   const answers = Array.from(
+  //     { length: questions.length + readings.length },
+  //     (_, i) => userAnswers[i]?.split("|")?.[0] || ""
+  //   );
+  //   const res = await submitAnswers({ answers });
+  //   setExamResult({ ...res, createdAt: new Date() });
+  //   setHistoryDialogOpen(true);
+  // }
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -190,13 +186,13 @@ export function JlptTestQuestions({
           );
         })}
       </div>
-
+      {/* 
       <HistoryDialog
         open={historyDialogOpen}
         onOpenChange={setHistoryDialogOpen}
         rankPoint={examResult?.rankPoint ?? 0}
         examResult={examResult}
-      />
+      /> */}
 
       <Dialog open={resultDialogOpen} onOpenChange={setResultDialogOpen}>
         <DialogContent aria-describedby="show-result" className="max-w-sm">
@@ -246,8 +242,8 @@ export function JlptTestQuestions({
             <AlertDialogAction
               onClick={() => {
                 setTestState(TestState.Done);
-                if (isDailyTest) handleSubmitAnswers();
-                else setResultDialogOpen(true);
+                // if (isDailyTest) handleSubmitAnswers(); else
+                setResultDialogOpen(true);
               }}
             >
               Đồng ý
