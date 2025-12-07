@@ -125,7 +125,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       .from("exams")
       .select(
         `
-        id, title, description, updated_at, popular, is_public, user_id,
+        id, title, description, updated_at, popular, is_public, user_id, jlpt_level,
         users:users!exams_user_id_fkey (id, name, avatar, role, jlptlevel),
         exam_tags (
           tags (name)
@@ -157,7 +157,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
           [],
         questionNumber: item.exam_questions?.length || 0,
         isLearning: false,
-        jlptLevel: item.users?.jlptlevel || "N5",
+        jlptLevel: item.jlpt_level,
         questions: [],
         readings: [],
       })) || [];
@@ -184,7 +184,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       .from("exams")
       .select(
         `
-        id, title, description, updated_at, popular, is_public, user_id,
+        id, title, description, updated_at, popular, is_public, user_id, jlpt_level,
         users:users!exams_user_id_fkey (id, name, avatar, role, jlptlevel),
         exam_tags!inner (
           tags!inner (name)
@@ -240,7 +240,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
           [],
         questionNumber: item.exam_questions?.length || 0,
         isLearning: false,
-        jlptLevel: item.users?.jlptlevel || "N5",
+        jlptLevel: item.jlpt_level,
         questions: [],
         readings: [],
       })) || [];
@@ -284,7 +284,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         .from("exams")
         .select(
           `
-        id, title, description, updated_at, popular, is_public, user_id,
+        id, title, description, updated_at, popular, is_public, user_id, jlpt_level,
         users:users!exams_user_id_fkey (id, name, avatar, role, jlptlevel),
         exam_tags (
           tags (name)
@@ -308,7 +308,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         .select(
           `
         exams (
-          id, title, description, updated_at, popular, is_public, user_id,
+          id, title, description, updated_at, popular, is_public, user_id, jlpt_level,
           users:users!exams_user_id_fkey (id, name, avatar, role, jlptlevel),
           exam_tags (
             tags (name)
@@ -345,8 +345,8 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         item.exam_tags?.map((t: any) => t.tags?.name || "").filter(Boolean) ||
         [],
       questionNumber: item.exam_questions?.length || 0,
-      isLearning: false, // This will be handled by the UI or separate logic if needed
-      jlptLevel: item.users?.jlptlevel || "N5",
+      isLearning: false,
+      jlptLevel: item.jlpt_level,
       questions: [],
       readings: [],
     });
@@ -418,7 +418,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
         [],
       questionNumber: data.exam_questions?.length || 0,
       isLearning: isLearning,
-      jlptLevel: data.jlpt_level || "N5",
+      jlptLevel: data.jlpt_level,
       questions:
         data.exam_questions?.map((q: any) => ({
           id: q.id,
@@ -738,7 +738,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
       .from("exams")
       .select(
         `
-        id, title, description, updated_at, popular, is_public, user_id,
+        id, title, description, updated_at, popular, is_public, user_id, jlpt_level
         users:users!exams_user_id_fkey (id, name, avatar, role, jlptlevel),
         exam_tags (
           tags (name)
@@ -769,7 +769,7 @@ export const createQuizRepository = (client: SupabaseClientType) => ({
           [],
         questionNumber: item.exam_questions?.length || 0,
         isLearning: false,
-        jlptLevel: item.users?.jlptlevel || "N5",
+        jlptLevel: item.jlpt_level,
         questions: [],
         readings: [],
       })) || [];
