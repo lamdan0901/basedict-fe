@@ -8,7 +8,7 @@ import { createQuizRepository } from "./repositories/quizRepo";
 import { createAuthRepository } from "./repositories/authRepo";
 import { createReadingRepository } from "./repositories/readingRepo";
 
-const client: ReturnType<typeof createBrowserClient<Database>> =
+export const client: ReturnType<typeof createBrowserClient<Database>> =
   createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!

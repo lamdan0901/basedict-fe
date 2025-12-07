@@ -9,7 +9,7 @@ import {
 } from "nuqs";
 import { useRef } from "react";
 import useSWR from "swr";
-import { parseQueryString } from "@/utils/parseQueryString";
+import { parseQueryString } from "@/lib/utils";
 
 type Props = { jlptLevel?: TJlptLevel };
 

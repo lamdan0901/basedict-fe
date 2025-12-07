@@ -2,7 +2,7 @@ import { readingRepo } from "@/lib/supabase/client";
 import { TabVal } from "@/modules/reading/const";
 import { ReadingListContent } from "@/modules/reading/ReadingList/ReadingListContent";
 import { getRequest } from "@/service/data";
-import { parseQueryString } from "@/utils/parseQueryString";
+import { parseQueryString } from "@/lib/utils";
 import {
   parseAsBoolean,
   parseAsInteger,

@@ -18,7 +18,7 @@ import { DEFAULT_AVATAR_URL, jlptLevels } from "@/constants";
 import { fetchUserProfile } from "@/service/user";
 import { useAppStore } from "@/store/useAppStore";
 import { createAuthRepository } from "@/lib/supabase/repositories/authRepo";
-import { createClient } from "@/utils/supabase/client";
+import { client } from "@/lib/supabase/client";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -32,7 +32,6 @@ type TUserForm = {
 };
 
 export function Profile() {
-  const supabase = createClient();
   const { toast } = useToast();
   const setProfile = useAppStore((state) => state.setProfile);
 
@@ -49,7 +48,7 @@ export function Profile() {
   const { data: email } = useSWRImmutable("get-email", async () => {
     const {
       data: { session },
-    } = await supabase.auth.getSession();
+    } = await client.auth.getSession();
     return session?.user.email;
   });
 
@@ -74,7 +73,7 @@ export function Profile() {
     if (!user) return;
     try {
       setIsMutating(true);
-      const authRepo = createAuthRepository(supabase);
+      const authRepo = createAuthRepository(client);
       await authRepo.updateUserProfile(user.id, data);
 
       const newUserData = {

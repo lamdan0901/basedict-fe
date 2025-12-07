@@ -1,6 +1,6 @@
 import { UserQuiz } from "@/modules/quizzes/user-quiz";
 import { ResolvingMetadata } from "next";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { createQuizRepository } from "@/lib/supabase/repositories/quizRepo";
 
 export async function generateMetadata(

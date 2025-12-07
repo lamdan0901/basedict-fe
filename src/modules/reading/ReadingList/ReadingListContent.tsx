@@ -11,7 +11,7 @@ import { ReadingItem } from "@/modules/reading/ReadingList/ReadingItem";
 import { ReadingType, readingTypeMap, TabVal } from "@/modules/reading/const";
 import { jlptLevels } from "@/constants";
 import { parseAsBoolean, parseAsStringEnum, useQueryStates } from "nuqs";
-import { parseQueryString } from "@/utils/parseQueryString";
+import { parseQueryString } from "@/lib/utils";
 
 type Props = {
   readingList: TReadingMaterial[];

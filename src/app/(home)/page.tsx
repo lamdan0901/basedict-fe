@@ -1,7 +1,7 @@
 import { ResolvingMetadata } from "next";
 import { Home } from "@/modules/home";
 import { cache } from "react";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { createLexemeRepository } from "@/lib/supabase/repositories/lexemeRepo";
 
 const fetchLexemeSearch = cache(

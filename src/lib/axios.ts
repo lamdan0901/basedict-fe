@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client";
+import { client } from "@/lib/supabase/client";
 import axios, { AxiosError } from "axios";
 
 const axiosData = axios.create({
@@ -6,10 +6,9 @@ const axiosData = axios.create({
 });
 
 const sharedInterceptor = async (config: any) => {
-  const supabase = createClient();
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await client.auth.getSession();
 
   const token = session?.access_token;
   if (token) {

@@ -19,7 +19,7 @@ import { useRouter } from "nextjs-toploader/app";
 import { cn } from "@/lib";
 import { useEffect, useState } from "react";
 import { login } from "@/service/actions";
-import { createClient } from "@/utils/supabase/client";
+import { client } from "@/lib/supabase/client";
 import { useAppStore } from "@/store/useAppStore";
 import { DEFAULT_AVATAR_URL } from "@/constants";
 import useSWR from "swr";
@@ -45,7 +45,6 @@ export const Header = () => {
   });
 
   async function signOut() {
-    const client = createClient();
     const { error } = await client.auth.signOut({ scope: "local" });
     if (!error) {
       await mutate();

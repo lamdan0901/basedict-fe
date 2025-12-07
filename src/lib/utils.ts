@@ -1,6 +1,16 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import QueryString from "qs";
+import { createParser } from "nuqs";
+
+export function parseQueryString<T extends string>(
+  defaultValue: T | null | undefined
+) {
+  return createParser<T>({
+    parse: (value) => value as T,
+    serialize: (value) => value,
+  }).withDefault(defaultValue as NonNullable<T>);
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

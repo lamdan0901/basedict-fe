@@ -1,7 +1,7 @@
 import { UserFlashcard } from "@/modules/flashcard/user-flashcard";
 import { ResolvingMetadata } from "next";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { createFlashcardRepository } from "@/lib/supabase/repositories/flashcardRepo";
 
 export async function generateMetadata(

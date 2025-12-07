@@ -1,11 +1,9 @@
-import { authRepo } from "@/lib/supabase/client";
-import { createClient } from "@/utils/supabase/client";
+import { authRepo, client } from "@/lib/supabase/client";
 
 export async function fetchUserProfile(): Promise<any> {
-  const supabase = createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await client.auth.getUser();
 
   if (!user) return undefined;
 
