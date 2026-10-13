@@ -1,0 +1,21 @@
+{
+  "default_branch": "master",
+  "branches": [
+    "feat/quiz",
+    "feat/refactor1724",
+    "master",
+    "refactor/jan-1st"
+  ],
+  "parent": {
+    "feat/quiz": "master",
+    "feat/refactor1724": "master",
+    "master": null,
+    "refactor/jan-1st": "master"
+  },
+  "order": [
+    "master",
+    "feat/quiz",
+    "feat/refactor1724",
+    "refactor/jan-1st"
+  ]
+}
